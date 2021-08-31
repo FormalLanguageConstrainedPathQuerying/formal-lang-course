@@ -3,3 +3,5 @@
 ---
 # formal-lang-course
 Курс по формальным языкам: шаблон для домашних работ + материалы
+
+# [Текущие результаты](https://docs.google.com/spreadsheets/d/18DhYG5CuOrN4A5b5N7-mEDfDkc-7BuXF3Qsu6HD-lks/edit?usp=sharing)
