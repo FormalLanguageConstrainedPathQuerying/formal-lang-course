@@ -12,15 +12,17 @@ def main():
         if re.match("test_\\w+.py", test):
             test_path = str(shared.TEST / test)
             print(" Exec unit test: ", test_path)
-            subprocess.check_call([
-                "python",
-                "-m",
-                "py.test",
-                "-v",
-                "--cache-clear",
-                "--capture=no",
-                test_path
-            ])
+            subprocess.check_call(
+                [
+                    "python",
+                    "-m",
+                    "py.test",
+                    "-v",
+                    "--cache-clear",
+                    "--capture=no",
+                    test_path
+                ]
+            )
 
 
 if __name__ == "__main__":
