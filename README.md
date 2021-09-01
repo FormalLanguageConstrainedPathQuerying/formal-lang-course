@@ -8,6 +8,7 @@
 
 Актуальное:
 - [Таблица с текущими результатами](https://docs.google.com/spreadsheets/d/18DhYG5CuOrN4A5b5N7-mEDfDkc-7BuXF3Qsu6HD-lks/edit?usp=sharing)
+- [Список задач](https://github.com/JetBrains-Research/formal-lang-course/tree/main/tasks)
 - [Стиль кода как референс](https://www.python.org/dev/peps/pep-0008/)
 - [Материалы по курсу](https://github.com/JetBrains-Research/formal-lang-course/blob/main/docs/lecture_notes/Formal_language_course.pdf)
 - [О достижимости с ограничениями в терминах формальных языков](https://github.com/JetBrains-Research/FormalLanguageConstrainedReachability-LectureNotes)
@@ -73,7 +74,7 @@
 - Для запуска тестов необходимо из корня проекта выполнить следующую команду:
   ```shell
   python ./scripts/run_tests.py
-  ``` 
+  ```
 
 ## Эксперименты
 
