@@ -20,7 +20,7 @@ def main():
                     "-v",
                     "--cache-clear",
                     "--capture=no",
-                    test_path
+                    test_path,
                 ]
             )
 
