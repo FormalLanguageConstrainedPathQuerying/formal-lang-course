@@ -72,8 +72,8 @@
 - Для работы с тестами рекомендутеся использовать [`pytest`](https://docs.pytest.org/en/6.2.x/).
 - Для запуска тестов необходимо из корня проекта выполнить следующую команду:
   ```shell
-  PYTHONPATH=. pytest -vv -s tests
-  ```
+  python ./scripts/run_tests.py
+  ``` 
 
 ## Эксперименты
 
