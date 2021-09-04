@@ -13,4 +13,4 @@
   - [x] По имени графа вернуть количество вершин, рёбер и перечислить различные метки, встречающиеся на рёбрах.
   - [x] По количеству вершин в циклах и именам меток строить [граф из двух циклов](https://jetbrains-research.github.io/CFPQ_Data/reference/graphs/generated/cfpq_data.graphs.generators.labeled_two_cycles_graph.html#cfpq_data.graphs.generators.labeled_two_cycles_graph) и сохранять его в указанный файл в формате DOT (использовать pydot).
 - [x] Добавить необходимые тесты.
-- [ ] Добавить запуск тестов с помощью `pytest` в `.github/workflows/`.
+- [x] Добавить запуск тестов с помощью `pytest` в `.github/workflows/`.
