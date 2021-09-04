@@ -22,4 +22,4 @@ def test_getting_graph_info():
 
 
 def test_saving_graph():
-    generate_and_save_two_cycles(10, 15, ("a", "b"), "../resources/example_saving.dot")
+    generate_and_save_two_cycles(10, 15, ("a", "b"), "resources/example_saving.dot")
