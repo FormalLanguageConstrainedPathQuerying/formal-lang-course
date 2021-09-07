@@ -130,3 +130,17 @@ dmypy.json
 
 # IDEA
 .idea
+
+# LaTeX
+*.aux
+*.toc
+*.vrb
+*.nav
+*.out
+*.snm
+_minted-presentation/
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.gz
