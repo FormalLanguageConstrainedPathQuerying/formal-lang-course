@@ -6,5 +6,5 @@
 
 ## Задача
 
-- [ ] Используя возможности [pyformlang](https://pyformlang.readthedocs.io/en/latest/) реализовать построение минимального ДКА по заданному регулярному выражению.
+- [ ] Используя возможности [pyformlang](https://pyformlang.readthedocs.io/en/latest/) реализовать **функцию** построения минимального ДКА по заданному регулярному выражению. [Формат регулярного выражения.](https://pyformlang.readthedocs.io/en/latest/usage.html#regular-expression).
 - [ ] Добавить необходимые тесты.
