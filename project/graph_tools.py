@@ -77,6 +77,23 @@ class Graph:
 pool = list()
 
 
+def get_names() -> List[str]:
+    """
+    Gets names list of ever used graphs
+
+    Returns
+    -------
+    List[str]
+        Names of ever used graphs
+    """
+
+    names = []
+    for g in pool:
+        names.append(g.description.name)
+
+    return names
+
+
 def get_description(name: str) -> GraphDescription:
     """
     Gets a description of real dataset graph encapsulated in GraphDescription.
@@ -212,20 +229,3 @@ def save_to_dot(
         nx.drawing.nx_pydot.write_dot(current.graph, path)
 
     return current.description
-
-
-def get_names() -> List[str]:
-    """
-    Gets names list of ever used graphs
-
-    Returns
-    -------
-    List[str]
-        Names of ever used graphs
-    """
-
-    names = []
-    for g in pool:
-        names.append(g.description.name)
-
-    return names
