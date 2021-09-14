@@ -49,4 +49,4 @@ jobs:
       # Runs unit tests from /tests directory
       - name: Run unit tests using pytest
         run: |
-          pytest ./tests
+          pytest -vv ./tests

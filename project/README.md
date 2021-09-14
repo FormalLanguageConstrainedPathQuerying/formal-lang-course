@@ -1,8 +1,8 @@
 # GraphTools application implementation
 
-An application presenting basic graph tools now. It is in active development.
+An application presenting basic graph tools now. It is in active development now.
 
-## How to run GraphTools application via command line
+## How to run the application via command line
 
 `python -m project` from the repository root.
 
