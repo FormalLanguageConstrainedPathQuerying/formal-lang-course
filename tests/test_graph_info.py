@@ -1,6 +1,5 @@
 from project.utils import graph_utils
 
-import cfpq_data
 import rdflib
 
 
