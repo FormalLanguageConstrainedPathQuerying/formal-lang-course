@@ -63,8 +63,6 @@ def get_graph_info(name: str, env: dict = None) -> GraphInfo:
     info : GraphInfo
         Namedtuple of (number of nodes, number of edges, set of edges' labels)
     """
-    if not env:
-        env = dict()
 
     graph = get_graph(name, env)
 
