@@ -53,7 +53,9 @@ def get_graph_description(name: str) -> None:
     )
 
 
-def get_two_cycles_graph(first_cycle: int, second_cycle: int, *edge_labels) -> None:
+def get_two_cycles_graph(
+    first_cycle: int, second_cycle: int, *edge_labels: str
+) -> None:
     """
     Implementation of generate_two_cycles_graph application command.
 
@@ -62,10 +64,10 @@ def get_two_cycles_graph(first_cycle: int, second_cycle: int, *edge_labels) -> N
     Parameters
     ----------
     first_cycle: int
-        Number of nodes in the first cycle
+        Number of nodes in the first cycle without common node
     second_cycle: int
-        Number of nodes in the second cycle
-    edge_labels: Tuple[Any, ...]
+        Number of nodes in the second cycle without common node
+    edge_labels: Tuple[str, ...]
         Edge labels on the cycles
 
     Returns
