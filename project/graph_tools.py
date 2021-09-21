@@ -6,6 +6,7 @@ import networkx as nx
 __all__ = [
     "Graph",
     "GraphDescription",
+    "get_from_dataset",
     "get_description",
     "get_two_cycles",
     "save_to_dot",
@@ -42,6 +43,9 @@ class GraphDescription:
             + f"\t- edge labels: {str(self.edge_labels)}"
         )
 
+    def set_name(self, name):
+        self.name = name
+
 
 class Graph:
     """
@@ -70,9 +74,6 @@ class Graph:
             {str(self.description)}
             """
 
-    def set_name(self, name):
-        self.description.name = name
-
 
 pool = list()
 
@@ -92,6 +93,42 @@ def get_names() -> List[str]:
         names.append(g.description.name)
 
     return names
+
+
+def get_from_dataset(name: str) -> Graph:
+    """
+    Gets a real dataset graph encapsulated in Graph.
+
+    Parameters
+    ----------
+    name: str
+        Name of the graph from https://jetbrains-research.github.io/CFPQ_Data/dataset/index.html
+
+    Returns
+    -------
+    Graph
+        Class encapsulates graph
+
+    Raises
+    ------
+    NameError
+        If name not in https://jetbrains-research.github.io/CFPQ_Data/dataset/index.html
+    """
+
+    dataset_graph = cfpq_data.graph_from_dataset(name, verbose=False)
+
+    if not dataset_graph:
+        raise NameError(
+            f'Wrong dataset graph name "{name}", please specify it by real dataset name'
+        )
+
+    graph = Graph(dataset_graph)
+    graph.description.set_name(name)
+
+    # global pool
+    # pool.append(graph)
+
+    return graph
 
 
 def get_description(name: str) -> GraphDescription:
@@ -114,15 +151,7 @@ def get_description(name: str) -> GraphDescription:
         If name not in https://jetbrains-research.github.io/CFPQ_Data/dataset/index.html
     """
 
-    graph = cfpq_data.graph_from_dataset(name, verbose=False)
-
-    if graph is None:
-        raise NameError(
-            f'Wrong dataset graph name "{name}", please specify it by real dataset name'
-        )
-
-    current = Graph(graph)
-    current.set_name(name)
+    current = get_from_dataset(name)
 
     global pool
     pool.append(current)
@@ -131,7 +160,7 @@ def get_description(name: str) -> GraphDescription:
 
 
 def get_two_cycles(
-    first_cycle: int, second_cycle: int, edge_labels: Tuple[str, str]
+    first_cycle: int, second_cycle: int, edge_labels: Tuple[str, str] = None
 ) -> Graph:
     """
     Generates two cycles graph specified by parameters.
@@ -139,11 +168,12 @@ def get_two_cycles(
     Parameters
     ----------
     first_cycle: int
-        Number of nodes in the first cycle
+        Number of nodes in the first cycle without common node
     second_cycle: int
-        Number of nodes in the second cycle
-    edge_labels: Tuple[str, str]
-        Labels for edges on the first and second cycles
+        Number of nodes in the second cycle without common node
+    edge_labels: Tuple[str, str], default = None
+        Labels for edges on the first and second cycles,
+        but if edge labels not specified, ('a', 'b') will be applied
 
     Returns
     -------
@@ -151,12 +181,17 @@ def get_two_cycles(
         Class encapsulates graph
     """
 
-    graph = cfpq_data.labeled_two_cycles_graph(
-        first_cycle, second_cycle, edge_labels=edge_labels, verbose=False
-    )
+    if not edge_labels:
+        graph = cfpq_data.labeled_two_cycles_graph(
+            first_cycle, second_cycle, verbose=False
+        )
+    else:
+        graph = cfpq_data.labeled_two_cycles_graph(
+            first_cycle, second_cycle, edge_labels=edge_labels, verbose=False
+        )
 
     current = Graph(graph)
-    current.set_name("two_cycles")
+    current.description.set_name("two_cycles")
 
     global pool
     pool.append(current)
@@ -200,8 +235,8 @@ def save_to_dot(
     global pool
     current = None
 
-    if name is None:
-        if graph is None:
+    if not name:
+        if not graph:
             if len(pool) > 0:
                 current = pool[0]
                 nx.drawing.nx_pydot.write_dot(current.graph, path)
@@ -216,8 +251,8 @@ def save_to_dot(
             if g.description.name == name:
                 current = g
 
-        if current is None:
-            if graph is None:
+        if not current:
+            if not graph:
                 raise NameError(
                     f'Wrong graph name: make sure that "{name}" graph has been used'
                 )
