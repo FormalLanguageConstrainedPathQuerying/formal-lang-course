@@ -44,7 +44,7 @@ def get_nfa(
     """
     Generates an Nondeterministic Finite Automaton for a specified graph and start or final nodes.
 
-    If start_nodes and final_nodes are not specified, all nodes are considered start and final.
+    If start_nodes or final_nodes are not specified, all nodes are considered start or final respectively.
 
     Parameters
     ----------
@@ -65,8 +65,26 @@ def get_nfa(
     Raises
     ------
     ValueError
-        If number of non-existent in the specified graph node is used
+        If non-existent in the specified graph node is used
     """
+
+    if not start_nodes:
+        start_nodes = set(graph.nodes)
+
+    if not final_nodes:
+        final_nodes = set(graph.nodes)
+
+    if not start_nodes.issubset(set(graph.nodes)):
+        raise ValueError(
+            f"Non-existent start nodes in the graph: "
+            f"{start_nodes.difference(set(graph.nodes))}"
+        )
+
+    if not final_nodes.issubset(set(graph.nodes)):
+        raise ValueError(
+            f"Non-existent final nodes in the graph: "
+            f"{final_nodes.difference(set(graph.nodes))}"
+        )
 
     nfa = NondeterministicFiniteAutomaton()
 
@@ -77,36 +95,12 @@ def get_nfa(
         edge_label = graph.get_edge_data(node_from, node_to)[0]["label"]
         nfa.add_transition(node_from, edge_label, node_to)
 
-    if len(nfa.states) == 0:
-        if start_nodes or final_nodes:
-            raise ValueError(
-                "The resulting empty Nondeterministic Finite Automaton"
-                + "cannot have start or final states equivalent to the specified nodes"
-            )
-    else:
-        if not start_nodes and not final_nodes:
-            for state in nfa.states:
-                nfa.add_start_state(state)
-                nfa.add_final_state(state)
+    for start_node in start_nodes:
+        start_state = list(nfa.states)[start_node]
+        nfa.add_start_state(start_state)
 
-        if start_nodes:
-            for start_node in start_nodes:
-                if start_node not in range(graph.number_of_nodes()):
-                    raise ValueError(
-                        f"Node {start_node} does not exists in specified graph"
-                    )
-
-                state = list(nfa.states)[start_node]
-                nfa.add_start_state(state)
-
-        if final_nodes:
-            for final_node in final_nodes:
-                if final_node not in range(graph.number_of_nodes()):
-                    raise ValueError(
-                        f"Node {final_node} does not exists in specified graph"
-                    )
-
-                state = list(nfa.states)[final_node]
-                nfa.add_final_state(state)
+    for final_node in final_nodes:
+        final_state = list(nfa.states)[final_node]
+        nfa.add_final_state(final_state)
 
     return nfa
