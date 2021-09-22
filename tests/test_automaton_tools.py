@@ -238,13 +238,13 @@ def test_get_nfa(graph, expected_ndfa, start_states, final_states) -> None:
         assert actual_nfa.is_empty() == expected_ndfa.is_empty()
     else:
         if not start_states:
-            start_states = set(range(graph.graph.number_of_nodes()))
+            start_states = set(graph.graph.nodes)
 
         for state in start_states:
             expected_ndfa.add_start_state(State(state))
 
         if not final_states:
-            final_states = set(range(graph.graph.number_of_nodes()))
+            final_states = set(graph.graph.nodes)
 
         for state in final_states:
             expected_ndfa.add_final_state(State(state))
