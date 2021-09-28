@@ -1,6 +1,10 @@
 import pytest
 import scipy.sparse as sps
-from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, DeterministicFiniteAutomaton, State
+from pyformlang.finite_automaton import (
+    NondeterministicFiniteAutomaton,
+    DeterministicFiniteAutomaton,
+    State,
+)
 
 from project.matrix_tools import Adjacency, BooleanAdjacencies
 
@@ -25,8 +29,12 @@ def nfa():
 def test_adjacency(nfa):
     adjacency = Adjacency(nfa)
 
-    expected_adjacency = [[set(), {State('a')}, {State('a')}, set()], [set(), {State('c')}, {State('b')}, set()],
-                          [set(), set(), set(), {State('d')}], [{State('d')}, set(), set(), set()]]
+    expected_adjacency = [
+        [set(), {State("a")}, {State("a")}, set()],
+        [set(), {State("c")}, {State("b")}, set()],
+        [set(), set(), set(), {State("d")}],
+        [{State("d")}, set(), set(), set()],
+    ]
     actual_adjacency = adjacency.adjacency
 
     assert actual_adjacency == expected_adjacency
@@ -53,7 +61,10 @@ def test_boolean_adjacency_symbols(nfa):
 def test_boolean_adjacency(nfa, symbol, adjacency_states):
     boolean_adjacencies = BooleanAdjacencies(nfa)
 
-    assert all(boolean_adjacencies.boolean_adjacencies[symbol][adjacency_state] for adjacency_state in adjacency_states)
+    assert all(
+        boolean_adjacencies.boolean_adjacencies[symbol][adjacency_state]
+        for adjacency_state in adjacency_states
+    )
 
 
 def test_transitive_closure(nfa):
@@ -64,7 +75,9 @@ def test_transitive_closure(nfa):
     assert transitive_closure.sum() == transitive_closure.size
 
 
-@pytest.mark.parametrize("symbol, expected_nnz", [("a", 2), ("b", 1), ("c", 1), ("d", 2)])
+@pytest.mark.parametrize(
+    "symbol, expected_nnz", [("a", 2), ("b", 1), ("c", 1), ("d", 2)]
+)
 def test_nonzero(nfa, symbol, expected_nnz):
     boolean_adjacencies = BooleanAdjacencies(nfa)
 
@@ -95,6 +108,8 @@ def test_intersection():
     expected_nfa.add_start_state(State(0))
     expected_nfa.add_final_state(State(1))
 
-    actual_nfa = graph_nfa_boolean_adjacencies.intersect(query_nfa_boolean_adjacencies).to_nfa()
+    actual_nfa = graph_nfa_boolean_adjacencies.intersect(
+        query_nfa_boolean_adjacencies
+    ).to_nfa()
 
     assert actual_nfa.is_equivalent_to(expected_nfa)

@@ -67,7 +67,7 @@ def get_nfa_from_graph(
     Raises
     ------
     ValueError
-        If non-existent in the specified graph node is used
+        If non-existent in the specified graph node number is used
     """
 
     nums_nodes = {num: node for num, node in enumerate(graph.nodes)}
