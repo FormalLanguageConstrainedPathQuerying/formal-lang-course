@@ -8,10 +8,10 @@ from pyformlang.finite_automaton import (
 )
 from pyformlang.regular_expression import Regex
 
-__all__ = ["get_min_dfa", "get_nfa"]
+__all__ = ["get_min_dfa_from_regex", "get_nfa_from_graph"]
 
 
-def get_min_dfa(regex: str) -> DeterministicFiniteAutomaton:
+def get_min_dfa_from_regex(regex: str) -> DeterministicFiniteAutomaton:
     """
     Based on a regular expression given as a string, builds an Deterministic Finite Automaton.
 
@@ -38,8 +38,10 @@ def get_min_dfa(regex: str) -> DeterministicFiniteAutomaton:
     return min_dfa
 
 
-def get_nfa(
-    graph: nx.MultiDiGraph, start_nodes: Set[int] = None, final_nodes: Set[int] = None
+def get_nfa_from_graph(
+    graph: nx.MultiDiGraph,
+    start_node_nums: Set[int] = None,
+    final_node_nums: Set[int] = None,
 ) -> NondeterministicFiniteAutomaton:
     """
     Generates an Nondeterministic Finite Automaton for a specified graph and start or final nodes.
@@ -50,11 +52,11 @@ def get_nfa(
     ----------
     graph: nx.MultiDiGraph
         Graph to generating an Nondeterministic Finite Automaton from it
-    start_nodes: Set[int], default = None
-        Set of start nodes to configure Nondeterministic Finite Automaton,
+    start_node_nums: Set[int], default = None
+        Set of start node numbers to configure Nondeterministic Finite Automaton,
         which must exist in the graph
-    final_nodes: Set[int], default = None
-        Set of final nodes to configure Nondeterministic Finite Automaton,
+    final_node_nums: Set[int], default = None
+        Set of final node numbers to configure Nondeterministic Finite Automaton,
         which must exist in the graph
 
     Returns
@@ -68,39 +70,52 @@ def get_nfa(
         If non-existent in the specified graph node is used
     """
 
-    if not start_nodes:
-        start_nodes = set(graph.nodes)
+    nums_nodes = {num: node for num, node in enumerate(graph.nodes)}
 
-    if not final_nodes:
-        final_nodes = set(graph.nodes)
+    start_nums_nodes = dict()
+    final_nums_nodes = dict()
 
-    if not start_nodes.issubset(set(graph.nodes)):
-        raise ValueError(
-            f"Non-existent start nodes in the graph: "
-            f"{start_nodes.difference(set(graph.nodes))}"
-        )
+    if not start_node_nums:
+        for num, node in nums_nodes.items():
+            start_nums_nodes[num] = node
+    else:
+        if not start_node_nums.issubset(set(nums_nodes.keys())):
+            raise ValueError(
+                f"Non-existent start node numbers in the graph: "
+                f"{start_node_nums.difference(set(nums_nodes.keys()))}"
+            )
 
-    if not final_nodes.issubset(set(graph.nodes)):
-        raise ValueError(
-            f"Non-existent final nodes in the graph: "
-            f"{final_nodes.difference(set(graph.nodes))}"
-        )
+        for num in start_node_nums:
+            start_nums_nodes[num] = nums_nodes[num]
+
+    if not final_node_nums:
+        for num, node in nums_nodes.items():
+            final_nums_nodes[num] = node
+    else:
+        if not final_node_nums.issubset(set(nums_nodes.keys())):
+            raise ValueError(
+                f"Non-existent final node numbers in the graph: "
+                f"{final_node_nums.difference(set(nums_nodes.keys()))}"
+            )
+
+        for num in final_node_nums:
+            final_nums_nodes[num] = nums_nodes[num]
 
     nfa = NondeterministicFiniteAutomaton()
 
-    for node in graph.nodes:
+    for node in nums_nodes.values():
         nfa.states.add(State(node))
 
     for node_from, node_to in graph.edges():
         edge_label = graph.get_edge_data(node_from, node_to)[0]["label"]
         nfa.add_transition(node_from, edge_label, node_to)
 
-    for start_node in start_nodes:
-        start_state = list(nfa.states)[start_node]
+    for num in start_nums_nodes.keys():
+        start_state = list(nfa.states)[num]
         nfa.add_start_state(start_state)
 
-    for final_node in final_nodes:
-        final_state = list(nfa.states)[final_node]
+    for num in final_nums_nodes.keys():
+        final_state = list(nfa.states)[num]
         nfa.add_final_state(final_state)
 
     return nfa
