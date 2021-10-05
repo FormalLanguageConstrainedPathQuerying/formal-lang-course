@@ -35,16 +35,31 @@ def acyclic_graph() -> nx.MultiDiGraph:
             None,
             set(product(range(4), range(4))).union({(0, 4), (4, 5), (5, 0)}),
         ),
-
-        (two_cycles_graph(), "a*|b", {0}, {1, 2, 3, 4}, {(0, 1), (0, 2), (0, 3), (0, 4)}),
+        (
+            two_cycles_graph(),
+            "a*|b",
+            {0},
+            {1, 2, 3, 4},
+            {(0, 1), (0, 2), (0, 3), (0, 4)},
+        ),
         (two_cycles_graph(), "a*|b", {4}, {4, 5}, {(4, 5)}),
-        (two_cycles_graph(), "a.a", {0, 1, 2, 3}, {0, 1, 2, 3}, {(0, 2), (1, 3), (2, 0), (3, 1)}),
+        (
+            two_cycles_graph(),
+            "a.a",
+            {0, 1, 2, 3},
+            {0, 1, 2, 3},
+            {(0, 2), (1, 3), (2, 0), (3, 1)},
+        ),
         (two_cycles_graph(), "b", {0}, {0, 1, 2, 3}, set()),
         (two_cycles_graph(), "b*", {0}, {5, 4}, {(0, 5), (0, 4)}),
-
         (two_cycles_graph(), "e*|d|zm*", None, None, set()),
-        (two_cycles_graph(), "a*|m", None, None, set((i, j) for i in range(4) for j in range(4))),
-
+        (
+            two_cycles_graph(),
+            "a*|m",
+            None,
+            None,
+            set((i, j) for i in range(4) for j in range(4)),
+        ),
         (empty_graph(), "", None, None, set()),
         (empty_graph(), "a*|b", None, None, set()),
         (acyclic_graph(), "x.y.y", None, None, {(0, 3)}),
