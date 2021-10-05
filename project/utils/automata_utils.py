@@ -75,11 +75,7 @@ def transform_graph_to_nfa(
         If given start or final states do not match graph nodes
     """
 
-    nfa = NondeterministicFiniteAutomaton()
-
-    for node_from, node_to in graph.edges():
-        edge_data = graph.get_edge_data(node_from, node_to)[0]["label"]
-        nfa.add_transition(node_from, edge_data, node_to)
+    nfa = NondeterministicFiniteAutomaton.from_networkx(graph)
 
     graph_nodes = graph.nodes()
 
