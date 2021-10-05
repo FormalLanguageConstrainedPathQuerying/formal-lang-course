@@ -49,7 +49,7 @@ class Adjacency:
             self.adjacency = self._get_adjacency(transition_func)
 
     def _get_adjacency(
-        self, transition_func: Dict[State, Dict[Symbol, Union[State, Set[State]]]]
+            self, transition_func: Dict[State, Dict[Symbol, Union[State, Set[State]]]]
     ) -> List[List[Set[Symbol]]]:
         """
         Construct a Nondeterministic Finite Automaton adjacency matrix.
@@ -110,7 +110,7 @@ class BooleanAdjacencies(Adjacency):
             self.boolean_adjacencies = self._get_boolean_adjacencies(symbols)
 
     def _get_boolean_adjacencies(
-        self, symbols: Set[Symbol]
+            self, symbols: Set[Symbol]
     ) -> Dict[Symbol, np.ndarray]:
         """
         Construct a Nondeterministic Finite Automaton boolean adjacency
@@ -168,7 +168,7 @@ class BooleanAdjacencies(Adjacency):
 
         intersection.states_num = self.states_num * other.states_num
         intersection_symbols = (
-            self.boolean_adjacencies.keys() & other.boolean_adjacencies.keys()
+                self.boolean_adjacencies.keys() & other.boolean_adjacencies.keys()
         )
 
         for symbol in intersection_symbols:
@@ -182,21 +182,21 @@ class BooleanAdjacencies(Adjacency):
             for query_state, query_state_num in other.states_nums.items():
                 intersection_state = State(str(query_state) + "⋂" + str(graph_state))
                 intersection_state_num = (
-                    graph_state_num * other.states_num + query_state_num
+                        graph_state_num * other.states_num + query_state_num
                 )
 
                 intersection.states_nums[intersection_state] = intersection_state_num
                 intersection.nums_states[intersection_state_num] = intersection_state
 
                 if (
-                    graph_state in self.start_states
-                    and query_state in other.start_states
+                        graph_state in self.start_states
+                        and query_state in other.start_states
                 ):
                     intersection.start_states.add(intersection_state)
 
                 if (
-                    graph_state in self.final_states
-                    and query_state in other.final_states
+                        graph_state in self.final_states
+                        and query_state in other.final_states
                 ):
                     intersection.final_states.add(intersection_state)
 
@@ -213,10 +213,10 @@ class BooleanAdjacencies(Adjacency):
             Nondeterministic Finite Automaton transitive closure
         """
 
-        transitive_closure: sps.csr_matrix = sum(
+        transitive_closure: sps.csr_matrix = sps.csr_matrix(sum(
             sps.csr_matrix(boolean_adjacency, dtype=bool)
             for boolean_adjacency in self.boolean_adjacencies.values()
-        )
+        ), dtype=bool)
 
         current_nnz = transitive_closure.nnz
         new_nnz = 0
@@ -243,7 +243,7 @@ class BooleanAdjacencies(Adjacency):
 
         for symbol, boolean_adjacency in self.boolean_adjacencies.items():
             for state_from_num, state_to_num in zip(
-                *sps.csr_matrix(boolean_adjacency, dtype=bool).nonzero()
+                    *sps.csr_matrix(boolean_adjacency, dtype=bool).nonzero()
             ):
                 state_from = self.nums_states[state_from_num]
                 state_to = self.nums_states[state_to_num]

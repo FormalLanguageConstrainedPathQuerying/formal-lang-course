@@ -70,7 +70,10 @@ def get_nfa_from_graph(
         If non-existent in the specified graph node number is used
     """
 
-    nums_nodes = {num: node for num, node in enumerate(graph.nodes)}
+    nums_nodes = dict()
+
+    if graph.number_of_nodes() != 0:
+        nums_nodes = {num: node for num, node in enumerate(graph.nodes)}
 
     start_nums_nodes = dict()
     final_nums_nodes = dict()
