@@ -6,3 +6,9 @@ from project.graph_tools import *
 
 import project.automaton_tools
 from project.automaton_tools import *
+
+import project.matrix_tools
+from project.matrix_tools import *
+
+import project.path_querying_tools
+from project.path_querying_tools import *

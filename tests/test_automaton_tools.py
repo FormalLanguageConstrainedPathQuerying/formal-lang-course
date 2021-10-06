@@ -15,17 +15,17 @@ from project.automaton_tools import *
 
 def test_wrong_regex() -> None:
     with pytest.raises(MisformedRegexError):
-        get_min_dfa("*|wrong_regex|*")
+        get_min_dfa_from_regex("*|wrong_regex|*")
 
 
 def test_dfa() -> None:
-    min_dfa = get_min_dfa("i* l* y* a* | 1901")
+    min_dfa = get_min_dfa_from_regex("i* l* y* a* | 1901")
 
     assert min_dfa.is_deterministic()
 
 
 def test_min_dfa() -> None:
-    actual_dfa = get_min_dfa("i* l* y* a* | 1901")
+    actual_dfa = get_min_dfa_from_regex("i* l* y* a* | 1901")
     expected_min_dfa = actual_dfa.minimize()
 
     assert actual_dfa.is_equivalent_to(expected_min_dfa) and len(
@@ -54,7 +54,7 @@ def test_min_dfa_accepts(
     expected_word: Iterable[Symbol],
     not_expected_word: Iterable[Symbol],
 ) -> None:
-    actual_min_dfa = get_min_dfa(actual_regex)
+    actual_min_dfa = get_min_dfa_from_regex(actual_regex)
 
     if actual_regex == "":
         assert actual_min_dfa.is_empty()
@@ -98,7 +98,7 @@ def test_get_min_dfa() -> None:
 
     expected_min_dfa.add_transition(state_3, symbol_a, state_3)
 
-    actual_min_dfa = get_min_dfa("i* l* y* a*")
+    actual_min_dfa = get_min_dfa_from_regex("i* l* y* a*")
 
     assert actual_min_dfa.is_equivalent_to(expected_min_dfa) and len(
         actual_min_dfa.states
@@ -176,7 +176,7 @@ def one_node_expected_nfa() -> NondeterministicFiniteAutomaton:
 )
 def test_wrong_states(graph) -> None:
     with pytest.raises(ValueError):
-        get_nfa(graph.graph, {0, 4, 199}, {-9, 3, 19})
+        get_nfa_from_graph(graph.graph, {0, 4, 199}, {-9, 3, 19})
 
 
 @pytest.mark.parametrize(
@@ -189,7 +189,7 @@ def test_wrong_states(graph) -> None:
     ],
 )
 def test_nfa(graph) -> None:
-    nfa = get_nfa(graph.graph)
+    nfa = get_nfa_from_graph(graph.graph)
 
     assert isinstance(nfa, NondeterministicFiniteAutomaton)
 
@@ -208,7 +208,7 @@ def test_nfa(graph) -> None:
     ],
 )
 def test_nfa_accepts(graph, expected_word, not_expected_word) -> None:
-    actual_nfa = get_nfa(graph.graph)
+    actual_nfa = get_nfa_from_graph(graph.graph)
 
     if graph.graph.number_of_nodes() == 0:
         assert actual_nfa.is_empty()
@@ -219,7 +219,7 @@ def test_nfa_accepts(graph, expected_word, not_expected_word) -> None:
 
 
 @pytest.mark.parametrize(
-    "graph, expected_ndfa, start_states, final_states",
+    "graph, expected_ndfa, start_node_nums, final_node_nums",
     [
         (two_cycles_graph(), two_cycles_expected_nfa(), {0}, {3}),
         (two_cycles_graph(), two_cycles_expected_nfa(), {0}, {1, 4}),
@@ -231,24 +231,24 @@ def test_nfa_accepts(graph, expected_word, not_expected_word) -> None:
         (one_node_graph(), one_node_expected_nfa(), {0}, {0}),
     ],
 )
-def test_get_nfa(graph, expected_ndfa, start_states, final_states) -> None:
+def test_get_nfa(graph, expected_ndfa, start_node_nums, final_node_nums) -> None:
     if graph.graph.number_of_nodes() == 0:
-        actual_nfa = get_nfa(graph.graph, start_states, final_states)
+        actual_nfa = get_nfa_from_graph(graph.graph, start_node_nums, final_node_nums)
 
         assert actual_nfa.is_empty() == expected_ndfa.is_empty()
     else:
-        if not start_states:
-            start_states = set(graph.graph.nodes)
+        if not start_node_nums:
+            start_node_nums = set(graph.graph.nodes)
 
-        for state in start_states:
-            expected_ndfa.add_start_state(State(state))
+        for start_node in start_node_nums:
+            expected_ndfa.add_start_state(State(start_node))
 
-        if not final_states:
-            final_states = set(graph.graph.nodes)
+        if not final_node_nums:
+            final_node_nums = set(graph.graph.nodes)
 
-        for state in final_states:
-            expected_ndfa.add_final_state(State(state))
+        for final_node in final_node_nums:
+            expected_ndfa.add_final_state(State(final_node))
 
-        actual_nfa = get_nfa(graph.graph, start_states, final_states)
+        actual_nfa = get_nfa_from_graph(graph.graph, start_node_nums, final_node_nums)
 
         assert actual_nfa.is_equivalent_to(expected_ndfa)
