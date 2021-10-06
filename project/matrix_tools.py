@@ -1,6 +1,7 @@
 from typing import List, Set, Dict, Union
 
 import numpy as np
+import pycubool as cb
 import scipy.sparse as sps
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, Symbol, State
 
