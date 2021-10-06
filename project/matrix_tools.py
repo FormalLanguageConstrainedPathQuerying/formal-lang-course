@@ -1,6 +1,5 @@
 from typing import List, Set, Dict, Union
 
-import numpy as np
 import pycubool as cb
 import scipy.sparse as sps
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, Symbol, State
@@ -19,6 +18,8 @@ class Adjacency:
         Nondeterministic Finite Automaton adjacency matrix
     states_num: int
         Number of states in specified Nondeterministic Finite Automaton
+    shape: Tuple[int, int]
+        Adjacency matrix size
     states_nums: Dict[State, int]
         States in specified Nondeterministic Finite Automaton and it's numbers
     nums_states: Dict[int, State]
@@ -32,6 +33,7 @@ class Adjacency:
 
     def __init__(self, nfa: NondeterministicFiniteAutomaton = None) -> None:
         self.states_num = 0
+        self.shape = (self.states_num, self.states_num)
         self.states_nums = dict()
         self.nums_states = dict()
         self.start_states = set()
@@ -41,6 +43,7 @@ class Adjacency:
 
         if nfa is not None:
             self.states_num = len(nfa.states)
+            self.shape = (self.states_num, self.states_num)
             self.states_nums = {state: num for num, state in enumerate(nfa.states)}
             self.nums_states = {num: state for num, state in enumerate(nfa.states)}
             self.start_states = nfa.start_states
@@ -89,6 +92,8 @@ class BooleanAdjacencies(Adjacency):
     Construct a Nondeterministic Finite Automaton boolean adjacency matrices
     by symbols and encapsulates all the information lost in this case.
 
+    Supports CPU and GPU computing platforms.
+
     Inheritances
     ------------
     Adjacency
@@ -97,14 +102,34 @@ class BooleanAdjacencies(Adjacency):
 
     Attributes
     ----------
-    boolean_adjacencies: Dict[Symbol, Union[np.ndarray, sps.csr_matrix]]
+    mode: str, default = "cpu"
+        Selected platform used for all calculations
+    boolean_adjacencies: Dict[Symbol, Union[sps.dok_matrix, cb.Matrix]]
         Nondeterministic Finite Automaton boolean adjacency matrices by symbols
     """
 
-    def __init__(self, nfa: NondeterministicFiniteAutomaton = None) -> None:
+    def __init__(
+        self, nfa: NondeterministicFiniteAutomaton = None, mode: str = "cpu"
+    ) -> None:
+        """
+        BooleanAdjacencies class constructor.
+
+        Parameters
+        ----------
+        nfa: NondeterministicFiniteAutomaton, default = None
+            Nondeterministic Finite Automaton to construct boolean adjacency matrices
+        mode: str, default = "cpu"
+            Allows to select the platform used for all calculations
+        """
+
+        modes = ["cpu", "gpu"]
+        if mode not in modes:
+            raise ValueError("Invalid computing platform specified")
+
         super().__init__(nfa)
 
         self.boolean_adjacencies = dict()
+        self.mode = mode
 
         if nfa is not None:
             symbols = nfa.symbols
@@ -112,7 +137,7 @@ class BooleanAdjacencies(Adjacency):
 
     def _get_boolean_adjacencies(
         self, symbols: Set[Symbol]
-    ) -> Dict[Symbol, np.ndarray]:
+    ) -> Dict[Symbol, Union[sps.dok_matrix, cb.Matrix]]:
         """
         Construct a Nondeterministic Finite Automaton boolean adjacency
         matrices by symbols.
@@ -124,21 +149,35 @@ class BooleanAdjacencies(Adjacency):
 
         Returns
         -------
-        Dict[Symbol, np.ndarray]
+        Dict[Symbol, Union[sps.dok_matrix, cb.Matrix]]
             Nondeterministic Finite Automaton boolean adjacency matrices
             by symbols
         """
 
         boolean_adjacencies = dict()
 
-        for symbol in symbols:
-            boolean_adjacency = np.zeros((self.states_num, self.states_num), dtype=bool)
+        if self.mode == "cpu":
+            for symbol in symbols:
+                boolean_adjacency: sps.dok_matrix = sps.dok_matrix(
+                    self.shape, dtype=bool
+                )
 
-            for i in range(len(self.adjacency)):
-                for j in range(len(self.adjacency[i])):
-                    boolean_adjacency[i][j] = symbol in self.adjacency[i][j]
+                for i in range(len(self.adjacency)):
+                    for j in range(len(self.adjacency[i])):
+                        boolean_adjacency[i, j] = symbol in self.adjacency[i][j]
 
-            boolean_adjacencies[symbol] = boolean_adjacency
+                boolean_adjacencies[symbol] = boolean_adjacency
+
+        if self.mode == "gpu":
+            for symbol in symbols:
+                boolean_adjacency: cb.Matrix = cb.Matrix.empty(self.shape)
+
+                for i in range(len(self.adjacency)):
+                    for j in range(len(self.adjacency[i])):
+                        if symbol in self.adjacency[i][j]:
+                            boolean_adjacency[i, j] = True
+
+                boolean_adjacencies[symbol] = boolean_adjacency
 
         return boolean_adjacencies
 
@@ -166,18 +205,40 @@ class BooleanAdjacencies(Adjacency):
         """
 
         intersection = BooleanAdjacencies()
+        intersection.mode = self.mode
 
         intersection.states_num = self.states_num * other.states_num
+        intersection.shape = (intersection.states_num, intersection.states_num)
         intersection_symbols = (
             self.boolean_adjacencies.keys() & other.boolean_adjacencies.keys()
         )
 
         for symbol in intersection_symbols:
-            intersection.boolean_adjacencies[symbol] = sps.kron(
-                sps.csr_matrix(self.boolean_adjacencies[symbol], dtype=bool),
-                sps.csr_matrix(other.boolean_adjacencies[symbol], dtype=bool),
-                format="csr",
-            )
+            if self.mode == "cpu":
+                intersection.boolean_adjacencies[symbol] = sps.kron(
+                    self.boolean_adjacencies[symbol],
+                    other.boolean_adjacencies[symbol],
+                    format="dok",
+                )
+
+            if self.mode == "gpu":
+                self_boolean_adjacency_indices = self.boolean_adjacencies[
+                    symbol
+                ].to_lists()
+                other_boolean_adjacency_indices = other.boolean_adjacencies[
+                    symbol
+                ].to_lists()
+                intersection.boolean_adjacencies[symbol] = cb.Matrix.from_lists(
+                    shape=self.shape,
+                    rows=self_boolean_adjacency_indices[0],
+                    cols=self_boolean_adjacency_indices[1],
+                ).kronecker(
+                    cb.Matrix.from_lists(
+                        shape=other.shape,
+                        rows=other_boolean_adjacency_indices[0],
+                        cols=other_boolean_adjacency_indices[1],
+                    )
+                )
 
         for graph_state, graph_state_num in self.states_nums.items():
             for query_state, query_state_num in other.states_nums.items():
@@ -203,34 +264,73 @@ class BooleanAdjacencies(Adjacency):
 
         return intersection
 
-    def get_transitive_closure(self) -> sps.csr_matrix:
+    def get_transitive_closure(self) -> Union[sps.dok_matrix, cb.Matrix]:
         """
         Makes the transitive closure of Nondeterministic Finite Automaton
         presented as boolean adjacency matrices by symbols.
 
         Returns
         -------
-        sps.csr_matrix:
+        Union[sps.dok_matrix, cb.Matrix]:
             Nondeterministic Finite Automaton transitive closure
         """
 
-        transitive_closure: sps.csr_matrix = sps.csr_matrix(
-            sum(
-                sps.csr_matrix(boolean_adjacency, dtype=bool)
-                for boolean_adjacency in self.boolean_adjacencies.values()
-            ),
-            dtype=bool,
-        )
+        if self.mode == "cpu":
+            transitive_closure: sps.dok_matrix = sps.dok_matrix(
+                sps.csr_matrix(
+                    sum(
+                        boolean_adjacency
+                        for boolean_adjacency in self.boolean_adjacencies.values()
+                    ),
+                    dtype=bool,
+                ),
+                dtype=bool,
+            )
 
-        current_nnz = transitive_closure.nnz
-        new_nnz = 0
+            current_nonzeros = transitive_closure.nnz
+            next_nonzeros = 0
 
-        while current_nnz != new_nnz:
-            transitive_closure += transitive_closure @ transitive_closure
+            while current_nonzeros != next_nonzeros:
+                transitive_closure += transitive_closure @ transitive_closure
 
-            current_nnz, new_nnz = new_nnz, transitive_closure.nnz
+                current_nonzeros, next_nonzeros = next_nonzeros, transitive_closure.nnz
 
-        return transitive_closure
+            return transitive_closure
+
+        if self.mode == "gpu":
+            # Needs to fix a bug
+            shape = (0, 0)
+            if self.shape == shape:
+                shape = (1, 1)
+            else:
+                shape = self.shape
+            transitive_closure: cb.Matrix = cb.Matrix.empty(shape)
+
+            for boolean_adjacency in self.boolean_adjacencies.values():
+                boolean_adjacency_indices = boolean_adjacency.to_lists()
+
+                transitive_closure = transitive_closure.ewiseadd(
+                    cb.Matrix.from_lists(
+                        shape=shape,
+                        rows=boolean_adjacency_indices[0],
+                        cols=boolean_adjacency_indices[1],
+                    )
+                )
+
+            current_nonzeros = len(transitive_closure.to_list())
+            next_nonzeros = 0
+
+            while current_nonzeros != next_nonzeros:
+                transitive_closure_pow: cb.Matrix = transitive_closure.mxm(
+                    transitive_closure
+                )
+                transitive_closure = transitive_closure.ewiseadd(transitive_closure_pow)
+
+                current_nonzeros, next_nonzeros = next_nonzeros, len(
+                    transitive_closure.to_list()
+                )
+
+            return transitive_closure
 
     def to_nfa(self) -> NondeterministicFiniteAutomaton:
         """
@@ -246,13 +346,25 @@ class BooleanAdjacencies(Adjacency):
         nfa = NondeterministicFiniteAutomaton()
 
         for symbol, boolean_adjacency in self.boolean_adjacencies.items():
-            for state_from_num, state_to_num in zip(
-                *sps.csr_matrix(boolean_adjacency, dtype=bool).nonzero()
-            ):
-                state_from = self.nums_states[state_from_num]
-                state_to = self.nums_states[state_to_num]
+            if self.mode == "cpu":
+                boolean_adjacency_indices = sps.dok_matrix(
+                    boolean_adjacency, dtype=bool
+                ).nonzero()
 
-                nfa.add_transition(state_from, symbol, state_to)
+                for state_from_num, state_to_num in zip(*boolean_adjacency_indices):
+                    state_from = self.nums_states[state_from_num]
+                    state_to = self.nums_states[state_to_num]
+
+                    nfa.add_transition(state_from, symbol, state_to)
+
+            if self.mode == "gpu":
+                boolean_adjacency_indices = boolean_adjacency.to_lists()
+
+                for state_from_num, state_to_num in zip(*boolean_adjacency_indices):
+                    state_from = self.nums_states[state_from_num]
+                    state_to = self.nums_states[state_to_num]
+
+                    nfa.add_transition(state_from, symbol, state_to)
 
         for start_state in self.start_states:
             nfa.add_start_state(start_state)
