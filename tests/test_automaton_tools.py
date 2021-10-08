@@ -7,7 +7,7 @@ from pyformlang.finite_automaton import (
     DeterministicFiniteAutomaton,
     NondeterministicFiniteAutomaton,
 )
-from pyformlang.regular_expression import MisformedRegexError
+from pyformlang.regular_expression import MisformedRegexError, Regex
 
 from project import get_two_cycles, Graph
 from project.automaton_tools import *
@@ -15,17 +15,17 @@ from project.automaton_tools import *
 
 def test_wrong_regex() -> None:
     with pytest.raises(MisformedRegexError):
-        get_min_dfa_from_regex("*|wrong_regex|*")
+        get_min_dfa_from_regex(Regex("*|wrong_regex|*"))
 
 
 def test_dfa() -> None:
-    min_dfa = get_min_dfa_from_regex("i* l* y* a* | 1901")
+    min_dfa = get_min_dfa_from_regex(Regex("i* l* y* a* | 1901"))
 
     assert min_dfa.is_deterministic()
 
 
 def test_min_dfa() -> None:
-    actual_dfa = get_min_dfa_from_regex("i* l* y* a* | 1901")
+    actual_dfa = get_min_dfa_from_regex(Regex("i* l* y* a* | 1901"))
     expected_min_dfa = actual_dfa.minimize()
 
     assert actual_dfa.is_equivalent_to(expected_min_dfa) and len(
@@ -54,7 +54,7 @@ def test_min_dfa_accepts(
     expected_word: Iterable[Symbol],
     not_expected_word: Iterable[Symbol],
 ) -> None:
-    actual_min_dfa = get_min_dfa_from_regex(actual_regex)
+    actual_min_dfa = get_min_dfa_from_regex(Regex(actual_regex))
 
     if actual_regex == "":
         assert actual_min_dfa.is_empty()
@@ -98,7 +98,7 @@ def test_get_min_dfa() -> None:
 
     expected_min_dfa.add_transition(state_3, symbol_a, state_3)
 
-    actual_min_dfa = get_min_dfa_from_regex("i* l* y* a*")
+    actual_min_dfa = get_min_dfa_from_regex(Regex("i* l* y* a*"))
 
     assert actual_min_dfa.is_equivalent_to(expected_min_dfa) and len(
         actual_min_dfa.states

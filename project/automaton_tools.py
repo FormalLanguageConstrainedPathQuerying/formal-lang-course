@@ -11,28 +11,22 @@ from pyformlang.regular_expression import Regex
 __all__ = ["get_min_dfa_from_regex", "get_nfa_from_graph"]
 
 
-def get_min_dfa_from_regex(regex: str) -> DeterministicFiniteAutomaton:
+def get_min_dfa_from_regex(regex: Regex) -> DeterministicFiniteAutomaton:
     """
     Based on a regular expression given as a string, builds an Deterministic Finite Automaton.
 
     Parameters
     ----------
-    regex: str
-        The string representation of a regular expression
+    regex: Regex
+        The Regex representation of a regular expression
 
     Returns
     -------
     DeterministicFiniteAutomaton
         Deterministic Finite Automaton equivalent to a given regular expression as a string
-
-    Raises
-    ------
-    MisformedRegexError
-        If given as string regular expression has an irregular format
     """
 
-    re = Regex(regex)
-    e_nfa = re.to_epsilon_nfa()
+    e_nfa = regex.to_epsilon_nfa()
     min_dfa = e_nfa.minimize()
 
     return min_dfa
