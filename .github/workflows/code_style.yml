@@ -14,7 +14,7 @@ jobs:
   style:
 
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     # A strategy creates a build matrix for your jobs
     strategy:
@@ -23,6 +23,7 @@ jobs:
       matrix:
 
         # Each option you define in the matrix has a key and value
+        os: [ubuntu-latest]
         python-version: [ 3.9 ]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
