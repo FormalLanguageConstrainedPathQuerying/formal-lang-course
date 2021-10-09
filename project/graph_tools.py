@@ -69,10 +69,7 @@ class Graph:
         )
 
     def __str__(self):
-        return f"""
-            Graph {self.description.name}:
-            {str(self.description)}
-            """
+        return f"""Graph {self.description.name}: {str(self.description)}"""
 
 
 pool = list()

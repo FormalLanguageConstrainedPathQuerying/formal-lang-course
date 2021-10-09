@@ -86,8 +86,6 @@ def regular_path_querying(
         which must exist in the graph
     mode: str, default = "cpu"
         Allows to select the platform used for all calculations
-    query_regex: Regex, default = None
-        Query to graph as complete Regex
 
     Returns
     -------
