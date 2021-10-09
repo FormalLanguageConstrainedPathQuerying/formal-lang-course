@@ -4,7 +4,7 @@ import networkx as nx
 import pytest
 
 from project.graph_tools import get_two_cycles
-from project.path_querying_tools import regular_path_querying
+from project.path_querying_tools import regular_str_path_querying
 
 
 def two_cycles_graph() -> nx.MultiDiGraph:
@@ -111,7 +111,7 @@ def acyclic_graph() -> nx.MultiDiGraph:
 def test_querying(
     graph, regex, start_node_nums, final_node_nums, expected_reachable_state_nums, mode
 ) -> None:
-    actual_reachable_state_nums = regular_path_querying(
+    actual_reachable_state_nums = regular_str_path_querying(
         graph, regex, start_node_nums, final_node_nums
     )
 
