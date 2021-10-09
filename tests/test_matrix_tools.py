@@ -26,20 +26,6 @@ def nfa():
     return nfa
 
 
-# def test_adjacency(nfa):
-#     adjacency = Adjacency(nfa)
-#
-#     expected_adjacency = [
-#         [set(), {State("a")}, {State("a")}, set()],
-#         [set(), {State("c")}, {State("b")}, set()],
-#         [set(), set(), set(), {State("d")}],
-#         [{State("d")}, set(), set(), set()],
-#     ]
-#     actual_adjacency = adjacency.adjacency
-#
-#     assert actual_adjacency == expected_adjacency
-
-
 def test_boolean_adjacency_symbols(nfa):
     boolean_adjacencies = BooleanAdjacencies(nfa)
 

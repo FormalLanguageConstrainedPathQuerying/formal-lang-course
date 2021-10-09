@@ -1,4 +1,4 @@
-from typing import List, Set, Dict, Union
+from typing import Set, Dict, Union
 
 import pycubool as cb
 import scipy.sparse as sps
