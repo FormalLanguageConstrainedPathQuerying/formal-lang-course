@@ -10,4 +10,4 @@ repos:
     rev: 21.7b0
     hooks:
       - id: black
-        exclude: 'rpq_research.ipynb'
+        exclude: '^rpq_research.ipynb'
