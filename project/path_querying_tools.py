@@ -17,45 +17,47 @@ def regular_str_path_querying(
     mode: str = "cpu",
 ) -> Set[Tuple[int, int]]:
     """
-        Using the specified graph and a regular query,
-        finds all pairs of reachable node numbers.
+    Using the specified graph and a regular query,
+    finds all pairs of reachable node numbers.
 
-        If actual regex is specified, regex_str is no longer taken into account.
+    If actual regex is specified, regex_str is no longer taken into account.
 
-        If start_nodes or final_nodes are not specified,
-        all nodes are considered start or final respectively.
+    If start_nodes or final_nodes are not specified,
+    all nodes are considered start or final respectively.
 
-        Parameters
-        ----------
-        graph: nx.MultiDiGraph
-            Graph for queries
-        query_str: str
-            Query to graph as a string
-        start_node_nums: Set[int], default = None
-            Set of start node numbers to configure Nondeterministic Finite Automaton,
-            which must exist in the graph
-        final_node_nums: Set[int], default = None
-            Set of final node numbers to configure Nondeterministic Finite Automaton,
-            which must exist in the graph
-        mode: str, default = "cpu"
-            Allows to select the platform used for all calculations
+    Parameters
+    ----------
+    graph: nx.MultiDiGraph
+        Graph for queries
+    query_str: str
+        Query to graph as a string
+    start_node_nums: Set[int], default = None
+        Set of start node numbers to configure Nondeterministic Finite Automaton,
+        which must exist in the graph
+    final_node_nums: Set[int], default = None
+        Set of final node numbers to configure Nondeterministic Finite Automaton,
+        which must exist in the graph
+    mode: str, default = "cpu"
+        Allows to select the platform used for all calculations
 
-        Returns
-        -------
-        Set[Tuple[int, int]]
-            Set of all pairs of reachable node numbers
+    Returns
+    -------
+    Set[Tuple[int, int]]
+        Set of all pairs of reachable node numbers
 
-        Raises
-        ------
-        ValueError
-            If invalid computing platform specified
-        ValueError
-            If non-existent in the specified graph node number is used
-        MisformedRegexError
-            If specified regex_str has an irregular format
-        """
+    Raises
+    ------
+    ValueError
+        If invalid computing platform specified
+    ValueError
+        If non-existent in the specified graph node number is used
+    MisformedRegexError
+        If specified regex_str has an irregular format
+    """
 
-    return regular_path_querying(graph, Regex(query_str), start_node_nums, final_node_nums, mode)
+    return regular_path_querying(
+        graph, Regex(query_str), start_node_nums, final_node_nums, mode
+    )
 
 
 def regular_path_querying(
