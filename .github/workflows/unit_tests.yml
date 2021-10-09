@@ -22,7 +22,7 @@ jobs:
       # You can define a matrix of different job configurations
       matrix:
         # Each option you define in the matrix has a key and value
-        os: [windows-latest, ubuntu-latest]
+        os: [ubuntu-latest]
         python-version: [ 3.9 ]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
