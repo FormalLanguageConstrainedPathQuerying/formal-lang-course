@@ -66,10 +66,6 @@ def acyclic_graph() -> nx.MultiDiGraph:
         (acyclic_graph(), "x.y.y", None, None, {(0, 3)}),
     ],
 )
-@pytest.mark.skipif(
-    not sys.platform == "linux",
-    reason="pyCuBool is only supported on Linux platform now",
-)
 def test_querying_cpu(
     graph, regex, start_node_nums, final_node_nums, expected_reachable_state_nums
 ) -> None:
