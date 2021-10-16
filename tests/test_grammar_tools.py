@@ -20,13 +20,10 @@ def test_wrong_text():
     with pytest.raises(ValueError):
         get_cnf_from_file("tests/data/cfgs/wrong.txt")
 
+
 @pytest.mark.parametrize(
     "filename, axiom",
-    [
-        ("epsilon.txt", "epsilon"),
-        ("from_lesson.txt", 'S'),
-        ("random.txt", "NP")
-    ],
+    [("epsilon.txt", "epsilon"), ("from_lesson.txt", "S"), ("random.txt", "NP")],
 )
 def test_get_cnf_from_file(filename, axiom):
     path = "tests/data/cfgs/" + filename
@@ -35,4 +32,3 @@ def test_get_cnf_from_file(filename, axiom):
 
     # It means Weak Chomsky Normal Form too
     assert cnf.is_normal_form()
-

@@ -28,7 +28,7 @@ def get_cnf_from_file(path: str, start_symbol: str = None) -> CFG:
 
     Returns
     -------
-    CNF:
+    CFG:
         Context Free Grammar in Chomsky Normal Form equivalent to
         file text representation of CFG
 
@@ -76,7 +76,7 @@ def get_cnf_from_text(cfg_text: str, start_symbol: str = None) -> CFG:
 
     Returns
     -------
-    CNF:
+    CFG:
         Context Free Grammar in Chomsky Normal Form equivalent to
         file text representation of CFG
 
@@ -87,7 +87,7 @@ def get_cnf_from_text(cfg_text: str, start_symbol: str = None) -> CFG:
     """
 
     if start_symbol is None:
-        start_symbol = 'S'
+        start_symbol = "S"
 
     cfg = CFG.from_text(cfg_text, Variable(start_symbol))
     cnf = cfg.to_normal_form()
