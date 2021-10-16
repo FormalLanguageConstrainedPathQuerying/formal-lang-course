@@ -12,3 +12,6 @@ from project.matrix_tools import *
 
 import project.path_querying_tools
 from project.path_querying_tools import *
+
+import project.grammar_tools
+from project.grammar_tools import *
