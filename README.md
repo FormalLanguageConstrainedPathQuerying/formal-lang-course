@@ -83,6 +83,8 @@
 - Создаем ноутбук, ссылка на ноутбук также размещается в [таблице](https://docs.google.com/spreadsheets/d/18DhYG5CuOrN4A5b5N7-mEDfDkc-7BuXF3Qsu6HD-lks/edit?usp=sharing) курса.
 - В `Google Colab` ноутбуке выполняется вся настройка, пишется код для экспериментов, подготовки отчетов и графиков.
 
+### [Эксперимент. Задача 5. RPQ](https://colab.research.google.com/drive/18JAnDswOkz-QpQAFuHz-aERRqVrdVj_c?authuser=1#scrollTo=gEsQSDtfxVjx)
+
 ## Структура репозитория
 
 ```text
