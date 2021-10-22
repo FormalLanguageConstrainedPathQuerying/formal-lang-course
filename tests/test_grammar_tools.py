@@ -1,7 +1,12 @@
 import pytest
 from pyformlang.cfg import Variable, Production, Epsilon, Terminal
 
-from project.grammar_tools import get_cnf_from_file
+from project.grammar_tools import (
+    get_cnf_from_file,
+    get_wcnf_from_file,
+    get_cfg_from_file,
+    is_wcnf,
+)
 
 
 def test_wrong_file():
@@ -88,3 +93,70 @@ def test_cnf_from_file(filename, axiom):
 
     # It means Weak Chomsky Normal Form too
     assert h_cnf.is_normal_form()
+
+
+@pytest.mark.parametrize(
+    "filename, axiom",
+    [("epsilon.txt", "E"), ("from_lesson.txt", "S"), ("random.txt", "NP")],
+)
+def test_wcnf_from_file_start_symbol(filename, axiom):
+    path = "tests/data/cfgs/" + filename
+
+    wcnf = get_wcnf_from_file(path, axiom)
+
+    assert wcnf.start_symbol == Variable(axiom)
+
+
+@pytest.mark.parametrize(
+    "filename, axiom, productions",
+    [
+        ("epsilon.txt", "E", {Production(Variable("E"), [Epsilon()])}),
+        (
+            "from_lesson.txt",
+            "S",
+            {
+                Production(Variable("b#CNF#"), [Terminal("b")]),
+                Production(Variable("C#CNF#1"), [Variable("S"), Variable("b#CNF#")]),
+                Production(Variable("S"), [Variable("a#CNF#"), Variable("C#CNF#1")]),
+                Production(Variable("S"), [Epsilon()]),
+                Production(Variable("a#CNF#"), [Terminal("a")]),
+                Production(Variable("S"), [Variable("S"), Variable("S")]),
+            },
+        ),
+        (
+            "random.txt",
+            "NP",
+            {
+                Production(Variable("NP"), [Variable("Det"), Variable("CN")]),
+                Production(Variable("Det"), [Terminal("the")]),
+                Production(Variable("NP"), [Terminal("john")]),
+                Production(Variable("CN"), [Variable("CN"), Variable("C#CNF#1")]),
+                Production(Variable("CN"), [Terminal("girl")]),
+                Production(Variable("S/NP"), [Variable("NP"), Variable("VP/NP")]),
+                Production(Variable("VTrans"), [Terminal("loves")]),
+                Production(Variable("VP/NP"), [Variable("VTrans"), Variable("NP")]),
+                Production(Variable("Wh"), [Terminal("whom")]),
+                Production(Variable("C#CNF#1"), [Variable("Wh"), Variable("S/NP")]),
+            },
+        ),
+    ],
+)
+def test_wcnf_from_file_productions(filename, axiom, productions):
+    path = "tests/data/cfgs/" + filename
+
+    wcnf = get_wcnf_from_file(path, axiom)
+    print()
+    assert set(wcnf.productions) == productions
+
+
+@pytest.mark.parametrize(
+    "filename, axiom",
+    [("epsilon.txt", "E"), ("from_lesson.txt", "S"), ("random.txt", "NP")],
+)
+def test_wcnf_from_file(filename, axiom):
+    path = "tests/data/cfgs/" + filename
+
+    wcnf = get_wcnf_from_file(path, axiom)
+    cfg = get_cfg_from_file(path, axiom)
+
+    assert is_wcnf(wcnf, cfg)
