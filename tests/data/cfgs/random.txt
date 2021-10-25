@@ -1,0 +1,7 @@
+NP -> Det CN | john
+Det -> the
+CN -> CN Wh S/NP | girl
+Wh -> whom
+S/NP -> NP VP/NP
+VP/NP -> VTrans NP
+VTrans -> loves
