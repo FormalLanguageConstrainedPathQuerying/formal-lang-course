@@ -1,4 +1,4 @@
-[![Unit tests](https://github.com/JetBrains-Research/formal-lang-course/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/JetBrains-Research/formal-lang-course/actions/workflows/code_style.yml)
+[![Run unit tests](https://github.com/kznts9v-1lya/formal-lang-course/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/kznts9v-1lya/formal-lang-course/actions/workflows/unit_tests.yml)
 
 [![Check code style](https://github.com/JetBrains-Research/formal-lang-course/actions/workflows/code_style.yml/badge.svg)](https://github.com/JetBrains-Research/formal-lang-course/actions/workflows/unit_tests.yml)
 [![Code style](https://img.shields.io/badge/Code%20style-black-000000.svg)](https://github.com/psf/black)
