@@ -171,9 +171,15 @@ def test_wcnf_from_file(filename, axiom):
     [
         (
             """
-                S -> epsilon
+
                 """,
-            {Variable("S"): Regex("epsilon")},
+            {},
+        ),
+        (
+            """
+                S -> epsilon | S a b
+                """,
+            {Variable("S"): Regex("epsilon | S a b")},
         ),
         (
             """
@@ -215,7 +221,7 @@ def test_ecfg_productions(cfg, expected_ecfg_productions):
             """
 
                 """,
-            [],
+            {},
         ),
         (
             """

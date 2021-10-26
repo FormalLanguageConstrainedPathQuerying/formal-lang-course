@@ -165,6 +165,7 @@ class RSMBox:
     ):
         self._dfa = dfa
         self._variable = variable
+        self.minimize()
 
     @property
     def dfa(self) -> DeterministicFiniteAutomaton:
@@ -210,6 +211,7 @@ class RSM:
     ):
         self._start_symbol = start_symbol
         self._boxes = boxes
+        self.minimize()
 
     @property
     def start_symbol(self):

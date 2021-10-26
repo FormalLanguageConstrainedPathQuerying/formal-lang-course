@@ -1,6 +1,7 @@
 from typing import Iterable
 
 import pytest
+from pyformlang.cfg import CFG
 from pyformlang.finite_automaton import (
     Symbol,
     State,
@@ -14,8 +15,9 @@ from project.automaton_tools import (
     get_min_dfa_from_regex,
     get_nfa_from_graph,
     get_rsm_from_ecfg,
+    minimize_rsm,
 )
-from project.grammar_tools import ECFG
+from project.grammar_tools import ECFG, get_ecfg_from_cfg
 from project.graph_tools import get_two_cycles, Graph
 
 
@@ -261,23 +263,26 @@ def test_get_nfa(graph, expected_ndfa, start_node_nums, final_node_nums) -> None
 
 
 @pytest.mark.parametrize(
-    """ecfg_text""",
+    """cfg_text""",
     (
         """
 
             """,
         """
+            S -> S b
             S -> epsilon
             """,
         """
             S -> a S b S
-            B -> B B
+            S -> epsilon
+            S -> B B
+            A -> C
             C -> A B C
             """,
     ),
 )
-def test_rsm_boxes(ecfg_text):
-    ecfg = ECFG.from_text(ecfg_text)
+def test_rsm_from_cfg(cfg_text):
+    ecfg = get_ecfg_from_cfg(CFG.from_text(cfg_text))
     rsm = get_rsm_from_ecfg(ecfg)
 
     actual_start_symbol = rsm.start_symbol
@@ -292,3 +297,28 @@ def test_rsm_boxes(ecfg_text):
     return (
         actual_start_symbol == expected_start_symbol and actual_boxes == expected_boxes
     )
+
+
+@pytest.mark.parametrize(
+    """ecfg_text""",
+    (
+        """
+
+                """,
+        """
+                S -> S G
+                G -> epsilon
+                """,
+        """
+                S -> a A b C
+                A -> C
+                C -> A B C
+                """,
+    ),
+)
+def test_rsm_from_ecfg_is_minimal(ecfg_text):
+    ecfg = ECFG.from_text(ecfg_text)
+    rsm = get_rsm_from_ecfg(ecfg)
+    min_rsm = minimize_rsm(rsm)
+
+    assert rsm == min_rsm
