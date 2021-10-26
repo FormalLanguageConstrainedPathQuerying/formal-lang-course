@@ -10,10 +10,10 @@ from pyformlang.finite_automaton import (
 from pyformlang.regular_expression import MisformedRegexError, Regex
 
 from project.automaton_tools import (
-    RSM,
     RSMBox,
     get_min_dfa_from_regex,
     get_nfa_from_graph,
+    get_rsm_from_ecfg,
 )
 from project.grammar_tools import ECFG
 from project.graph_tools import get_two_cycles, Graph
@@ -264,9 +264,10 @@ def test_get_nfa(graph, expected_ndfa, start_node_nums, final_node_nums) -> None
     """ecfg_text""",
     (
         """
+
             """,
         """
-            S -> $
+            S -> epsilon
             """,
         """
             S -> a S b S
@@ -275,9 +276,9 @@ def test_get_nfa(graph, expected_ndfa, start_node_nums, final_node_nums) -> None
             """,
     ),
 )
-def test_boxes_regex_equality(ecfg_text):
+def test_rsm_boxes(ecfg_text):
     ecfg = ECFG.from_text(ecfg_text)
-    rsm = RSM.from_ecfg(ecfg)
+    rsm = get_rsm_from_ecfg(ecfg)
 
     actual_start_symbol = rsm.start_symbol
     expected_start_symbol = ecfg.start_symbol

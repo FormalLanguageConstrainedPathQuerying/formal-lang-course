@@ -9,6 +9,7 @@ from project.grammar_tools import (
     get_cfg_from_file,
     is_wcnf,
     ECFG,
+    get_ecfg_from_cfg,
 )
 
 
@@ -170,23 +171,23 @@ def test_wcnf_from_file(filename, axiom):
     [
         (
             """
-            S -> epsilon
-            """,
+                S -> epsilon
+                """,
             {Variable("S"): Regex("epsilon")},
         ),
         (
             """
-            S -> a S b S
-            S -> epsilon
-            """,
+                S -> a S b S
+                S -> epsilon
+                """,
             {Variable("S"): Regex("(a S b S) | epsilon")},
         ),
         (
             """
-            S -> i f ( C ) t h e n { ST } e l s e { ST }
-            C -> t r u e | f a l s e
-            ST -> p a s s | S
-            """,
+                S -> i f ( C ) t h e n { ST } e l s e { ST }
+                C -> t r u e | f a l s e
+                ST -> p a s s | S
+                """,
             {
                 Variable("S"): Regex("i f ( C ) t h e n { ST } e l s e { ST }"),
                 Variable("C"): Regex("t r u e | f a l s e"),
@@ -196,7 +197,7 @@ def test_wcnf_from_file(filename, axiom):
     ],
 )
 def test_ecfg_productions(cfg, expected_ecfg_productions):
-    ecfg = ECFG.from_cfg(CFG.from_text(cfg))
+    ecfg = get_ecfg_from_cfg(CFG.from_text(cfg))
     actual_ecfg_productions = set(ecfg.productions)
 
     assert all(
@@ -213,28 +214,28 @@ def test_ecfg_productions(cfg, expected_ecfg_productions):
         (
             """
 
-            """,
+                """,
             [],
         ),
         (
             """
-            S -> a S b S | epsilon
-            """,
+                S -> a S b S | epsilon
+                """,
             {
                 Variable("S"): Regex("a S b S | epsilon"),
             },
         ),
         (
             """
-            S -> (a | b)* c
-            """,
+                S -> (a | b)* c
+                """,
             {Variable("S"): Regex("(a | b)* c")},
         ),
         (
             """
-            S -> (a (S | epsilon) b)*
-            A -> a b c
-            """,
+                S -> (a (S | epsilon) b)*
+                A -> a b c
+                """,
             {
                 Variable("S"): Regex("(a (S | epsilon) b)*"),
                 Variable("A"): Regex("a b c"),
@@ -247,8 +248,10 @@ def test_ecfg_from_text(ecfg_text, expected_ecfg_productions):
     actual_ecfg_productions = set(ecfg.productions)
 
     assert len(actual_ecfg_productions) == len(expected_ecfg_productions) and all(
-        check_regex_equality(p.body, expected_ecfg_productions[p.head])
-        for p in ecfg.productions
+        check_regex_equality(
+            production.body, expected_ecfg_productions[production.head]
+        )
+        for production in ecfg.productions
     )
 
 

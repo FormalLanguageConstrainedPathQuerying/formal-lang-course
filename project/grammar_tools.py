@@ -13,6 +13,7 @@ __all__ = [
     "is_wcnf",
     "ECFGProduction",
     "ECFG",
+    "get_ecfg_from_cfg",
 ]
 
 from pyformlang.regular_expression import Regex
@@ -573,3 +574,21 @@ class ECFG:
             start_symbol=cfg.start_symbol,
             productions=ecfg_productions,
         )
+
+
+def get_ecfg_from_cfg(cfg: CFG) -> ECFG:
+    """
+    Get an Extended Context Free Grammar from Context Free Grammar.
+
+    Parameters
+    ----------
+    cfg: CFG
+        CFG to convert
+
+    Returns
+    -------
+    ECFG:
+        ECFG equivalent to given CFG
+    """
+
+    return ECFG.from_cfg(cfg)

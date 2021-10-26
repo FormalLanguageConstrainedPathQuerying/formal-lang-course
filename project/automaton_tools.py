@@ -15,6 +15,8 @@ __all__ = [
     "get_nfa_from_graph",
     "RSMBox",
     "RSM",
+    "get_rsm_from_ecfg",
+    "minimize_rsm",
     "check_regex_equality",
 ]
 
@@ -221,14 +223,15 @@ class RSM:
     def start_symbol(self, start_symbol: Variable):
         self._start_symbol = start_symbol
 
-    def minimize(self):
+    def minimize(self) -> "RSM":
         """
         Minimize Recursive State Machine means minimize each
         Deterministic Finite Automaton in boxes.
 
         Returns
         -------
-        None
+        RSM:
+            Minimal RSM
         """
 
         for box in self._boxes:
@@ -243,8 +246,8 @@ class RSM:
 
         Returns
         -------
-        ECFG:
-            ECFG to convert into RSM
+        RSM:
+            RSM from ECFG
         """
 
         boxes = [
@@ -253,6 +256,33 @@ class RSM:
         ]
 
         return cls(start_symbol=ecfg.start_symbol, boxes=boxes)
+
+
+def minimize_rsm(rsm: RSM) -> RSM:
+    """
+    Minimize Recursive State Machine means minimize each
+    Deterministic Finite Automaton in boxes.
+
+    Returns
+    -------
+    RSM:
+        Minimal RSM
+    """
+
+    return rsm.minimize()
+
+
+def get_rsm_from_ecfg(ecfg: ECFG) -> RSM:
+    """
+    Converts an Extended Context Free Grammar to a Recursive State Machine.
+
+    Returns
+    -------
+    RSM:
+        RSM from ECFG
+    """
+
+    return RSM.from_ecfg(ecfg)
 
 
 def check_regex_equality(regex1: Regex, regex2: Regex) -> bool:
