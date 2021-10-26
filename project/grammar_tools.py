@@ -292,8 +292,8 @@ def get_wcnf_from_text(cfg_text: str, start_symbol: str = None) -> CFG:
 
     wcnf = (
         cfg.remove_useless_symbols()
-            .eliminate_unit_productions()
-            .remove_useless_symbols()
+        .eliminate_unit_productions()
+        .remove_useless_symbols()
     )
 
     epsilon_productions = wcnf._get_productions_with_only_single_terminals()
@@ -353,9 +353,9 @@ def is_wcnf(acnf: CFG, cfg: CFG) -> bool:
 
         # Check the rules
         if not (
-                (len(body) <= 2 and all(map(lambda x: x in acnf.variables, body)))
-                or (len(body) == 1 and body[0] in acnf.terminals)
-                or (not body)
+            (len(body) <= 2 and all(map(lambda x: x in acnf.variables, body)))
+            or (len(body) == 1 and body[0] in acnf.terminals)
+            or (not body)
         ) or not __check_epsilon_productions(
             acnf.variables, acnf.productions, cfg.productions
         ):
@@ -415,11 +415,14 @@ class ECFG:
         Collection containing productions of ECFG
     """
 
-    def __init__(self, variables: AbstractSet[Variable] = None,
-                 start_symbol: Variable = None,
-                 productions: Iterable[ECFGProduction] = None) -> None:
+    def __init__(
+        self,
+        variables: AbstractSet[Variable] = None,
+        start_symbol: Variable = None,
+        productions: Iterable[ECFGProduction] = None,
+    ) -> None:
         self._variables = variables or set()
-        self._start_symbol = start_symbol or Variable('S')
+        self._start_symbol = start_symbol or Variable("S")
         self._productions = productions or set()
 
     @property
@@ -444,7 +447,7 @@ class ECFG:
             Text representation of ECFG
         """
 
-        return '\n'.join(str(production) for production in self.productions)
+        return "\n".join(str(production) for production in self.productions)
 
     @classmethod
     def from_file(cls, path: str, start_symbol: str = None) -> "ECFG":
@@ -512,17 +515,13 @@ class ECFG:
 
             production_text_objects = line.split("->")
             if len(production_text_objects) != 2:
-                raise ValueError(
-                    "Only one production per line is required"
-                )
+                raise ValueError("Only one production per line is required")
 
             head_text, body_text = production_text_objects
 
             head = Variable(head_text.strip())
             if head in variables:
-                raise ValueError(
-                    "Only one production for each variable is required"
-                )
+                raise ValueError("Only one production for each variable is required")
             variables.add(head)
 
             body = Regex(body_text.strip())
@@ -553,13 +552,17 @@ class ECFG:
 
         for cfg_production in cfg.productions:
             body = Regex(
-                " ".join(
-                    body_object.value for body_object in cfg_production.body) if cfg_production.body else "epsilon")
+                " ".join(body_object.value for body_object in cfg_production.body)
+                if cfg_production.body
+                else "epsilon"
+            )
 
             if cfg_production.head not in productions:
                 productions[cfg_production.head] = body
             else:
-                productions[cfg_production.head] = productions.get(cfg_production.head).union(body)
+                productions[cfg_production.head] = productions.get(
+                    cfg_production.head
+                ).union(body)
 
         ecfg_productions = (
             ECFGProduction(head, body) for head, body in productions.items()

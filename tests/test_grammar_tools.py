@@ -7,7 +7,8 @@ from project.grammar_tools import (
     get_cnf_from_file,
     get_wcnf_from_file,
     get_cfg_from_file,
-    is_wcnf, ECFG,
+    is_wcnf,
+    ECFG,
 )
 
 
@@ -46,33 +47,33 @@ def test_cnf_from_file_start_symbol(filename, axiom):
     [
         ("epsilon.txt", "E", {Production(Variable("E"), [Epsilon()])}),
         (
-                "from_lesson.txt",
-                "S",
-                {
-                    Production(Variable("S"), [Variable("S"), Variable("S")]),
-                    Production(Variable("b#CNF#"), [Terminal("b")]),
-                    Production(Variable("S"), [Epsilon()]),
-                    Production(Variable("S"), [Variable("a#CNF#"), Variable("b#CNF#")]),
-                    Production(Variable("S"), [Variable("a#CNF#"), Variable("C#CNF#1")]),
-                    Production(Variable("C#CNF#1"), [Variable("S"), Variable("b#CNF#")]),
-                    Production(Variable("a#CNF#"), [Terminal("a")]),
-                },
+            "from_lesson.txt",
+            "S",
+            {
+                Production(Variable("S"), [Variable("S"), Variable("S")]),
+                Production(Variable("b#CNF#"), [Terminal("b")]),
+                Production(Variable("S"), [Epsilon()]),
+                Production(Variable("S"), [Variable("a#CNF#"), Variable("b#CNF#")]),
+                Production(Variable("S"), [Variable("a#CNF#"), Variable("C#CNF#1")]),
+                Production(Variable("C#CNF#1"), [Variable("S"), Variable("b#CNF#")]),
+                Production(Variable("a#CNF#"), [Terminal("a")]),
+            },
         ),
         (
-                "random.txt",
-                "NP",
-                {
-                    Production(Variable("CN"), [Terminal("girl")]),
-                    Production(Variable("Det"), [Terminal("the")]),
-                    Production(Variable("Wh"), [Terminal("whom")]),
-                    Production(Variable("S/NP"), [Variable("NP"), Variable("VP/NP")]),
-                    Production(Variable("VTrans"), [Terminal("loves")]),
-                    Production(Variable("NP"), [Variable("Det"), Variable("CN")]),
-                    Production(Variable("VP/NP"), [Variable("VTrans"), Variable("NP")]),
-                    Production(Variable("NP"), [Terminal("john")]),
-                    Production(Variable("C#CNF#1"), [Variable("Wh"), Variable("S/NP")]),
-                    Production(Variable("CN"), [Variable("CN"), Variable("C#CNF#1")]),
-                },
+            "random.txt",
+            "NP",
+            {
+                Production(Variable("CN"), [Terminal("girl")]),
+                Production(Variable("Det"), [Terminal("the")]),
+                Production(Variable("Wh"), [Terminal("whom")]),
+                Production(Variable("S/NP"), [Variable("NP"), Variable("VP/NP")]),
+                Production(Variable("VTrans"), [Terminal("loves")]),
+                Production(Variable("NP"), [Variable("Det"), Variable("CN")]),
+                Production(Variable("VP/NP"), [Variable("VTrans"), Variable("NP")]),
+                Production(Variable("NP"), [Terminal("john")]),
+                Production(Variable("C#CNF#1"), [Variable("Wh"), Variable("S/NP")]),
+                Production(Variable("CN"), [Variable("CN"), Variable("C#CNF#1")]),
+            },
         ),
     ],
 )
@@ -114,32 +115,32 @@ def test_wcnf_from_file_start_symbol(filename, axiom):
     [
         ("epsilon.txt", "E", {Production(Variable("E"), [Epsilon()])}),
         (
-                "from_lesson.txt",
-                "S",
-                {
-                    Production(Variable("b#CNF#"), [Terminal("b")]),
-                    Production(Variable("C#CNF#1"), [Variable("S"), Variable("b#CNF#")]),
-                    Production(Variable("S"), [Variable("a#CNF#"), Variable("C#CNF#1")]),
-                    Production(Variable("S"), [Epsilon()]),
-                    Production(Variable("a#CNF#"), [Terminal("a")]),
-                    Production(Variable("S"), [Variable("S"), Variable("S")]),
-                },
+            "from_lesson.txt",
+            "S",
+            {
+                Production(Variable("b#CNF#"), [Terminal("b")]),
+                Production(Variable("C#CNF#1"), [Variable("S"), Variable("b#CNF#")]),
+                Production(Variable("S"), [Variable("a#CNF#"), Variable("C#CNF#1")]),
+                Production(Variable("S"), [Epsilon()]),
+                Production(Variable("a#CNF#"), [Terminal("a")]),
+                Production(Variable("S"), [Variable("S"), Variable("S")]),
+            },
         ),
         (
-                "random.txt",
-                "NP",
-                {
-                    Production(Variable("NP"), [Variable("Det"), Variable("CN")]),
-                    Production(Variable("Det"), [Terminal("the")]),
-                    Production(Variable("NP"), [Terminal("john")]),
-                    Production(Variable("CN"), [Variable("CN"), Variable("C#CNF#1")]),
-                    Production(Variable("CN"), [Terminal("girl")]),
-                    Production(Variable("S/NP"), [Variable("NP"), Variable("VP/NP")]),
-                    Production(Variable("VTrans"), [Terminal("loves")]),
-                    Production(Variable("VP/NP"), [Variable("VTrans"), Variable("NP")]),
-                    Production(Variable("Wh"), [Terminal("whom")]),
-                    Production(Variable("C#CNF#1"), [Variable("Wh"), Variable("S/NP")]),
-                },
+            "random.txt",
+            "NP",
+            {
+                Production(Variable("NP"), [Variable("Det"), Variable("CN")]),
+                Production(Variable("Det"), [Terminal("the")]),
+                Production(Variable("NP"), [Terminal("john")]),
+                Production(Variable("CN"), [Variable("CN"), Variable("C#CNF#1")]),
+                Production(Variable("CN"), [Terminal("girl")]),
+                Production(Variable("S/NP"), [Variable("NP"), Variable("VP/NP")]),
+                Production(Variable("VTrans"), [Terminal("loves")]),
+                Production(Variable("VP/NP"), [Variable("VTrans"), Variable("NP")]),
+                Production(Variable("Wh"), [Terminal("whom")]),
+                Production(Variable("C#CNF#1"), [Variable("Wh"), Variable("S/NP")]),
+            },
         ),
     ],
 )
@@ -168,29 +169,29 @@ def test_wcnf_from_file(filename, axiom):
     "cfg, expected_ecfg_productions",
     [
         (
-                """
+            """
             S -> epsilon
             """,
-                {Variable("S"): Regex("epsilon")},
+            {Variable("S"): Regex("epsilon")},
         ),
         (
-                """
+            """
             S -> a S b S
             S -> epsilon
             """,
-                {Variable("S"): Regex("(a S b S) | epsilon")},
+            {Variable("S"): Regex("(a S b S) | epsilon")},
         ),
         (
-                """
+            """
             S -> i f ( C ) t h e n { ST } e l s e { ST }
             C -> t r u e | f a l s e
             ST -> p a s s | S
             """,
-                {
-                    Variable("S"): Regex("i f ( C ) t h e n { ST } e l s e { ST }"),
-                    Variable("C"): Regex("t r u e | f a l s e"),
-                    Variable("ST"): Regex("p a s s | S"),
-                },
+            {
+                Variable("S"): Regex("i f ( C ) t h e n { ST } e l s e { ST }"),
+                Variable("C"): Regex("t r u e | f a l s e"),
+                Variable("ST"): Regex("p a s s | S"),
+            },
         ),
     ],
 )
@@ -210,33 +211,34 @@ def test_ecfg_productions(cfg, expected_ecfg_productions):
     "ecfg_text, expected_ecfg_productions",
     [
         (
-                """
-                
-                """,
-                []),
-        (
-                """
-                S -> a S b S | epsilon
-                """,
-                {
-                    Variable("S"): Regex("a S b S | epsilon"),
-                },
+            """
+
+            """,
+            [],
         ),
         (
-                """
-                S -> (a | b)* c
-                """,
-                {Variable("S"): Regex("(a | b)* c")}
+            """
+            S -> a S b S | epsilon
+            """,
+            {
+                Variable("S"): Regex("a S b S | epsilon"),
+            },
         ),
         (
-                """
-                S -> (a (S | epsilon) b)*
-                A -> a b c
-                """,
-                {
-                    Variable("S"): Regex("(a (S | epsilon) b)*"),
-                    Variable("A"): Regex("a b c"),
-                },
+            """
+            S -> (a | b)* c
+            """,
+            {Variable("S"): Regex("(a | b)* c")},
+        ),
+        (
+            """
+            S -> (a (S | epsilon) b)*
+            A -> a b c
+            """,
+            {
+                Variable("S"): Regex("(a (S | epsilon) b)*"),
+                Variable("A"): Regex("a b c"),
+            },
         ),
     ],
 )
@@ -253,8 +255,12 @@ def test_ecfg_from_text(ecfg_text, expected_ecfg_productions):
 @pytest.mark.parametrize(
     "cfg_text",
     [
-        """S -> B -> C""",
-        """A -> b B -> a""",
+        """
+        S -> B -> C
+        """,
+        """
+        A -> b B -> a
+        """,
         """
         S -> a S b S
         A -> B ->

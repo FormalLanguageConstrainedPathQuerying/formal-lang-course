@@ -9,8 +9,14 @@ from pyformlang.finite_automaton import (
 )
 from pyformlang.regular_expression import Regex
 
-__all__ = ["get_min_dfa_from_regex_str", "get_min_dfa_from_regex", "get_nfa_from_graph", "RSMBox", "RSM",
-           "check_regex_equality"]
+__all__ = [
+    "get_min_dfa_from_regex_str",
+    "get_min_dfa_from_regex",
+    "get_nfa_from_graph",
+    "RSMBox",
+    "RSM",
+    "check_regex_equality",
+]
 
 from project.grammar_tools import ECFG
 
@@ -55,9 +61,9 @@ def get_min_dfa_from_regex(regex: Regex) -> DeterministicFiniteAutomaton:
 
 
 def get_nfa_from_graph(
-        graph: nx.MultiDiGraph,
-        start_node_nums: Set[int] = None,
-        final_node_nums: Set[int] = None,
+    graph: nx.MultiDiGraph,
+    start_node_nums: Set[int] = None,
+    final_node_nums: Set[int] = None,
 ) -> NondeterministicFiniteAutomaton:
     """
     Generates an Nondeterministic Finite Automaton for a specified graph and start or final nodes.
@@ -153,7 +159,7 @@ class RSMBox:
     """
 
     def __init__(
-            self, variable: Variable = None, dfa: DeterministicFiniteAutomaton = None
+        self, variable: Variable = None, dfa: DeterministicFiniteAutomaton = None
     ):
         self._dfa = dfa
         self._variable = variable
@@ -196,9 +202,9 @@ class RSM:
     """
 
     def __init__(
-            self,
-            start_symbol: Variable,
-            boxes: Iterable[RSMBox],
+        self,
+        start_symbol: Variable,
+        boxes: Iterable[RSMBox],
     ):
         self._start_symbol = start_symbol
         self._boxes = boxes
@@ -241,7 +247,10 @@ class RSM:
             ECFG to convert into RSM
         """
 
-        boxes = [RSMBox(production.head, get_min_dfa_from_regex(production.body)) for production in ecfg.productions]
+        boxes = [
+            RSMBox(production.head, get_min_dfa_from_regex(production.body))
+            for production in ecfg.productions
+        ]
 
         return cls(start_symbol=ecfg.start_symbol, boxes=boxes)
 
@@ -265,4 +274,6 @@ def check_regex_equality(regex1: Regex, regex2: Regex) -> bool:
         False otherwise
     """
 
-    return get_min_dfa_from_regex(regex1).is_equivalent_to(get_min_dfa_from_regex(regex2))
+    return get_min_dfa_from_regex(regex1).is_equivalent_to(
+        get_min_dfa_from_regex(regex2)
+    )
