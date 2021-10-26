@@ -9,8 +9,9 @@ from pyformlang.finite_automaton import (
 )
 from pyformlang.regular_expression import MisformedRegexError, Regex
 
-from project import get_two_cycles, Graph
-from project.automaton_tools import *
+from project.automaton_tools import RSM, RSMBox, get_min_dfa_from_regex, get_nfa_from_graph
+from project.grammar_tools import ECFG
+from project.graph_tools import get_two_cycles, Graph
 
 
 def test_wrong_regex() -> None:
@@ -38,21 +39,21 @@ def test_min_dfa() -> None:
     [
         ("", [], [Symbol("*")]),
         (
-            "i* l* y* a* | 1901",
-            [Symbol("i"), Symbol("l"), Symbol("y"), Symbol("a")],
-            [Symbol("i"), Symbol("l"), Symbol("y"), Symbol("a"), Symbol("1901")],
+                "i* l* y* a* | 1901",
+                [Symbol("i"), Symbol("l"), Symbol("y"), Symbol("a")],
+                [Symbol("i"), Symbol("l"), Symbol("y"), Symbol("a"), Symbol("1901")],
         ),
         (
-            "(a | b)* 00* | 11*",
-            [Symbol("a"), Symbol("a"), Symbol("00"), Symbol("00"), Symbol("00")],
-            [Symbol("a"), Symbol("b"), Symbol("11")],
+                "(a | b)* 00* | 11*",
+                [Symbol("a"), Symbol("a"), Symbol("00"), Symbol("00"), Symbol("00")],
+                [Symbol("a"), Symbol("b"), Symbol("11")],
         ),
     ],
 )
 def test_min_dfa_accepts(
-    actual_regex: str,
-    expected_word: Iterable[Symbol],
-    not_expected_word: Iterable[Symbol],
+        actual_regex: str,
+        expected_word: Iterable[Symbol],
+        not_expected_word: Iterable[Symbol],
 ) -> None:
     actual_min_dfa = get_min_dfa_from_regex(Regex(actual_regex))
 
@@ -252,3 +253,32 @@ def test_get_nfa(graph, expected_ndfa, start_node_nums, final_node_nums) -> None
         actual_nfa = get_nfa_from_graph(graph.graph, start_node_nums, final_node_nums)
 
         assert actual_nfa.is_equivalent_to(expected_ndfa)
+
+
+@pytest.mark.parametrize(
+    """ecfg_text""",
+    (
+            """
+            """,
+            """
+            S -> $
+            """,
+            """
+            S -> a S b S
+            B -> B B
+            C -> A B C
+            """,
+    ),
+)
+def test_boxes_regex_equality(ecfg_text):
+    ecfg = ECFG.from_text(ecfg_text)
+    rsm = RSM.from_ecfg(ecfg)
+
+    actual_start_symbol = rsm.start_symbol
+    expected_start_symbol = ecfg.start_symbol
+
+    actual_boxes = rsm.boxes
+    expected_boxes = [RSMBox(production.head, get_min_dfa_from_regex(production.body)) for production in
+                      ecfg.productions]
+
+    return actual_start_symbol == expected_start_symbol and actual_boxes == expected_boxes

@@ -101,7 +101,7 @@ class BooleanAdjacencies:
 
         return boolean_adjacencies
 
-    def intersect(self, other):
+    def intersect(self, other: "BooleanAdjacencies") -> "BooleanAdjacencies":
         """
         Makes the intersection of two Nondeterministic Finite Automaton
         presented as boolean adjacency matrices by symbols.
@@ -164,7 +164,6 @@ class BooleanAdjacencies:
         return intersection
 
     def get_transitive_closure(self) -> sps.dok_matrix:
-
         """
         Makes the transitive closure of Nondeterministic Finite Automaton
         presented as boolean adjacency matrices by symbols.

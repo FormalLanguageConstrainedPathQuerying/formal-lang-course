@@ -88,8 +88,6 @@ def regular_path_querying(
     ------
     ValueError
         If non-existent in the specified graph node number is used
-    MisformedRegexError
-        If specified regex_str has an irregular format
     """
 
     graph = BooleanAdjacencies(
