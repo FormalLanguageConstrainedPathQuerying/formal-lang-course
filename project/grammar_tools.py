@@ -14,7 +14,7 @@ __all__ = [
     "ECFGProduction",
     "ECFG",
     "get_ecfg_from_cfg",
-    "cyk"
+    "cyk",
 ]
 
 from pyformlang.regular_expression import Regex
@@ -619,8 +619,12 @@ def cyk(word: str, cfg: CFG) -> bool:
 
     cnf = cfg.to_normal_form()
 
-    terminal_productions = [production for production in cnf.productions if len(production.body) == 1]
-    variable_productions = [production for production in cnf.productions if len(production.body) == 2]
+    terminal_productions = [
+        production for production in cnf.productions if len(production.body) == 1
+    ]
+    variable_productions = [
+        production for production in cnf.productions if len(production.body) == 2
+    ]
 
     matrix = [[set() for _ in range(word_len)]] * word_len
 

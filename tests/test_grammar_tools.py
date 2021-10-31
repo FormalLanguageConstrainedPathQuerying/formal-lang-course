@@ -10,7 +10,7 @@ from project.grammar_tools import (
     is_wcnf,
     ECFG,
     get_ecfg_from_cfg,
-    cyk
+    cyk,
 )
 
 
@@ -319,7 +319,16 @@ def test_one_production_per_variable(cfg_text):
                 S -> a S b S
                 S -> epsilon
                 """,
-            ["", "aba", "aabbababaaabbb",  "abcd", "ab", "aaaabbbb", "wdfa", "aaabbbaabaaabbbbbaa"],
+            [
+                "",
+                "aba",
+                "aabbababaaabbb",
+                "abcd",
+                "ab",
+                "aaaabbbb",
+                "wdfa",
+                "aaabbbaabaaabbbbbaa",
+            ],
         ),
     ],
 )
