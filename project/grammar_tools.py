@@ -599,6 +599,8 @@ def cyk(word: str, cfg: CFG) -> bool:
     """
     Checks whether grammar derive the word.
 
+    This function is applicable to any CFG.
+
     Parameters
     ----------
     cfg: CFG
