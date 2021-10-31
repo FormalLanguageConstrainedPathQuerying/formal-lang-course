@@ -10,6 +10,7 @@ from project.grammar_tools import (
     is_wcnf,
     ECFG,
     get_ecfg_from_cfg,
+    cyk
 )
 
 
@@ -298,3 +299,31 @@ def test_one_production_per_line(cfg_text):
 def test_one_production_per_variable(cfg_text):
     with pytest.raises(ValueError):
         ECFG.from_text(cfg_text)
+
+
+@pytest.mark.parametrize(
+    "cfg, words",
+    [
+        (
+            """
+                S -> epsilon
+                """,
+            ["", "$", "hcj"],
+        ),
+        (
+            """""",
+            ["", "epsilon", "$"],
+        ),
+        (
+            """
+                S -> a S b S
+                S -> epsilon
+                """,
+            ["", "aba", "aabbababaaabbb",  "abcd", "ab", "aaaabbbb", "wdfa", "aaabbbaabaaabbbbbaa"],
+        ),
+    ],
+)
+def test_cyk(cfg, words):
+    cfg = CFG.from_text(cfg)
+
+    assert all(cyk(word, cfg) == cfg.contains(word) for word in words)
