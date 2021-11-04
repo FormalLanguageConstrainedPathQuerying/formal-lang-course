@@ -173,28 +173,28 @@ def test_wcnf_from_file(filename, axiom):
         (
             """
 
-                    """,
+                        """,
             {},
         ),
         (
             """
-                    S -> epsilon | S a b
-                    """,
+                        S -> epsilon | S a b
+                        """,
             {Variable("S"): Regex("epsilon | S a b")},
         ),
         (
             """
-                    S -> a S b S
-                    S -> epsilon
-                    """,
+                        S -> a S b S
+                        S -> epsilon
+                        """,
             {Variable("S"): Regex("(a S b S) | epsilon")},
         ),
         (
             """
-                    S -> i f ( C ) t h e n { ST } e l s e { ST }
-                    C -> t r u e | f a l s e
-                    ST -> p a s s | S
-                    """,
+                        S -> i f ( C ) t h e n { ST } e l s e { ST }
+                        C -> t r u e | f a l s e
+                        ST -> p a s s | S
+                        """,
             {
                 Variable("S"): Regex("i f ( C ) t h e n { ST } e l s e { ST }"),
                 Variable("C"): Regex("t r u e | f a l s e"),
@@ -221,28 +221,28 @@ def test_ecfg_productions(cfg, expected_ecfg_productions):
         (
             """
 
-                    """,
+                        """,
             {},
         ),
         (
             """
-                    S -> a S b S | epsilon
-                    """,
+                        S -> a S b S | epsilon
+                        """,
             {
                 Variable("S"): Regex("a S b S | epsilon"),
             },
         ),
         (
             """
-                    S -> (a | b)* c
-                    """,
+                        S -> (a | b)* c
+                        """,
             {Variable("S"): Regex("(a | b)* c")},
         ),
         (
             """
-                    S -> (a (S | epsilon) b)*
-                    A -> a b c
-                    """,
+                        S -> (a (S | epsilon) b)*
+                        A -> a b c
+                        """,
             {
                 Variable("S"): Regex("(a (S | epsilon) b)*"),
                 Variable("A"): Regex("a b c"),
@@ -307,8 +307,80 @@ def test_one_production_per_variable(cfg_text):
         (
             CFG.from_text(
                 """
-            S -> epsilon
+                S -> epsilon
+                """
+            ),
+            ["epsilon", "$"],
+        ),
+        (
+            CFG.from_text(""""""),
+            [],
+        ),
+        (
+            CFG.from_text(
+                """
+                    S -> a S b S
+                    S -> epsilon
+                    """
+            ),
+            [
+                "epsilon",
+                "aba",
+                "aabbababaaabbb",
+                "ab",
+                "aaaabbbb",
+                "aaabbbaabbaaabbb",
+            ],
+        ),
+    ],
+)
+def test_cyk_accept_from_cfg(cfg, words):
+    assert all(cyk(word, cfg) == cfg.contains(word) for word in words)
+
+
+@pytest.mark.parametrize(
+    "cfg, words",
+    [
+        (
             """
+                S -> epsilon
+                """,
+            ["epsilon", "$"],
+        ),
+        (
+            """""",
+            [],
+        ),
+        (
+            """
+                    S -> a S b S
+                    S -> epsilon
+                    """,
+            [
+                "epsilon",
+                "aba",
+                "aabbababaaabbb",
+                "ab",
+                "aaaabbbb",
+                "aaabbbaabbaaabbb",
+            ],
+        ),
+    ],
+)
+def test_cyk_accept_from_text(cfg, words):
+    cfg = CFG.from_text(cfg)
+
+    assert all(cyk(word, cfg) == cfg.contains(word) for word in words)
+
+
+@pytest.mark.parametrize(
+    "cfg, words",
+    [
+        (
+            CFG.from_text(
+                """
+                S -> epsilon
+                """
             ),
             ["", "$", "hcj"],
         ),
@@ -319,9 +391,9 @@ def test_one_production_per_variable(cfg_text):
         (
             CFG.from_text(
                 """
-                S -> a S b S
-                S -> epsilon
-                """
+                    S -> a S b S
+                    S -> epsilon
+                    """
             ),
             [
                 "",
@@ -336,7 +408,7 @@ def test_one_production_per_variable(cfg_text):
         ),
     ],
 )
-def test_cyk_from_cfg(cfg, words):
+def test_cyk_not_accept_from_cfg(cfg, words):
     assert all(cyk(word, cfg) == cfg.contains(word) for word in words)
 
 
@@ -345,8 +417,8 @@ def test_cyk_from_cfg(cfg, words):
     [
         (
             """
-                    S -> epsilon
-                    """,
+                        S -> epsilon
+                        """,
             ["", "$", "hcj"],
         ),
         (
@@ -355,9 +427,9 @@ def test_cyk_from_cfg(cfg, words):
         ),
         (
             """
-                    S -> a S b S
-                    S -> epsilon
-                    """,
+                        S -> a S b S
+                        S -> epsilon
+                        """,
             [
                 "",
                 "aba",
@@ -371,7 +443,7 @@ def test_cyk_from_cfg(cfg, words):
         ),
     ],
 )
-def test_cyk_from_text(cfg, words):
+def test_cyk_not_accept_from_text(cfg, words):
     cfg = CFG.from_text(cfg)
 
     assert all(cyk(word, cfg) == cfg.contains(word) for word in words)

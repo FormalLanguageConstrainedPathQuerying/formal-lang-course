@@ -628,7 +628,7 @@ def cyk(word: str, cfg: CFG) -> bool:
         production for production in cnf.productions if len(production.body) == 2
     ]
 
-    matrix = [[set() for _ in range(word_len)]] * word_len
+    matrix = [[set() for _ in range(word_len)] for _ in range(word_len)]
 
     for i in range(word_len):
         matrix[i][i].update(
