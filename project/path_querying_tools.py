@@ -1,4 +1,4 @@
-from typing import Set, Tuple, List
+from typing import Set, Tuple
 
 import networkx as nx
 from pyformlang.cfg import CFG, Variable
@@ -8,7 +8,11 @@ from project.automaton_tools import get_min_dfa_from_regex, get_nfa_from_graph
 from project.grammar_tools import hellings
 from project.matrix_tools import BooleanAdjacencies
 
-__all__ = ["regular_path_querying", "regular_str_path_querying"]
+__all__ = [
+    "regular_path_querying",
+    "regular_str_path_querying",
+    "context_free_path_querying",
+]
 
 
 def regular_str_path_querying(
@@ -122,57 +126,30 @@ def regular_path_querying(
 def context_free_path_querying(
     cfg: CFG,
     graph: nx.MultiDiGraph,
-    start_symbol: str = None,
+    start_symbol: str = Variable("S"),
     start_node_nums: Set[int] = None,
     final_node_nums: Set[int] = None,
-) -> List[Tuple]:
-    if start_symbol is None:
-        start_symbol = "S"
-    axiom = Variable(start_symbol)
-    cfg = CFG(start_symbol=Variable(axiom), productions=cfg.productions)
+) -> Set[Tuple[int, int]]:
+    cfg._start_symbol = start_symbol
 
-    nums_nodes = dict()
+    reachable_node_nums = {
+        (node_num_l, node_num_r)
+        for node_num_l, head, node_num_r in hellings(cfg, graph)
+        if head == cfg.start_symbol
+    }
 
-    if graph.number_of_nodes() != 0:
-        nums_nodes = {num: node for num, node in enumerate(graph.nodes)}
+    if start_node_nums:
+        reachable_node_nums = {
+            (node_num_l, node_num_r)
+            for node_num_l, node_num_r in reachable_node_nums
+            if node_num_l in start_node_nums
+        }
 
-    start_nums_nodes = dict()
-    final_nums_nodes = dict()
+    if start_node_nums:
+        reachable_node_nums = {
+            (node_num_l, node_num_r)
+            for node_num_l, node_num_r in reachable_node_nums
+            if node_num_r in final_node_nums
+        }
 
-    if not start_node_nums:
-        for num, node in nums_nodes.items():
-            start_nums_nodes[num] = node
-    else:
-        if not start_node_nums.issubset(set(nums_nodes.keys())):
-            raise ValueError(
-                f"Non-existent start node numbers in the graph: "
-                f"{start_node_nums.difference(set(nums_nodes.keys()))}"
-            )
-
-        for num in start_node_nums:
-            start_nums_nodes[num] = nums_nodes[num]
-
-    if not final_node_nums:
-        for num, node in nums_nodes.items():
-            final_nums_nodes[num] = node
-    else:
-        if not final_node_nums.issubset(set(nums_nodes.keys())):
-            raise ValueError(
-                f"Non-existent final node numbers in the graph: "
-                f"{final_node_nums.difference(set(nums_nodes.keys()))}"
-            )
-
-        for num in final_node_nums:
-            final_nums_nodes[num] = nums_nodes[num]
-
-    reachable = hellings(cfg, graph)
-
-    result = []
-    for start_node in start_nums_nodes.values():
-        for final_node in start_nums_nodes.values():
-            trio = (start_node, cfg.start_symbol, final_node)
-
-            if (start_node, cfg.start_symbol.value, final_node) in reachable:
-                result.append(trio)
-
-    return result
+    return reachable_node_nums

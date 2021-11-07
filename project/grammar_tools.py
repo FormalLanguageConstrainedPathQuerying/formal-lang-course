@@ -1,5 +1,5 @@
 import os
-from typing import AbstractSet, Iterable, List, Tuple
+from typing import AbstractSet, Iterable, Tuple, Set
 
 import networkx as nx
 from pyformlang.cfg import CFG, Variable, Production, Epsilon
@@ -16,6 +16,7 @@ __all__ = [
     "ECFG",
     "get_ecfg_from_cfg",
     "cyk",
+    "hellings",
 ]
 
 from pyformlang.regular_expression import Regex
@@ -681,63 +682,64 @@ def cyk(word: str, cfg: CFG) -> bool:
     return cnf.start_symbol.value in matrix[0][word_len - 1]
 
 
-def hellings(cfg: CFG, graph: nx.MultiDiGraph) -> List[Tuple]:
+def hellings(cfg: CFG, graph: nx.MultiDiGraph) -> Set[Tuple[int, str, int]]:
     wcnf = get_wcnf_from_cfg(cfg)
 
-    result = []
-    temporary = []
+    epsilon_heads = [
+        production.head.value for production in wcnf.productions if not production.body
+    ]
+    terminal_productions = {
+        production for production in wcnf.productions if len(production.body) == 1
+    }
+    variable_productions = {
+        production for production in wcnf.productions if len(production.body) == 2
+    }
 
-    for production in set(wcnf.productions):
-        head, body = production
-        if not body == [Epsilon()]:
-            continue
+    result = {
+        (node_num, head, node_num)
+        for node_num in range(graph.number_of_nodes())
+        for head in epsilon_heads
+    } | {
+        (node_num_l, production.head.value, node_num_r)
+        for node_num_l, node_num_r, edge_data in graph.edges(data=True)
+        for production in terminal_productions
+        if production.body[0].value == edge_data["label"]
+    }
 
-        for node in graph.nodes:
-            result.append((node, head.value, node))
-            temporary.append((node, head.value, node))
+    working = result.copy()
 
-    for node_l, label, node_r in graph.edges:
-        for production in set(wcnf.productions):
-            head, body = production
-            if len(body) == 0 or body[0].value == label:
-                result.append((node_l, head.value, node_r))
-                temporary.append((node_l, head.value, node_r))
+    while working:
+        node_num_l, variable_i, node_num_r = working.pop()
+        pre_result = set()
 
-    while temporary:
-        node_l, variable_i, node_r = temporary.pop(0)
+        for node_num_ll, variable_j, node_num_rr in result:
+            if node_num_rr == node_num_l:
+                trio = {
+                    (node_num_ll, production.head.value, node_num_r)
+                    for production in variable_productions
+                    if production.body[0].value == variable_j
+                    and production.body[1].value == variable_i
+                    and (node_num_ll, production.head.value, node_num_r) not in result
+                }
+                working |= trio
+                pre_result |= trio
 
-        # right concatenation
-        for node_ll, variable_j, node_rr in result:
-            if node_rr != node_l:
-                continue
+        result |= pre_result
+        pre_result.clear()
 
-            for production in set(wcnf.productions):
-                head, body = production
-                if len(body) <= 1:
-                    continue
-                if body[0].value != variable_j or body[1].value != variable_i:
-                    continue
-                if (node_ll, head.value, node_r) in result:
-                    continue
+        for node_num_ll, variable_j, node_num_rr in result:
+            if node_num_ll == node_num_r:
+                trio = {
+                    (node_num_l, production.head.value, node_num_rr)
+                    for production in variable_productions
+                    if production.body[0].value == variable_i
+                    and production.body[1].value == variable_j
+                    and (node_num_l, production.head.value, node_num_rr) not in result
+                }
+                working |= trio
+                pre_result |= trio
 
-                temporary.append((node_ll, head.value, node_r))
-                result.append((node_ll, head.value, node_r))
-
-        # left concatenation
-        for node_ll, variable_j, node_rr in result:
-            if node_ll != node_r:
-                continue
-
-            for production in set(wcnf.productions):
-                head, body = production
-                if len(body) <= 1:
-                    continue
-                if body[0].value != variable_i or body[1].value != variable_j:
-                    continue
-                if (node_l, head.value, node_rr) in result:
-                    continue
-
-                temporary.append((node_l, head.value, node_rr))
-                result.append((node_l, head.value, node_rr))
+        result |= pre_result
+        pre_result.clear()
 
     return result
