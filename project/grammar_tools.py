@@ -1,6 +1,7 @@
 import os
-from typing import AbstractSet, Iterable
+from typing import AbstractSet, Iterable, List, Tuple
 
+import networkx as nx
 from pyformlang.cfg import CFG, Variable, Production, Epsilon
 
 __all__ = [
@@ -291,6 +292,35 @@ def get_wcnf_from_text(cfg_text: str, start_symbol: str = None) -> CFG:
     axiom = Variable(start_symbol)
 
     cfg = CFG.from_text(cfg_text, axiom)
+
+    wcnf = (
+        cfg.remove_useless_symbols()
+        .eliminate_unit_productions()
+        .remove_useless_symbols()
+    )
+
+    epsilon_productions = wcnf._get_productions_with_only_single_terminals()
+    epsilon_productions = wcnf._decompose_productions(epsilon_productions)
+
+    return CFG(start_symbol=wcnf.start_symbol, productions=set(epsilon_productions))
+
+
+def get_wcnf_from_cfg(cfg: CFG) -> CFG:
+    """
+    Makes Context Free Grammar in Weak Chomsky Normal Form equivalent to
+    given CFG.
+
+    Parameters
+    ----------
+    cfg: CFG
+        CFG to make WCNF
+
+    Returns
+    -------
+    Tuple[CFG, CFG]:
+        Context Free Grammar in Weak Chomsky Normal Form
+        equivalent to CFG
+    """
 
     wcnf = (
         cfg.remove_useless_symbols()
@@ -603,10 +633,10 @@ def cyk(word: str, cfg: CFG) -> bool:
 
     Parameters
     ----------
+    word: str
+        A word to derive in cfg
     cfg: CFG
         A CFG to derive a word
-    word:
-        A word to derive in cfg
 
     Returns
     -------
@@ -649,3 +679,65 @@ def cyk(word: str, cfg: CFG) -> bool:
                 )
 
     return cnf.start_symbol.value in matrix[0][word_len - 1]
+
+
+def hellings(cfg: CFG, graph: nx.MultiDiGraph) -> List[Tuple]:
+    wcnf = get_wcnf_from_cfg(cfg)
+
+    result = []
+    temporary = []
+
+    for production in set(wcnf.productions):
+        head, body = production
+        if not body == [Epsilon()]:
+            continue
+
+        for node in graph.nodes:
+            result.append((node, head.value, node))
+            temporary.append((node, head.value, node))
+
+    for node_l, label, node_r in graph.edges:
+        for production in set(wcnf.productions):
+            head, body = production
+            if len(body) == 0 or body[0].value == label:
+                result.append((node_l, head.value, node_r))
+                temporary.append((node_l, head.value, node_r))
+
+    while temporary:
+        node_l, variable_i, node_r = temporary.pop(0)
+
+        # right concatenation
+        for node_ll, variable_j, node_rr in result:
+            if node_rr != node_l:
+                continue
+
+            for production in set(wcnf.productions):
+                head, body = production
+                if len(body) <= 1:
+                    continue
+                if body[0].value != variable_j or body[1].value != variable_i:
+                    continue
+                if (node_ll, head.value, node_r) in result:
+                    continue
+
+                temporary.append((node_ll, head.value, node_r))
+                result.append((node_ll, head.value, node_r))
+
+        # left concatenation
+        for node_ll, variable_j, node_rr in result:
+            if node_ll != node_r:
+                continue
+
+            for production in set(wcnf.productions):
+                head, body = production
+                if len(body) <= 1:
+                    continue
+                if body[0].value != variable_i or body[1].value != variable_j:
+                    continue
+                if (node_l, head.value, node_rr) in result:
+                    continue
+
+                temporary.append((node_l, head.value, node_rr))
+                result.append((node_l, head.value, node_rr))
+
+    return result
