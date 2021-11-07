@@ -1,5 +1,5 @@
-import networkx
-import pydot
+import cfpq_data
+import networkx as nx
 
 from project.utils import graph_utils
 from pathlib import Path
@@ -13,10 +13,19 @@ def test_save_to_dot_path():
     assert path == Path("tests/data/test_graph.dot")
 
 
-def test_save_to_dot_labels():
-    graph_utils.save_to_dot(graph_env["test_graph"], "tests/data/test_labels.dot")
-    pydot_graph = pydot.graph_from_dot_file("tests/data/test_labels.dot")[0]
-    input_graph_env = {"input_graph": networkx.drawing.nx_pydot.from_pydot(pydot_graph)}
+def test_graph_isomorphism(tmpdir):
+    n, m = 52, 48
+    edge_labels = ("a", "b")
+    file = tmpdir.mkdir("test_dir").join("two_cycles.dot")
 
-    info = graph_utils.get_graph_info("input_graph", env=input_graph_env)
-    assert info.labels == {"a", "b"}
+    graph = cfpq_data.labeled_two_cycles_graph(
+        n, m, edge_labels=edge_labels, verbose=False
+    )
+    graph_utils.save_to_dot(graph, file)
+
+    actual_graph = nx.drawing.nx_pydot.read_dot(file)
+    expected_graph = cfpq_data.labeled_two_cycles_graph(
+        n, m, edge_labels=edge_labels, verbose=False
+    )
+
+    assert nx.is_isomorphic(actual_graph, expected_graph)

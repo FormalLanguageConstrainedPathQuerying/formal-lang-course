@@ -1,3 +1,4 @@
+from project.grammars.cfg_exception import CFGException
 from project.utils import CFG_utils
 from pyformlang.cfg import CFG, Production, Variable, Terminal
 
@@ -154,12 +155,12 @@ def test_cfg_from_file(cfg_default):
 
 
 def test_corrupted_cfg():
-    with pytest.raises(CFG_utils.CFGException):
+    with pytest.raises(CFGException):
         filename = "tests/data/test_cfg_corrupted.txt"
         CFG_utils.read_cfg_from_file(filename, "S")
 
 
 def test_nonexistent_file():
-    with pytest.raises(CFG_utils.CFGException):
+    with pytest.raises(CFGException):
         filename = "Whiteboards are remarkable"
         CFG_utils.read_cfg_from_file(filename, "S")
