@@ -7,6 +7,14 @@ from project.grammars.rsm_box import RSMBox
 
 from project.utils.automata_utils import transform_regex_to_dfa
 
+__all__ = [
+    "read_cfg_from_file",
+    "read_ecfg_from_file",
+    "transform_cfg_to_wcnf",
+    "is_wcnf",
+    "transform_ecfg_to_rsm",
+]
+
 
 def read_cfg_from_file(filename: str, start_symbol: str):
     """
@@ -106,6 +114,23 @@ def transform_cfg_to_wcnf(cfg: CFG) -> CFG:
     new_productions = wncf._get_productions_with_only_single_terminals()
     new_productions = wncf._decompose_productions(new_productions)
     return CFG(start_symbol=wncf.start_symbol, productions=set(new_productions))
+
+
+def is_wcnf(cfg: CFG) -> bool:
+    """
+    Check whether given grammar is in Weakened Chomsky Normal Form
+
+    Parameters
+    ----------
+    cfg: CFG
+        Context Free Grammar to check
+
+    Returns
+    -------
+    is_wcnf: bool
+        True if cfg is in WCNF, False otherwise
+    """
+    return all(p.is_normal_form() if p.body else True for p in cfg.productions)
 
 
 def transform_ecfg_to_rsm(ecfg: ECFG) -> RSM:
