@@ -135,8 +135,8 @@ Option = namedtuple(
 def test_context_free_path_querying(cfg, graph, option):
     assert all(
         context_free_path_querying(
-            CFG.from_text(cfg),
             graph.graph,
+            CFG.from_text(cfg),
             opt.start_symbol,
             opt.start_node_nums,
             opt.final_node_nums,

@@ -682,7 +682,23 @@ def cyk(word: str, cfg: CFG) -> bool:
     return cnf.start_symbol.value in matrix[0][word_len - 1]
 
 
-def hellings(cfg: CFG, graph: nx.MultiDiGraph) -> Set[Tuple[int, str, int]]:
+def hellings(graph: nx.MultiDiGraph, cfg: CFG) -> Set[Tuple[int, str, int]]:
+    """
+    Hellings Context Free Grammar algorithm implementation.
+
+    Parameters
+    ----------
+    graph: nx.MultiDiGraph
+        Graph for queries
+    cfg: CFG
+         Query to graph as context free grammar
+
+    Returns
+    -------
+    Set[Tuple[int, str, int]]
+        Set of all tuples of reachable node numbers by CFG variable
+    """
+
     wcnf = get_wcnf_from_cfg(cfg)
 
     epsilon_heads = [

@@ -124,17 +124,40 @@ def regular_path_querying(
 
 
 def context_free_path_querying(
-    cfg: CFG,
     graph: nx.MultiDiGraph,
+    cfg: CFG,
     start_symbol: str = Variable("S"),
     start_node_nums: Set[int] = None,
     final_node_nums: Set[int] = None,
 ) -> Set[Tuple[int, int]]:
-    cfg._start_symbol = start_symbol
+    """
+    Using the specified graph and a context free query,
+    finds all pairs of reachable node numbers.
+
+    Parameters
+    ----------
+    graph: nx.MultiDiGraph
+        Graph for queries
+    cfg: CFG
+         Query to graph as context free grammar
+    start_symbol: str
+        Start symbol for context free grammar
+    start_node_nums: Set[int], default = None
+        Set of start node numbers in the graph
+    final_node_nums: Set[int], default = None
+        Set of final node numbers in the graph
+
+    Returns
+    -------
+    Set[Tuple[int, int]]
+        Set of all pairs of reachable node numbers
+    """
+
+    cfg._start_symbol = Variable(start_symbol)
 
     reachable_node_nums = {
         (node_num_l, node_num_r)
-        for node_num_l, head, node_num_r in hellings(cfg, graph)
+        for node_num_l, head, node_num_r in hellings(graph, cfg)
         if head == cfg.start_symbol
     }
 

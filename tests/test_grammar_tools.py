@@ -510,4 +510,4 @@ def test_cyk_not_accept_from_text(cfg, words):
     ],
 )
 def test_hellings(cfg, graph, expected):
-    assert hellings(CFG.from_text(cfg), graph.graph) == expected
+    assert hellings(graph.graph, CFG.from_text(cfg)) == expected
