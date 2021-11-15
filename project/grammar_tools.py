@@ -11,6 +11,7 @@ __all__ = [
     "get_cnf_from_text",
     "get_wcnf_from_file",
     "get_wcnf_from_text",
+    "get_wcnf_from_cfg",
     "is_wcnf",
     "ECFGProduction",
     "ECFG",

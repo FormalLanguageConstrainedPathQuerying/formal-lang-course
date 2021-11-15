@@ -9,7 +9,8 @@ from pyformlang.cfg import CFG
 from project.graph_tools import get_two_cycles, Graph
 from project.path_querying_tools import (
     regular_str_path_querying,
-    context_free_path_querying,
+    hellings_context_free_path_querying,
+    matrix_context_free_path_querying,
 )
 
 
@@ -81,6 +82,13 @@ def test_querying(
     assert actual_reachable_state_nums == expected_reachable_state_nums
 
 
+@pytest.fixture(
+    params=[hellings_context_free_path_querying, matrix_context_free_path_querying]
+)
+def cfpq(request):
+    return request.param
+
+
 Option = namedtuple(
     "Option", ["start_symbol", "start_node_nums", "final_node_nums", "expected"]
 )
@@ -120,7 +128,7 @@ Option = namedtuple(
                 A -> a
                 B -> b
                 """,
-            get_two_cycles(2, 1, ("a", "b")),
+            get_two_cycles(2, 1),
             [
                 Option(
                     "S", None, None, {(0, 0), (0, 3), (2, 0), (2, 3), (1, 0), (1, 3)}
@@ -132,9 +140,9 @@ Option = namedtuple(
         ),
     ],
 )
-def test_context_free_path_querying(cfg, graph, option):
+def test_context_free_path_querying(cfpq, cfg, graph, option):
     assert all(
-        context_free_path_querying(
+        cfpq(
             graph.graph,
             CFG.from_text(cfg),
             opt.start_symbol,
