@@ -14,6 +14,7 @@ __all__ = [
     "ECFGProduction",
     "ECFG",
     "get_ecfg_from_cfg",
+    "cyk",
 ]
 
 from pyformlang.regular_expression import Regex
@@ -592,3 +593,59 @@ def get_ecfg_from_cfg(cfg: CFG) -> ECFG:
     """
 
     return ECFG.from_cfg(cfg)
+
+
+def cyk(word: str, cfg: CFG) -> bool:
+    """
+    Checks whether grammar derive the word.
+
+    This function is applicable to any CFG.
+
+    Parameters
+    ----------
+    cfg: CFG
+        A CFG to derive a word
+    word:
+        A word to derive in cfg
+
+    Returns
+    -------
+    bool:
+        Whether grammar derive the word
+    """
+
+    word_len = len(word)
+
+    if not word_len:
+        return cfg.generate_epsilon()
+
+    cnf = cfg.to_normal_form()
+
+    terminal_productions = [
+        production for production in cnf.productions if len(production.body) == 1
+    ]
+    variable_productions = [
+        production for production in cnf.productions if len(production.body) == 2
+    ]
+
+    matrix = [[set() for _ in range(word_len)] for _ in range(word_len)]
+
+    for i in range(word_len):
+        matrix[i][i].update(
+            production.head.value
+            for production in terminal_productions
+            if production.body[0].value == word[i]
+        )
+
+    for length in range(1, word_len):
+        for start in range(word_len - length):
+            end = start + length
+            for current in range(start, end):
+                matrix[start][end].update(
+                    production.head.value
+                    for production in variable_productions
+                    if production.body[0].value in matrix[start][current]
+                    and production.body[1].value in matrix[current + 1][end]
+                )
+
+    return cnf.start_symbol.value in matrix[0][word_len - 1]
