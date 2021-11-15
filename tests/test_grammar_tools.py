@@ -1,7 +1,9 @@
 import pytest
+from cfpq_data import labeled_cycle_graph
 from pyformlang.cfg import Variable, Production, Epsilon, Terminal, CFG
 from pyformlang.regular_expression import Regex
 
+from project import get_two_cycles, Graph
 from project.automaton_tools import get_min_dfa_from_regex, check_regex_equality
 from project.grammar_tools import (
     get_cnf_from_file,
@@ -11,6 +13,7 @@ from project.grammar_tools import (
     ECFG,
     get_ecfg_from_cfg,
     cyk,
+    hellings,
 )
 
 
@@ -173,28 +176,28 @@ def test_wcnf_from_file(filename, axiom):
         (
             """
 
-                        """,
+                            """,
             {},
         ),
         (
             """
-                        S -> epsilon | S a b
-                        """,
+                            S -> epsilon | S a b
+                            """,
             {Variable("S"): Regex("epsilon | S a b")},
         ),
         (
             """
-                        S -> a S b S
-                        S -> epsilon
-                        """,
+                            S -> a S b S
+                            S -> epsilon
+                            """,
             {Variable("S"): Regex("(a S b S) | epsilon")},
         ),
         (
             """
-                        S -> i f ( C ) t h e n { ST } e l s e { ST }
-                        C -> t r u e | f a l s e
-                        ST -> p a s s | S
-                        """,
+                            S -> i f ( C ) t h e n { ST } e l s e { ST }
+                            C -> t r u e | f a l s e
+                            ST -> p a s s | S
+                            """,
             {
                 Variable("S"): Regex("i f ( C ) t h e n { ST } e l s e { ST }"),
                 Variable("C"): Regex("t r u e | f a l s e"),
@@ -221,28 +224,28 @@ def test_ecfg_productions(cfg, expected_ecfg_productions):
         (
             """
 
-                        """,
+                            """,
             {},
         ),
         (
             """
-                        S -> a S b S | epsilon
-                        """,
+                            S -> a S b S | epsilon
+                            """,
             {
                 Variable("S"): Regex("a S b S | epsilon"),
             },
         ),
         (
             """
-                        S -> (a | b)* c
-                        """,
+                            S -> (a | b)* c
+                            """,
             {Variable("S"): Regex("(a | b)* c")},
         ),
         (
             """
-                        S -> (a (S | epsilon) b)*
-                        A -> a b c
-                        """,
+                            S -> (a (S | epsilon) b)*
+                            A -> a b c
+                            """,
             {
                 Variable("S"): Regex("(a (S | epsilon) b)*"),
                 Variable("A"): Regex("a b c"),
@@ -307,8 +310,8 @@ def test_one_production_per_variable(cfg_text):
         (
             CFG.from_text(
                 """
-                S -> epsilon
-                """
+                    S -> epsilon
+                    """
             ),
             ["epsilon", "$"],
         ),
@@ -319,9 +322,9 @@ def test_one_production_per_variable(cfg_text):
         (
             CFG.from_text(
                 """
-                    S -> a S b S
-                    S -> epsilon
-                    """
+                        S -> a S b S
+                        S -> epsilon
+                        """
             ),
             [
                 "epsilon",
@@ -343,8 +346,8 @@ def test_cyk_accept_from_cfg(cfg, words):
     [
         (
             """
-                S -> epsilon
-                """,
+                    S -> epsilon
+                    """,
             ["epsilon", "$"],
         ),
         (
@@ -353,9 +356,9 @@ def test_cyk_accept_from_cfg(cfg, words):
         ),
         (
             """
-                    S -> a S b S
-                    S -> epsilon
-                    """,
+                        S -> a S b S
+                        S -> epsilon
+                        """,
             [
                 "epsilon",
                 "aba",
@@ -379,8 +382,8 @@ def test_cyk_accept_from_text(cfg, words):
         (
             CFG.from_text(
                 """
-                S -> epsilon
-                """
+                    S -> epsilon
+                    """
             ),
             ["", "$", "hcj"],
         ),
@@ -391,9 +394,9 @@ def test_cyk_accept_from_text(cfg, words):
         (
             CFG.from_text(
                 """
-                    S -> a S b S
-                    S -> epsilon
-                    """
+                        S -> a S b S
+                        S -> epsilon
+                        """
             ),
             [
                 "",
@@ -417,8 +420,8 @@ def test_cyk_not_accept_from_cfg(cfg, words):
     [
         (
             """
-                        S -> epsilon
-                        """,
+                            S -> epsilon
+                            """,
             ["", "$", "hcj"],
         ),
         (
@@ -427,9 +430,9 @@ def test_cyk_not_accept_from_cfg(cfg, words):
         ),
         (
             """
-                        S -> a S b S
-                        S -> epsilon
-                        """,
+                            S -> a S b S
+                            S -> epsilon
+                            """,
             [
                 "",
                 "aba",
@@ -447,3 +450,64 @@ def test_cyk_not_accept_from_text(cfg, words):
     cfg = CFG.from_text(cfg)
 
     assert all(cyk(word, cfg) == cfg.contains(word) for word in words)
+
+
+@pytest.mark.parametrize(
+    "cfg, graph, expected",
+    [
+        (
+            """
+                S -> epsilon
+                """,
+            Graph(labeled_cycle_graph(3, "a", verbose=False)),
+            {(1, "S", 1), (2, "S", 2), (0, "S", 0)},
+        ),
+        (
+            """
+                S -> b | epsilon
+                """,
+            Graph(labeled_cycle_graph(4, "b", verbose=False)),
+            {
+                (1, "S", 1),
+                (2, "S", 2),
+                (0, "S", 0),
+                (3, "S", 3),
+                (0, "S", 1),
+                (1, "S", 2),
+                (2, "S", 3),
+                (3, "S", 0),
+            },
+        ),
+        (
+            """
+                S -> A B
+                S -> A S1
+                S1 -> S B
+                A -> a
+                B -> b
+                """,
+            get_two_cycles(2, 1, ("a", "b")),
+            {
+                (0, "S1", 3),
+                (2, "S1", 0),
+                (2, "S", 3),
+                (2, "S1", 3),
+                (3, "B", 0),
+                (1, "S", 0),
+                (0, "S", 0),
+                (1, "S", 3),
+                (1, "A", 2),
+                (0, "S", 3),
+                (0, "B", 3),
+                (1, "S1", 3),
+                (2, "A", 0),
+                (1, "S1", 0),
+                (0, "S1", 0),
+                (0, "A", 1),
+                (2, "S", 0),
+            },
+        ),
+    ],
+)
+def test_hellings(cfg, graph, expected):
+    assert hellings(graph.graph, CFG.from_text(cfg)) == expected

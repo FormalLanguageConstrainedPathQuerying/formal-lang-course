@@ -1,12 +1,18 @@
 from typing import Set, Tuple
 
 import networkx as nx
+from pyformlang.cfg import CFG, Variable
 from pyformlang.regular_expression import Regex
 
 from project.automaton_tools import get_min_dfa_from_regex, get_nfa_from_graph
+from project.grammar_tools import hellings
 from project.matrix_tools import BooleanAdjacencies
 
-__all__ = ["regular_path_querying", "regular_str_path_querying"]
+__all__ = [
+    "regular_path_querying",
+    "regular_str_path_querying",
+    "context_free_path_querying",
+]
 
 
 def regular_str_path_querying(
@@ -115,3 +121,58 @@ def regular_path_querying(
             reachable_state_nums.add((reachable_state_from_num, reachable_state_to_num))
 
     return reachable_state_nums
+
+
+def context_free_path_querying(
+    graph: nx.MultiDiGraph,
+    cfg: CFG,
+    start_symbol: str = Variable("S"),
+    start_node_nums: Set[int] = None,
+    final_node_nums: Set[int] = None,
+) -> Set[Tuple[int, int]]:
+    """
+    Using the specified graph and a context free query,
+    finds all pairs of reachable node numbers.
+
+    Parameters
+    ----------
+    graph: nx.MultiDiGraph
+        Graph for queries
+    cfg: CFG
+         Query to graph as context free grammar
+    start_symbol: str
+        Start symbol for context free grammar
+    start_node_nums: Set[int], default = None
+        Set of start node numbers in the graph
+    final_node_nums: Set[int], default = None
+        Set of final node numbers in the graph
+
+    Returns
+    -------
+    Set[Tuple[int, int]]
+        Set of all pairs of reachable node numbers
+    """
+
+    cfg._start_symbol = Variable(start_symbol)
+
+    reachable_node_nums = {
+        (node_num_l, node_num_r)
+        for node_num_l, head, node_num_r in hellings(graph, cfg)
+        if head == cfg.start_symbol
+    }
+
+    if start_node_nums:
+        reachable_node_nums = {
+            (node_num_l, node_num_r)
+            for node_num_l, node_num_r in reachable_node_nums
+            if node_num_l in start_node_nums
+        }
+
+    if start_node_nums:
+        reachable_node_nums = {
+            (node_num_l, node_num_r)
+            for node_num_l, node_num_r in reachable_node_nums
+            if node_num_r in final_node_nums
+        }
+
+    return reachable_node_nums
