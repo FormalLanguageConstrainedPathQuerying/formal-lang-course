@@ -1,4 +1,4 @@
-from project.utils.matrix_utils import BooleanMatrix
+from project.utils.nfa_matrix import NFAMatrix
 
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, State
 from scipy.sparse import dok_matrix
@@ -53,8 +53,8 @@ def nfa_unordered_states():
 def test_pyformlang_intersect_default(lhs_nfa, rhs_nfa):
     expected_result = lhs_nfa.get_intersection(rhs_nfa)
 
-    lhs_bm = BooleanMatrix.from_nfa(lhs_nfa)
-    rhs_bm = BooleanMatrix.from_nfa(rhs_nfa)
+    lhs_bm = NFAMatrix.from_nfa(lhs_nfa)
+    rhs_bm = NFAMatrix.from_nfa(rhs_nfa)
 
     intersection_bm = lhs_bm.intersect(rhs_bm)
     intersection = intersection_bm.to_nfa()
@@ -65,8 +65,8 @@ def test_pyformlang_intersect_default(lhs_nfa, rhs_nfa):
 def test_pyformlang_intersect_with_several(nfa_several_labels, rhs_nfa):
     expected_result = nfa_several_labels.get_intersection(rhs_nfa)
 
-    lhs_bm = BooleanMatrix.from_nfa(nfa_several_labels)
-    rhs_bm = BooleanMatrix.from_nfa(rhs_nfa)
+    lhs_bm = NFAMatrix.from_nfa(nfa_several_labels)
+    rhs_bm = NFAMatrix.from_nfa(rhs_nfa)
 
     intersection_bm = lhs_bm.intersect(rhs_bm)
     intersection = intersection_bm.to_nfa()
@@ -76,8 +76,8 @@ def test_pyformlang_intersect_with_several(nfa_several_labels, rhs_nfa):
 
 def test_intersect_with_empty(lhs_nfa, empty_nfa):
 
-    lhs_bm = BooleanMatrix.from_nfa(lhs_nfa)
-    rhs_bm = BooleanMatrix.from_nfa(empty_nfa)
+    lhs_bm = NFAMatrix.from_nfa(lhs_nfa)
+    rhs_bm = NFAMatrix.from_nfa(empty_nfa)
 
     intersection_bm = lhs_bm.intersect(rhs_bm)
     intersection = intersection_bm.to_nfa()
@@ -86,24 +86,24 @@ def test_intersect_with_empty(lhs_nfa, empty_nfa):
 
 
 def test_to_nfa_from_nfa(lhs_nfa):
-    lhs_bm = BooleanMatrix.from_nfa(lhs_nfa)
+    lhs_bm = NFAMatrix.from_nfa(lhs_nfa)
     expected_nfa = lhs_bm.to_nfa()
 
     assert lhs_nfa.is_equivalent_to(expected_nfa)
 
 
 def test_renumbered_keys(nfa_unordered_states):
-    nfa_bm = BooleanMatrix.from_nfa(nfa_unordered_states)
+    nfa_bm = NFAMatrix.from_nfa(nfa_unordered_states)
     assert nfa_bm.indexed_states.keys() == nfa_unordered_states.states
 
 
 def test_renumbered_values(nfa_unordered_states):
-    nfa_bm = BooleanMatrix.from_nfa(nfa_unordered_states)
+    nfa_bm = NFAMatrix.from_nfa(nfa_unordered_states)
     assert sorted(nfa_bm.indexed_states.values()) == [0, 1, 2, 3, 4]
 
 
 def test_nfa_to_bmatrix(lhs_nfa):
-    lhs_bm = BooleanMatrix.from_nfa(lhs_nfa)
+    lhs_bm = NFAMatrix.from_nfa(lhs_nfa)
 
     bmatrix = {
         "a": dok_matrix([[0, 1], [1, 0]], dtype=bool),
@@ -114,7 +114,7 @@ def test_nfa_to_bmatrix(lhs_nfa):
 
 
 def test_transitive_closure(lhs_nfa):
-    lhs_bm = BooleanMatrix.from_nfa(lhs_nfa)
+    lhs_bm = NFAMatrix.from_nfa(lhs_nfa)
     tc = dok_matrix([[True, True], [True, True]])
 
     assert lhs_bm.transitive_closure().toarray().data == tc.toarray().data

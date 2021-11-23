@@ -1,4 +1,4 @@
-from project.utils import rpq
+from project.rpq import rpq
 from project.utils.graph_utils import generate_two_cycles_graph
 
 import networkx as nx

@@ -1,8 +1,8 @@
-antlr4-python3-runtime
+antlr4-python3-runtime==4.9.2
 black
 cfpq-data==1.0.2
 networkx==2.6.2
-pre-commit
-pydot
-pytest
-scipy
+pre-commit==2.15.0
+pydot==1.4.2
+pytest==6.2.5
+scipy==1.7.1

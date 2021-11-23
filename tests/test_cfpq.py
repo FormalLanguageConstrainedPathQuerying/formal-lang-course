@@ -1,19 +1,42 @@
 import pytest
-
 from pyformlang.cfg import CFG
 from itertools import product
 from collections import namedtuple
 
-from project.utils.cfpq import cfpq
 from project.utils.graph_utils import generate_two_cycles_graph
+from project.cfpq.cfpq import cfpq_hellings, cfpq_matrix
+
 from cfpq_data import labeled_cycle_graph
 
 Config = namedtuple("Config", ["start_var", "start_nodes", "final_nodes", "exp_ans"])
 
 
+@pytest.fixture(params=[cfpq_hellings, cfpq_matrix])
+def cfpq(request):
+    return request.param
+
+
 @pytest.mark.parametrize(
-    "cfg, graph, configs",
+    "cfg, graph, confs",
     [
+        (
+            """
+                    S -> A B
+                    S -> A S1
+                    S1 -> S B
+                    A -> a
+                    B -> b
+                    """,
+            generate_two_cycles_graph("2", "1", "a", "b"),
+            [
+                Config(
+                    "S", None, None, {(0, 0), (0, 3), (2, 0), (2, 3), (1, 0), (1, 3)}
+                ),
+                Config("S", {0}, {0}, {(0, 0)}),
+                Config("A", None, None, {(0, 1), (1, 2), (2, 0)}),
+                Config("B", None, None, {(3, 0), (0, 3)}),
+            ],
+        ),
         (
             """
                 A -> a A | epsilon
@@ -37,27 +60,9 @@ Config = namedtuple("Config", ["start_var", "start_nodes", "final_nodes", "exp_a
                 Config("B", None, None, set()),
             ],
         ),
-        (
-            """
-                    S -> A B
-                    S -> A S1
-                    S1 -> S B
-                    A -> a
-                    B -> b
-                    """,
-            generate_two_cycles_graph("2", "1", "a", "b"),
-            [
-                Config(
-                    "S", None, None, {(0, 0), (0, 3), (2, 0), (2, 3), (1, 0), (1, 3)}
-                ),
-                Config("A", None, None, {(0, 1), (1, 2), (2, 0)}),
-                Config("B", None, None, {(3, 0), (0, 3)}),
-                Config("S", {0}, {0}, {(0, 0)}),
-            ],
-        ),
     ],
 )
-def test_cfpq_answer(cfg, graph, configs):
+def test_cfpq_answer(cfpq, cfg, graph, confs):
     assert all(
         cfpq(
             graph,
@@ -67,5 +72,5 @@ def test_cfpq_answer(cfg, graph, configs):
             conf.start_var,
         )
         == conf.exp_ans
-        for conf in configs
+        for conf in confs
     )

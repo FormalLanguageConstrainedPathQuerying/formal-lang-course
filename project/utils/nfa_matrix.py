@@ -1,8 +1,10 @@
 from scipy.sparse import dok_matrix, kron
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, State
 
+from project.utils.boolean_matrix import BooleanMatrix
 
-class BooleanMatrix:
+
+class NFAMatrix(BooleanMatrix):
     """
     Representation of NFA as a Boolean Matrix
 
@@ -22,6 +24,7 @@ class BooleanMatrix:
     """
 
     def __init__(self):
+        super().__init__()
         self.indexed_states = {}
         self.start_states = set()
         self.final_states = set()
@@ -86,29 +89,6 @@ class BooleanMatrix:
 
         return nfa
 
-    def transitive_closure(self):
-        """
-        Computes transitive closure of boolean matrices
-
-        Returns
-        -------
-        tc: dok_matrix
-            Transitive closure of boolean matrices
-        """
-        if not self.bmatrix.values():
-            return dok_matrix((1, 1))
-
-        tc = sum(self.bmatrix.values())
-
-        prev_nnz = tc.nnz
-        curr_nnz = 0
-
-        while prev_nnz != curr_nnz:
-            tc += tc @ tc
-            prev_nnz, curr_nnz = curr_nnz, tc.nnz
-
-        return tc
-
     def _nfa_to_bmatrix(self, nfa: NondeterministicFiniteAutomaton):
         """
         Parameters
@@ -146,14 +126,14 @@ class BooleanMatrix:
 
         Parameters
         ----------
-        other: BooleanMatrix
+        other: NFAMatrix
             Right-hand side boolean matrix
         Returns
         -------
-        intersection: BooleanMatrix
+        intersection: NFAMatrix
             Intersection of two boolean matrices
         """
-        intersection = BooleanMatrix()
+        intersection = NFAMatrix()
         common_labels = self.bmatrix.keys() & other.bmatrix.keys()
 
         for label in common_labels:
