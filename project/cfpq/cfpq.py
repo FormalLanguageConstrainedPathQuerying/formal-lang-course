@@ -5,10 +5,11 @@ from typing import Set, Tuple, Callable
 
 from project.grammars.hellings import hellings
 from project.grammars.matrix_based import matrix_based
+from project.grammars.tensor_based import tensor_based
 from project.utils.CFG_utils import transform_cfg_to_wcnf, is_wcnf
 
 
-__all__ = ["cfpq_hellings", "cfpq_matrix"]
+__all__ = ["cfpq_hellings", "cfpq_matrix", "cfpq_tensor"]
 
 
 def _filter_pairs(
@@ -146,4 +147,37 @@ def cfpq_matrix(
     """
     return _cfpq(
         graph, cfg, start_nodes, final_nodes, start_var, algorithm=matrix_based
+    )
+
+
+def cfpq_tensor(
+    graph: MultiDiGraph,
+    cfg: CFG,
+    start_nodes: Set[int] = None,
+    final_nodes: Set[int] = None,
+    start_var: Variable = Variable("S"),
+) -> Set[Tuple[int, int]]:
+    """
+    Context-Free Path Querying based on Kronecker product
+
+    Parameters
+    ----------
+    graph: MultiDiGraph
+        Labeled graph for the Path Querying task
+    cfg: CFG
+        Query given in Context Free Grammar form
+    start_nodes: Set[int], default=None
+        Set of graph start nodes
+    final_nodes: Set[int], default=None
+        Set of graph final nodes
+    start_var: Variable, default=Variable("S")
+        Start variable of a grammar
+
+    Returns
+    -------
+    cfpq: Set[Tuple[int, int]]
+        Context Free Path Querying
+    """
+    return _cfpq(
+        graph, cfg, start_nodes, final_nodes, start_var, algorithm=tensor_based
     )
