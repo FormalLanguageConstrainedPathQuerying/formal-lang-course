@@ -2,7 +2,7 @@ import pytest
 
 from project.grammars.rsm_box import RSMBox
 from project.grammars.ecfg import ECFG
-from project.utils.CFG_utils import transform_ecfg_to_rsm, transform_regex_to_dfa
+from project.utils.cfg_utils import transform_ecfg_to_rsm, transform_regex_to_dfa
 
 
 @pytest.mark.parametrize(

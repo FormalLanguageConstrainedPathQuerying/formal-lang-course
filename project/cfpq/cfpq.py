@@ -6,7 +6,7 @@ from typing import Set, Tuple, Callable
 from project.grammars.hellings import hellings
 from project.grammars.matrix_based import matrix_based
 from project.grammars.tensor_based import tensor_based
-from project.utils.CFG_utils import transform_cfg_to_wcnf, is_wcnf
+from project.utils.cfg_utils import transform_cfg_to_wcnf, is_wcnf
 
 
 __all__ = ["cfpq_hellings", "cfpq_matrix", "cfpq_tensor"]

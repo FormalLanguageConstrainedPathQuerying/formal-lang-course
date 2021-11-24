@@ -5,7 +5,7 @@ from pyformlang.cfg import CFG
 from typing import Set, Tuple
 
 from project.grammars.ecfg import ECFG
-from project.utils.CFG_utils import transform_ecfg_to_rsm
+from project.utils.cfg_utils import transform_ecfg_to_rsm
 from project.utils.rsm_matrix import RSMMatrix
 from project.utils.automata_utils import transform_graph_to_nfa
 

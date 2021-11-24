@@ -1,6 +1,6 @@
 from networkx import MultiDiGraph
 from pyformlang.cfg import CFG
-from project.utils.CFG_utils import transform_cfg_to_wcnf, is_wcnf
+from project.utils.cfg_utils import transform_cfg_to_wcnf, is_wcnf
 
 
 __all__ = ["hellings"]
