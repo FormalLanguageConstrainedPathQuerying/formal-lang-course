@@ -4,14 +4,14 @@ from itertools import product
 from collections import namedtuple
 
 from project.utils.graph_utils import generate_two_cycles_graph
-from project.cfpq.cfpq import cfpq_hellings, cfpq_matrix
+from project.cfpq.cfpq import cfpq_hellings, cfpq_matrix, cfpq_tensor
 
 from cfpq_data import labeled_cycle_graph
 
 Config = namedtuple("Config", ["start_var", "start_nodes", "final_nodes", "exp_ans"])
 
 
-@pytest.fixture(params=[cfpq_hellings, cfpq_matrix])
+@pytest.fixture(params=[cfpq_hellings, cfpq_matrix, cfpq_tensor])
 def cfpq(request):
     return request.param
 

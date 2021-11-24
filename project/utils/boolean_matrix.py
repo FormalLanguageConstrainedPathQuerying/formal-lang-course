@@ -22,7 +22,6 @@ class BooleanMatrix:
         self.final_states = set()
         self.indexed_states = {}
         self.bmatrix = {}
-        self.state_indices = {}
         self.states_to_box_variable = {}
         self.block_size = 1
 

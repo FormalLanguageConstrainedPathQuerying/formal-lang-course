@@ -35,10 +35,10 @@ class RSMMatrix(BooleanMatrix):
             bm.states_to_box_variable.update(
                 {
                     (
-                        bm.state_indices[
+                        bm.indexed_states[
                             bm.rename_rsm_box_state(box.dfa.start_state, box.variable)
                         ],
-                        bm.state_indices[bm.rename_rsm_box_state(state, box.variable)],
+                        bm.indexed_states[bm.rename_rsm_box_state(state, box.variable)],
                     ): box.variable.value
                     for state in box.dfa.final_states
                 }
@@ -58,10 +58,10 @@ class RSMMatrix(BooleanMatrix):
                 if not isinstance(states_to, set):
                     states_to = {states_to}
                 for s_to in states_to:
-                    idx_from = self.state_indices[
+                    idx_from = self.indexed_states[
                         self.rename_rsm_box_state(s_from, box.variable)
                     ]
-                    idx_to = self.state_indices[
+                    idx_to = self.indexed_states[
                         self.rename_rsm_box_state(s_to, box.variable)
                     ]
                     label = str(label)
