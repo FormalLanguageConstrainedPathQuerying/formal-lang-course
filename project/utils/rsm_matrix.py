@@ -11,8 +11,18 @@ __all__ = ["RSMMatrix"]
 
 
 class RSMMatrix(BooleanMatrix):
+    """
+    Representation of RSM as a Boolean Matrix
+
+    Attributes
+    ----------
+    states_to_box_variable: dict
+        State: Variable dictionary
+    """
+
     def __init__(self):
         super().__init__()
+        self.states_to_box_variable = {}
 
     @staticmethod
     def rename_rsm_box_state(state: State, box_variable: Variable):
@@ -20,6 +30,14 @@ class RSMMatrix(BooleanMatrix):
 
     @classmethod
     def from_rsm(cls, rsm: RSM):
+        """
+        Create an instance of RSMMatrix from rsm
+
+        Attributes
+        ----------
+        rsm: RSM
+            Recursive State Machine
+        """
         bm = cls()
         bm.number_of_states = sum(len(box.dfa.states) for box in rsm.boxes)
         box_idx = 0
@@ -51,7 +69,20 @@ class RSMMatrix(BooleanMatrix):
     def get_nonterminals(self, s_from, s_to):
         return self.states_to_box_variable.get((s_from, s_to))
 
-    def _create_box_bool_matrices(self, box: RSMBox):
+    def _create_box_bool_matrices(self, box: RSMBox) -> dict:
+        """
+        Create bool matrices for RSM box
+
+        Attributes
+        ----------
+        box: RSMBox
+            Box of RSM
+
+        Returns
+        -------
+        bmatrix: dict
+            Boolean Matrices dict
+        """
         bmatrix = {}
         for s_from, trans in box.dfa.to_dict().items():
             for label, states_to in trans.items():

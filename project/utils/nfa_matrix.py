@@ -7,20 +7,6 @@ from project.utils.boolean_matrix import BooleanMatrix
 class NFAMatrix(BooleanMatrix):
     """
     Representation of NFA as a Boolean Matrix
-
-    Attributes
-    ----------
-    indexed_states: dict
-        Renumbered (from 0) states of NFA
-    start_states: set
-        Start states of NFA
-    final_states: set
-        Final states of NFA
-    bmatrix: dict
-        Dictionary of boolean matrices.
-        Keys are NFA labels
-    block_size: int
-        Size of a block in boolean matrix
     """
 
     def __init__(self):

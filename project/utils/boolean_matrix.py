@@ -9,6 +9,14 @@ class BooleanMatrix:
 
     Attributes
     ----------
+    number_of_states: int
+        Number of states
+    start_states: Set[int]
+        Start states
+    final_states: Set[int]
+        Final states
+    indexed_states: dict
+        Renumbered states dictionary
     bmatrix: dict
         Dictionary of boolean matrices.
         Keys are NFA labels
@@ -22,7 +30,6 @@ class BooleanMatrix:
         self.final_states = set()
         self.indexed_states = {}
         self.bmatrix = {}
-        self.states_to_box_variable = {}
         self.block_size = 1
 
     def transitive_closure(self):
