@@ -23,9 +23,14 @@ def test_graph_isomorphism(tmpdir):
     )
     graph_utils.save_to_dot(graph, file)
 
-    actual_graph = nx.drawing.nx_pydot.read_dot(file)
+    actual_graph_string = None
+    with open(file, "r") as graph_file:
+        actual_graph_string = graph_file.read()
+
     expected_graph = cfpq_data.labeled_two_cycles_graph(
         n, m, edge_labels=edge_labels, verbose=False
     )
 
-    assert nx.is_isomorphic(actual_graph, expected_graph)
+    expected_graph_string = nx.drawing.nx_pydot.to_pydot(expected_graph).to_string()
+
+    assert actual_graph_string == expected_graph_string
