@@ -1,6 +1,6 @@
 from networkx import MultiDiGraph
 
-from project.utils.nfa_matrix import NFAMatrix
+from project.utils.rsm_sparse import RSMMatrixSparse
 from project.utils.automata_utils import transform_graph_to_nfa, transform_regex_to_dfa
 
 
@@ -27,13 +27,13 @@ def rpq(
        Regular Path Querying
     """
 
-    graph_bm = NFAMatrix.from_nfa(
+    graph_bm = RSMMatrixSparse.from_nfa(
         transform_graph_to_nfa(graph, start_nodes, final_nodes)
     )
-    query_bm = NFAMatrix.from_nfa(transform_regex_to_dfa(query))
+    query_bm = RSMMatrixSparse.from_nfa(transform_regex_to_dfa(query))
 
     intersection = graph_bm.intersect(query_bm)
-    tc = intersection.transitive_closure()
+    tc = intersection.get_transitive_closure()
 
     result = set()
     for state_from, state_to in zip(*tc.nonzero()):
