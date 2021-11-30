@@ -39,7 +39,7 @@ class RSMBox:
         return RSMBox(variable=self._variable, dfa=self._dfa.minimize())
 
     @property
-    def dfa(self):
+    def dfa(self) -> DeterministicFiniteAutomaton:
         """
         Get dfa
 
@@ -51,7 +51,7 @@ class RSMBox:
         return self._dfa
 
     @property
-    def variable(self):
+    def variable(self) -> Variable:
         """
         Get variable
 

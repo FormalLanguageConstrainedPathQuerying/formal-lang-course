@@ -113,7 +113,7 @@ def transform_cfg_to_wcnf(cfg: CFG) -> CFG:
     )
     new_productions = wncf._get_productions_with_only_single_terminals()
     new_productions = wncf._decompose_productions(new_productions)
-    return CFG(start_symbol=wncf.start_symbol, productions=set(new_productions))
+    return CFG(start_symbol=wncf.start_symbol, productions=new_productions)
 
 
 def is_wcnf(cfg: CFG) -> bool:

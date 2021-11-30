@@ -1,7 +1,7 @@
 import pytest
 
 from project.grammars.ecfg import ECFG
-from project.utils.CFG_utils import transform_ecfg_to_rsm
+from project.utils.cfg_utils import transform_ecfg_to_rsm
 
 
 @pytest.mark.parametrize(
