@@ -40,8 +40,8 @@
 
 ### Дедлайны
 
-- **мягкий**: ??? 23:59
-- **жёсткий**: ??? 23:59
+- **мягкий**: воскресенье 23:59
+- **жёсткий**: среда 23:59
 
 ### Выполнение домашнего задания
 
@@ -106,3 +106,4 @@
 - Семен Григорьев [@gsvgit](https://github.com/gsvgit)
 - Егор Орачев [@EgorOrachyov](https://github.com/EgorOrachyov)
 - Вадим Абзалов [@vdshk](https://github.com/vdshk)
+- Рустам Азимов [@rustam-azimov](https://github.com/rustam-azimov)
