@@ -42,8 +42,8 @@ def get_graph_info(name: str) -> GraphInfo:
 
 
 def generate_labeled_two_cycles_graph(
-        nodes_num: tuple[int, int],
-        labels: tuple[str, str],
+    nodes_num: tuple[int, int],
+    labels: tuple[str, str],
 ) -> MultiDiGraph:
     """
     Returns a graph with two cycles with labeled edges.
