@@ -34,5 +34,5 @@ def get_graph_info(name: str) -> GraphInfo:
     return GraphInfo(
         graph.number_of_nodes(),
         graph.number_of_edges(),
-        set([i[2]["label"] for i in graph.edges.data(default=True)])
+        set([i[2]["label"] for i in graph.edges.data(default=True)]),
     )
