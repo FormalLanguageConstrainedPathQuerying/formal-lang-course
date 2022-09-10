@@ -3,7 +3,7 @@ from typing import Set, Tuple
 
 import cfpq_data
 from networkx import Graph, MultiDiGraph
-from networkx.drawing.nx_pydot import write_dot
+from networkx.drawing.nx_pydot import to_pydot
 
 __all__ = [
     "GraphData",
@@ -73,4 +73,10 @@ def write_labeled_two_cycles_graph_to_dot(
     graph = cfpq_data.labeled_two_cycles_graph(
         n=cycle_sizes[0], m=cycle_sizes[1], labels=labels
     )
-    write_dot(graph, path)
+    _write_graph_to_dot(graph, path)
+
+
+def _write_graph_to_dot(graph: Graph, path: Path):
+    with open(path, "w") as file:
+        # removing "\n"-s because otherwise `read_dot` creates node called "\n"
+        file.write(to_pydot(graph).to_string().replace("\n", ""))
