@@ -48,4 +48,4 @@ jobs:
 
       - name: Run tests
         run: |
-          run: python ./scripts/run_tests.py
+          python ./scripts/run_tests.py
