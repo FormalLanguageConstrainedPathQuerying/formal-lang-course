@@ -15,7 +15,7 @@ def test_save_graph_in_dot():
     save_in_dot(graph_expected)
     assert filecmp.cmp(
         str(shared.ROOT) + os.sep + "output" + os.sep + "graph.dot",
-        str(shared.ROOT) + os.sep + "output" + os.sep + "expected_graph.dot"
+        str(shared.ROOT) + os.sep + "output" + os.sep + "expected_graph.dot",
     )
 
 
