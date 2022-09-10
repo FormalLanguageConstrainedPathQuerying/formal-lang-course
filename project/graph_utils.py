@@ -1,3 +1,5 @@
+import os
+
 import networkx
 from cfpq_data import *
 from scripts import shared
@@ -38,5 +40,5 @@ def create_two_cycles_graph(nodes_in_first_cycle, nodes_in_sec_cycle, labels):
 def save_in_dot(graph_networkx):
     print(str(shared.ROOT))
     networkx.drawing.nx_pydot.write_dot(
-        graph_networkx, str(shared.ROOT) + "\\output\\graph.dot"
+        graph_networkx, str(shared.ROOT) + os.sep + "output" + os.sep + "graph.dot"
     )
