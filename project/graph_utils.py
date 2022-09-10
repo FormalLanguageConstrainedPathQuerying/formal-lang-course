@@ -13,7 +13,7 @@ class Graph:
 
 
 def get_labels(edges):
-    return list(map(lambda node: node[2]["label"], edges.data()))
+    return set(map(lambda node: node[2]["label"], edges.data()))
 
 
 def get_info_by_graph(graph):
