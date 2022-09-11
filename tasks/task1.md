@@ -21,4 +21,4 @@
       строить [граф из двух циклов](https://jetbrains-research.github.io/CFPQ_Data/reference/graphs/generated/cfpq_data.graphs.generators.labeled_two_cycles_graph.html#cfpq_data.graphs.generators.labeled_two_cycles_graph)
       и сохранять его в указанный файл в формате DOT (использовать pydot).
 - [X] Добавить необходимые тесты.
-- [ ] Добавить запуск тестов с помощью `pytest` в `.github/workflows/`.
+- [X] Добавить запуск тестов с помощью `pytest` в `.github/workflows/`.
