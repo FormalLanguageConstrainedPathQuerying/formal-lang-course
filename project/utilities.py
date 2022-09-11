@@ -9,7 +9,7 @@ def get_graph_info(name):
     return GraphInfo(
         graph.number_of_nodes(),
         graph.number_of_edges(),
-        set([edge[2]["label"] for edge in graph.edges(data=True)])
+        set([edge[2]["label"] for edge in graph.edges(data=True)]),
     )
 
 
