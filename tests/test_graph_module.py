@@ -1,3 +1,4 @@
+import pytest
 import project.graph_module as gm
 
 
