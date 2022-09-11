@@ -16,7 +16,7 @@ class Graph(NamedTuple):
 
     nodes: int
     edges: int
-    labels: set[str]
+    labels: set
 
 
 def get_graph_info(name) -> Graph:

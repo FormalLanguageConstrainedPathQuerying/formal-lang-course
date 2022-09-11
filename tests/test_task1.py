@@ -18,6 +18,6 @@ def test_create_and_save_labeled_two_cycles_graph():
         (3, 3), ("A", "B"), "temp_for_create_two_cycles_graph.dot"
     )
     assert filecmp.cmp(
-        "temp_for_create_two_cycles_graph.dot", "expected_graph_task1.dot"
+        "temp_for_create_two_cycles_graph.dot", "../tests/expected_graph_task1.dot"
     )
     os.remove("temp_for_create_two_cycles_graph.dot")
