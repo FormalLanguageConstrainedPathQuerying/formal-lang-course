@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from typing import NamedTuple, Set
 import cfpq_data
 import networkx as nx
 
@@ -16,7 +16,7 @@ class Graph(NamedTuple):
 
     nodes: int
     edges: int
-    labels: set
+    labels: Set
 
 
 def get_graph_info(name) -> Graph:

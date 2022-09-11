@@ -15,9 +15,11 @@ def test_get_graph_info():
 
 def test_create_and_save_labeled_two_cycles_graph():
     create_two_cycles_graph_and_save_as_dot(
-        (3, 3), ("A", "B"), "temp_for_create_two_cycles_graph.dot"
+        (3, 3), ("A", "B"), "tests/temp_for_create_two_cycles_graph.dot"
     )
     assert filecmp.cmp(
-        "temp_for_create_two_cycles_graph.dot", "../tests/expected_graph_task1.dot"
+        "tests/temp_for_create_two_cycles_graph.dot",
+        "tests/expected_graph_task1.dot",
+        shallow=False,
     )
-    os.remove("temp_for_create_two_cycles_graph.dot")
+    os.remove("tests/temp_for_create_two_cycles_graph.dot")
