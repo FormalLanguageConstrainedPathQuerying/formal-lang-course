@@ -70,7 +70,6 @@ def create_two_cycles_graph_and_save_as_dot(
     file_path: str
         The name or path to the file where the graph should be saved.
     """
-    graph = cfpq_data.labeled_two_cycles_graph(
-        cycle_sizes[0], cycle_sizes[1], labels=labels
-    )
+    n, m = cycle_sizes
+    graph = cfpq_data.labeled_two_cycles_graph(n, m, labels=labels)
     nx.drawing.nx_pydot.write_dot(graph, file_path)
