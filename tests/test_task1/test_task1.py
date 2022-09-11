@@ -36,5 +36,7 @@ def test_get_graph_info():
 
 def test_generate_two_cycles_graph():
     generate_two_cycles_graph(3, 2, ["a", "b"], "tests/test_task1/generated_graph.dot")
-    assert filecmp.cmp("tests/test_task1/generated_graph.dot", "tests/test_task1/expected_graph.dot")
+    assert filecmp.cmp(
+        "tests/test_task1/generated_graph.dot", "tests/test_task1/expected_graph.dot"
+    )
     os.remove("tests/test_task1/generated_graph.dot")
