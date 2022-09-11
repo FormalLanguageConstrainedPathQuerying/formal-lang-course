@@ -1,4 +1,4 @@
-from typing import NamedTuple, Set
+from typing import NamedTuple, Set, Tuple
 import cfpq_data
 import networkx as nx
 
@@ -57,15 +57,15 @@ def get_graph(name) -> nx.MultiDiGraph:
 
 
 def create_two_cycles_graph_and_save_as_dot(
-    cycle_sizes: tuple[int, int], labels: tuple[str, str], file_path
+    cycle_sizes: Tuple[int, int], labels: Tuple[str, str], file_path
 ) -> None:
     """Create a labeled two cycles graph and save it to the file in DOT format.
 
     Parameters
     ----------
-    cycle_sizes: tuple[int, int]
+    cycle_sizes: Tuple[int, int]
         The number of vertices in the first and second cycles.
-    labels: tuple[str, str]
+    labels: Tuple[str, str]
         Labels that will be used to mark the edges of the graph.
     file_path: str
         The name or path to the file where the graph should be saved.
