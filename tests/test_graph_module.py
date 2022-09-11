@@ -1,15 +1,16 @@
-import project.graph_module as gm
+from project.graph_module import get_graph_count_vertex_edges_labels
+from project.graph_module import build_two_cycles_graph_dot_format
 
 
 def test_get_graph_count_vertex_edges_labels():
     expected_result = (332, 269, {"D", "A"})
-    actual_result = gm.get_graph_count_vertex_edges_labels("wc")
+    actual_result = get_graph_count_vertex_edges_labels("wc")
     assert expected_result == actual_result
 
 
 def test_build_two_cycles_graph_dot_format(tmp_path):
     actual_file_path = tmp_path / "actual_test_graph.dot"
-    gm.build_two_cycles_graph_dot_format(1, 2, ("man", "woman"), actual_file_path)
+    build_two_cycles_graph_dot_format(1, 2, ("man", "woman"), actual_file_path)
     assert (
         open(actual_file_path, "r").read()
         == """digraph  {
