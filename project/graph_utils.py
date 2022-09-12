@@ -28,6 +28,16 @@ def get_graph_info(graph: MultiDiGraph) -> GraphInfo:
     )
 
 
+def get_graph_info_by_name(graph_name: str) -> GraphInfo:
+    """Loads graph by name from dataset and extracts info from it.
+
+    :param graph_name: Graph name in the dataset.
+    :return: Graph info.
+    """
+    graph = load_graph(graph_name)
+    return get_graph_info(graph)
+
+
 def build_two_cycle_labeled_graph(
     first_cycle_size: int,
     second_cycle_size: int,
