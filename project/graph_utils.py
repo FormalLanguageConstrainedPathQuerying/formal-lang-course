@@ -57,6 +57,28 @@ def build_two_cycle_labeled_graph(
     )
 
 
+def build_and_save_two_cycle_labeled_graph(
+    first_cycle_size: int,
+    second_cycle_size: int,
+    edge_labels: Tuple[str, str],
+    file: Union[str, IO],
+):
+    """Builds and saves a labeled graph with two cycles.
+
+    :param first_cycle_size: Number of nodes in the first cycle.
+    :param second_cycle_size: Number of nodes in the second cycle.
+    :param edge_labels: Edge labels.
+    :param file: File handle to save with.
+    """
+
+    graph = build_two_cycle_labeled_graph(
+        first_cycle_size=first_cycle_size,
+        second_cycle_size=second_cycle_size,
+        edge_labels=edge_labels,
+    )
+    save_graph(graph, file)
+
+
 def load_graph(graph_name: str) -> MultiDiGraph:
     """Loads a graph from dataset.
 

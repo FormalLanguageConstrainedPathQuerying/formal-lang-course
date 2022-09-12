@@ -18,6 +18,3 @@ def test_graph_save():
         os.sep.join([test_dir_path, "sample_graph.dot"]),
     )
     os.remove(os.sep.join([test_dir_path, "actual_graph.dot"]))
-
-
-test_graph_save()

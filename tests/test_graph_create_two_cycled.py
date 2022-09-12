@@ -1,4 +1,6 @@
 import networkx
+import filecmp
+import os
 
 from project.graph_utils import *
 
@@ -6,6 +8,8 @@ from networkx.algorithms.isomorphism import (
     categorical_multiedge_match,
     categorical_node_match,
 )
+
+test_dir_path = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_create_labeled_two_cycles_graph():
@@ -23,3 +27,17 @@ def test_create_labeled_two_cycles_graph():
         node_match=categorical_node_match("label", None),
         edge_match=categorical_multiedge_match("label", None),
     )
+
+
+def test_create_labeled_two_cycles_graph_and_save():
+    build_and_save_two_cycle_labeled_graph(
+        first_cycle_size=3,
+        second_cycle_size=3,
+        edge_labels=("A", "B"),
+        file=os.sep.join([test_dir_path, "actual_graph.dot"]),
+    )
+    assert filecmp.cmp(
+        os.sep.join([test_dir_path, "actual_graph.dot"]),
+        os.sep.join([test_dir_path, "sample_graph.dot"]),
+    )
+    os.remove(os.sep.join([test_dir_path, "actual_graph.dot"]))
