@@ -1,8 +1,8 @@
 antlr4-python3-runtime
 black
 cfpq-data
+networkx
 pre-commit
 pydot
 pytest
 scipy
-networkx

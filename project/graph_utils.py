@@ -7,8 +7,8 @@ from typing.io import IO
 
 
 class GraphInfo(NamedTuple):
-    """Class representing necessary data from a graph.
-    """
+    """Class representing necessary data from a graph."""
+
     number_of_nodes: int
     number_of_edges: int
     edge_labels: Set[str]
@@ -20,9 +20,7 @@ def get_graph_info(graph: MultiDiGraph) -> GraphInfo:
     :param graph: Graph for info extraction.
     :return: Graph info.
     """
-    edge_labels = set(
-        label for _, _, label in graph.edges(data = 'label') if label
-    )
+    edge_labels = set(label for _, _, label in graph.edges(data="label") if label)
     return GraphInfo(
         graph.number_of_nodes(),
         graph.number_of_edges(),
@@ -31,9 +29,9 @@ def get_graph_info(graph: MultiDiGraph) -> GraphInfo:
 
 
 def build_two_cycle_labeled_graph(
-        first_cycle_size: int,
-        second_cycle_size: int,
-        edge_labels: Tuple[str, str],
+    first_cycle_size: int,
+    second_cycle_size: int,
+    edge_labels: Tuple[str, str],
 ) -> MultiDiGraph:
     """Builds a labeled graph with two cycles.
 
@@ -43,9 +41,9 @@ def build_two_cycle_labeled_graph(
     :return: Graph with two cycles connected by one node.
     """
     return cfpq_data.labeled_two_cycles_graph(
-        n = first_cycle_size,
-        m = second_cycle_size,
-        labels = edge_labels,
+        n=first_cycle_size,
+        m=second_cycle_size,
+        labels=edge_labels,
     )
 
 
