@@ -13,7 +13,11 @@ def get_graph_info(graph):
 
 
 def get_graph_info_by_name(name):
-    graph = cfpq_data.graph_from_csv(cfpq_data.download(name))
+    try:
+        data = cfpq_data.download(name)
+        graph = cfpq_data.graph_from_csv(data)
+    except FileNotFoundError:
+        raise ValueError(f"Wrong name, graph {name} doesn't exist")
     return get_graph_info(graph)
 
 

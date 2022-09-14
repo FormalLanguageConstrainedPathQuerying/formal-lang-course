@@ -33,6 +33,11 @@ def test_get_graph_info_loop():
     assert info.edge_labels == {"a"}
 
 
+def test_get_graph_info_bad_name():
+    with raises(ValueError):
+        get_graph_info_by_name("bad_name")
+
+
 def test_get_graph_info_skos():
     info = get_graph_info_by_name("skos")
 
