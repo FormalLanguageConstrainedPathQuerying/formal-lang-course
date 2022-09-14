@@ -13,6 +13,6 @@ def get_graph_info(name):
     )
 
 
-def generate_two_cycles_graph(n, m, labels, path):
-    graph = cfpq_data.labeled_two_cycles_graph(n, m, labels=labels)
+def generate_two_cycles_graph(fst_cycle_nodes_num, snd_cycle_nodes_num, labels, path):
+    graph = cfpq_data.labeled_two_cycles_graph(fst_cycle_nodes_num, snd_cycle_nodes_num, labels=labels)
     networkx.drawing.nx_pydot.write_dot(graph, path)

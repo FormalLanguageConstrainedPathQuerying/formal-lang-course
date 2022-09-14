@@ -7,8 +7,8 @@ def test_get_graph_info():
     info = get_graph_info("skos")
 
     # from: https: // jetbrains - research.github.io / CFPQ_Data / dataset / index.html
-    assert info.n_nodes == 144
-    assert info.n_edges == 252
+    assert info.number_of_nodes == 144
+    assert info.number_of_edges == 252
     assert info.edge_labels == {
         "type",
         "label",
