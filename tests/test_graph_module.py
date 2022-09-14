@@ -11,7 +11,7 @@ def teardown_module(module):
     print("\n\nend of test\n\n")
 
 
-def test_1():
+def test_create_and_save_graph():
     gm.create_graph(1, 3, ("1", "2"), "graph.dot")
     assert (
         open("graph.dot", "r").read()
@@ -33,7 +33,7 @@ def test_1():
     os.remove("graph.dot")
 
 
-def test_2():
+def test_get_info_of_graph():
     assert gm.get_graph_info("atom") == gm.GraphInfo(
         291,
         425,
