@@ -1,4 +1,5 @@
 import cfpq_data
+import networkx
 
 
 def load_graph(name: str):
@@ -35,6 +36,7 @@ def get_graph_info(name: str):
     ----------
     name : str
         The name of graph
+
     Returns
     -------
 
@@ -43,7 +45,7 @@ def get_graph_info(name: str):
     """
 
     g = load_graph(name)
-    # g = cfpq_data.labeled_cycle_graph(5, label="a")
+
     labels = []
 
     for _, _, lbl in g.edges(data=True):
@@ -52,4 +54,15 @@ def get_graph_info(name: str):
     return g.number_of_nodes(), g.number_of_edges(), labels
 
 
-print(get_graph_info("1"))
+def create_and_save_two_cycles_graph(n, m, labels, path):
+    """
+    Creates two cycles graph and saves it to the specified .dot file
+
+    :param n: Number of vertices in the first cycle
+    :param m: Number of vertices in the second cycle
+    :param labels: Names of labels
+    :param path: Path to file
+    :returns: None
+    """
+    g = cfpq_data.labeled_two_cycles_graph(n, m, labels=labels)
+    networkx.drawing.nx_pydot.write_dot(g, path)
