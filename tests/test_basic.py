@@ -1,18 +1,28 @@
+import os
+
 import pytest
-import project  # on import will print something from __init__ file
+from project.graphs_util import *
 
 
-def setup_module(module):
-    print("basic setup module")
+def test_works_as_expected_for_get_info_function():
+    result = get_info_by_graph_name("generations")
+    assert result[0] == 129
+    assert result[1] == 273
 
 
-def teardown_module(module):
-    print("basic teardown module")
-
-
-def test_1():
-    assert 1 + 1 == 2
-
-
-def test_2():
-    assert "1" + "1" == "11"
+def test_works_as_expected():
+    create_and_save_graph(1, 1, "a", "b", "file_for_test.dot")
+    assert (
+        open("file_for_test.dot", "r").read()
+        == """digraph  {
+1;
+0;
+2;
+1 -> 0  [key=0, label=a];
+0 -> 1  [key=0, label=a];
+0 -> 2  [key=0, label=b];
+2 -> 0  [key=0, label=b];
+}
+"""
+    )
+    os.remove("file_for_test.dot")
