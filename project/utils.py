@@ -1,5 +1,5 @@
 import cfpq_data
-import networkx.drawing.nx_pydot
+import networkx as nx
 from collections import namedtuple
 
 __all__ = [
@@ -34,7 +34,7 @@ def create_labeled_two_cycles_graph(
 
 
 def save_graph_as_dot(graph, path):
-    networkx.drawing.nx_pydot.write_dot(graph, path)
+    nx.drawing.nx_pydot.write_dot(graph, path)
 
 
 def create_and_save_labeled_two_cycles_graph(
