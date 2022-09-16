@@ -1,4 +1,3 @@
-import cfpq_data
 import networkx as nx
 
 

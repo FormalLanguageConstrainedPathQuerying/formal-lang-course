@@ -1,4 +1,3 @@
-import pytest
 from project import *
 import cfpq_data
 
