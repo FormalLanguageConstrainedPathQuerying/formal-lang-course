@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Check code style
+name: Run tests
 
 # Controls when the workflow will run
 on:
@@ -46,12 +46,7 @@ jobs:
           python -m pip install -r requirements.txt
           python -m pip list
 
-      # Install pre-commit from .pre-commit-config.yaml
-      - name: Install pre-commit
-        run: |
-          pre-commit install
-
       # Run pre-commit on all the files in the repo
-      - name: Run pre-commit
+      - name: Run tests
         run: |
-          pre-commit run --all-files --color always --verbose --show-diff-on-failure
+          python ./scripts/run_tests.py
