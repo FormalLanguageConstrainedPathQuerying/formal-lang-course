@@ -12,12 +12,12 @@ __all__ = [
     "create_and_save_labeled_two_cycles_graph",
 ]
 
-graph_info = namedtuple("graph_info", "number_of_nodes number_of_edges lables")
+graph_info = namedtuple("graph_info", "graph number_of_nodes number_of_edges lables")
 
 
 def get_graph_info(graph: nx.MultiDiGraph) -> graph_info:
     keys = set(label for _, _, label in graph.edges(data="label") if label)
-    return graph_info(graph.number_of_nodes(), graph.number_of_edges(), keys)
+    return graph_info(graph, graph.number_of_nodes(), graph.number_of_edges(), keys)
 
 
 def get_graph_info_by_name(graph_name: str) -> graph_info:
