@@ -12,7 +12,7 @@ __all__ = [
     "create_and_save_labeled_two_cycles_graph",
 ]
 
-graph_info = namedtuple("graph_info", "graph number_of_nodes number_of_edges lables")
+graph_info = namedtuple("graph_info", "graph number_of_nodes number_of_edges labels")
 
 
 def get_graph_info(graph: nx.MultiDiGraph) -> graph_info:
@@ -27,10 +27,10 @@ def get_graph_info_by_name(graph_name: str) -> graph_info:
 
 
 def create_labeled_two_cycles_graph(
-    first_cycle_size: int, second_cycle_size: int, lables: Tuple[str, str] = ("a", "b")
+    first_cycle_size: int, second_cycle_size: int, labels: Tuple[str, str] = ("a", "b")
 ) -> nx.MultiDiGraph:
     return cfpq_data.labeled_two_cycles_graph(
-        first_cycle_size, second_cycle_size, labels=lables
+        first_cycle_size, second_cycle_size, labels=labels
     )
 
 
@@ -39,9 +39,9 @@ def save_graph_as_dot(graph: nx.MultiDiGraph, path: str) -> None:
 
 
 def create_and_save_labeled_two_cycles_graph(
-    first_cycle_size: int, second_cycle_size: int, lables: Tuple[str, str], path: str
+    first_cycle_size: int, second_cycle_size: int, labels: Tuple[str, str], path: str
 ) -> None:
     save_graph_as_dot(
-        create_labeled_two_cycles_graph(first_cycle_size, second_cycle_size, lables),
+        create_labeled_two_cycles_graph(first_cycle_size, second_cycle_size, labels),
         path,
     )

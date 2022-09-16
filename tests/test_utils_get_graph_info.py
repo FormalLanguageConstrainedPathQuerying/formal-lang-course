@@ -7,4 +7,4 @@ def test_by_labeled_two_cycles_graph():
     info = get_graph_info(g)
     assert info.number_of_nodes == 72
     assert info.number_of_edges == 73
-    assert info.lables == {"a", "b"}
+    assert info.labels == {"a", "b"}

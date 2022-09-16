@@ -9,4 +9,4 @@ def test_by_bzip():
     expected = get_graph_info(bzip)
     assert result.number_of_nodes == expected.number_of_nodes
     assert result.number_of_edges == expected.number_of_edges
-    assert result.lables == expected.lables
+    assert result.labels == expected.labels
