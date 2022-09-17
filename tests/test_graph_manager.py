@@ -6,35 +6,6 @@ from networkx import nx_pydot
 from project.graph_manager import GraphManager
 
 
-def test_get_info():
-    actual = GraphManager.get_info("generations")
-    expected = (
-        129,
-        273,
-        [
-            "rest",
-            "first",
-            "onProperty",
-            "type",
-            "hasValue",
-            "someValuesFrom",
-            "equivalentClass",
-            "intersectionOf",
-            "inverseOf",
-            "range",
-            "hasSibling",
-            "sameAs",
-            "hasParent",
-            "hasSex",
-            "hasChild",
-            "versionInfo",
-            "oneOf",
-        ],
-    )
-
-    assert actual == expected
-
-
 def test_write_two_cycle_labeled_graph_to_dot():
     path = os.path.dirname(os.path.abspath(__file__)) + "/res"
     actual = path + "/actual.dot"

@@ -26,7 +26,7 @@ class GraphManager:
         labels = []
         [
             labels.append(edge[2]["label"])
-            for edge in graph.edges(data=True)
+            for edge in graph.edges.data()
             if (edge[2]["label"]) not in labels
         ]
         return labels
