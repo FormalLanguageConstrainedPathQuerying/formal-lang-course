@@ -59,6 +59,14 @@ def write_labeled_two_cycles_graph_as_dot(
 def from_graph_to_nfa(
     graph: MultiDiGraph, start_states: list[int] = None, final_states: list[int] = None
 ) -> EpsilonNFA:
+    """
+    Generates epsilon NFA from given graph
+
+    :param graph: graph to be converted
+    :param start_states: start states in generated NFA
+    :param final_states: final states in generated NFA
+    :return: EpsilonNFA object representing NFA from given graph
+    """
     enfa = EpsilonNFA()
 
     for u, v, ddict in graph.edges(data=True):
