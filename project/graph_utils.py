@@ -2,10 +2,16 @@ from dataclasses import dataclass
 
 from networkx import MultiDiGraph
 from networkx.drawing.nx_pydot import write_dot
+from pyformlang.finite_automaton import EpsilonNFA
 
 import cfpq_data
 
-__all__ = ["GraphData", "from_named_graph", "write_labeled_two_cycles_graph"]
+__all__ = [
+    "GraphData",
+    "from_named_graph_to_graph_data",
+    "write_labeled_two_cycles_graph_as_dot",
+    "from_graph_to_nfa",
+]
 
 
 @dataclass
@@ -15,7 +21,7 @@ class GraphData:
     labels: set[str]
 
 
-def from_graph(graph: MultiDiGraph) -> GraphData:
+def from_graph_to_graph_data(graph: MultiDiGraph) -> GraphData:
     return GraphData(
         graph.number_of_nodes(),
         graph.number_of_edges(),
@@ -23,7 +29,7 @@ def from_graph(graph: MultiDiGraph) -> GraphData:
     )
 
 
-def from_named_graph(name: str) -> GraphData:
+def from_named_graph_to_graph_data(name: str) -> GraphData:
     """
     Extracts graph data from named graph inside CFPQ Data Dataset
 
@@ -32,10 +38,10 @@ def from_named_graph(name: str) -> GraphData:
     :raises FileNotFoundError: if graph with given name not found inside CFPQ Data Dataset
     """
     path = cfpq_data.dataset.download(name)
-    return from_graph(cfpq_data.graph_from_csv(path))
+    return from_graph_to_graph_data(cfpq_data.graph_from_csv(path))
 
 
-def write_labeled_two_cycles_graph(
+def write_labeled_two_cycles_graph_as_dot(
     sizes: tuple[int, int], labels: tuple[str, str], path: str
 ):
     """
@@ -48,3 +54,21 @@ def write_labeled_two_cycles_graph(
     n, m = sizes
     graph = cfpq_data.labeled_two_cycles_graph(n, m, labels=labels)
     write_dot(graph, path)
+
+
+def from_graph_to_nfa(
+    graph: MultiDiGraph, start_states: list[int] = None, final_states: list[int] = None
+) -> EpsilonNFA:
+    enfa = EpsilonNFA()
+
+    for u, v, ddict in graph.edges(data=True):
+        label = ddict["label"]
+        enfa.add_transition(u, label, v)
+
+    for node in graph.nodes:
+        if node in start_states:
+            enfa.add_start_state(node)
+        if node in final_states:
+            enfa.add_final_state(node)
+
+    return enfa
