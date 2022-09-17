@@ -1,27 +1,36 @@
 import filecmp
+
+import pytest
+
 from project.__init__ import *
 import networkx as nx
 
 
-def test_create_two_cycles_graph():
-    graph_expected = cfpq_data.labeled_two_cycles_graph(40, 40, labels=("a", "b"))
+@pytest.mark.parametrize(
+    "two_cycles_graph", [[40, 40, "a", "b"]], indirect=["two_cycles_graph"]
+)
+def test_comparison_two_cycles_graph(two_cycles_graph):
     graph = create_two_cycles_graph(40, 40, ("a", "b"))
     em = nx.algorithms.isomorphism.categorical_multiedge_match("label", None)
-    assert nx.is_isomorphic(graph, graph_expected, edge_match=em)
+    assert nx.is_isomorphic(graph, two_cycles_graph, edge_match=em)
 
 
-def test_save_graph_in_dot():
-    graph_expected = cfpq_data.labeled_two_cycles_graph(40, 40, labels=("a", "b"))
-    save_in_dot(graph_expected)
+@pytest.mark.parametrize(
+    "two_cycles_graph", [[40, 40, "a", "b"]], indirect=["two_cycles_graph"]
+)
+def test_save_graph_in_dot(two_cycles_graph):
+    save_in_dot(two_cycles_graph)
     assert filecmp.cmp(
         str(shared.ROOT) + os.sep + "output" + os.sep + "graph.dot",
         str(shared.ROOT) + os.sep + "output" + os.sep + "expected_graph.dot",
     )
 
 
-def test_get_graph_info_by_graph():
-    graph = cfpq_data.labeled_two_cycles_graph(3, 3, labels=("a", "b"))
-    info_by_graph = get_info_by_graph(graph)
+@pytest.mark.parametrize(
+    "two_cycles_graph", [[3, 3, "a", "b"]], indirect=["two_cycles_graph"]
+)
+def test_get_graph_info_by_graph(two_cycles_graph):
+    info_by_graph = get_info_by_graph(two_cycles_graph)
     assert info_by_graph.number_of_nodes == 7
     assert info_by_graph.number_of_edges == 8
     assert info_by_graph.labels == {"a", "b"}
