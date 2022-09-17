@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from networkx import MultiDiGraph
 from networkx.drawing.nx_pydot import write_dot
-from pyformlang.finite_automaton import EpsilonNFA
+from pyformlang.finite_automaton import EpsilonNFA, State, Symbol
 
 import cfpq_data
 
@@ -63,12 +63,12 @@ def from_graph_to_nfa(
 
     for u, v, ddict in graph.edges(data=True):
         label = ddict["label"]
-        enfa.add_transition(u, label, v)
+        enfa.add_transition(State(u), Symbol(label), State(v))
 
     for node in graph.nodes:
-        if node in start_states:
-            enfa.add_start_state(node)
-        if node in final_states:
-            enfa.add_final_state(node)
+        if not start_states or node in start_states:
+            enfa.add_start_state(State(node))
+        if not final_states or node in final_states:
+            enfa.add_final_state(State(node))
 
     return enfa
