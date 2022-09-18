@@ -4,5 +4,6 @@ cfpq-data
 networkx
 pre-commit
 pydot
+pyformlang
 pytest
 scipy
