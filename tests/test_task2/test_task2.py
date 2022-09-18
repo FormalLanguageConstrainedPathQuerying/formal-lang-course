@@ -22,6 +22,18 @@ def test_regex_to_graph_one_letter():
     assert dfa.is_equivalent_to(expected)
 
 
+def test_regex_to_graph_long_lable():
+    dfa = regex_to_dfa(Regex("long_lable"))
+    expected = create_automaton(
+        transitions=[(0, "long_lable", 1)],
+        start_states=[0],
+        final_states=[1],
+        automaton=DeterministicFiniteAutomaton(),
+    )
+
+    assert dfa.is_equivalent_to(expected)
+
+
 def test_regex_to_graph_two_letter():
     dfa = regex_to_dfa(Regex("a b"))
     expected = create_automaton(
