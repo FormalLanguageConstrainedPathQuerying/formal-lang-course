@@ -16,18 +16,16 @@ def create_graph(
 ):
     """Creates a graph with two cycles and labeled edges. After that saves it into DOT file.
 
-    Parameters
-    ----------
-    nodes_first : Union[int, Iterable[Any]]
+    :param nodes_first : Union[int, Iterable[Any]]
         The number of nodes in the first cycle.
 
-    nodes_second : Union[int, Iterable[Any]]
+    :param nodes_second : Union[int, Iterable[Any]]
         The number of nodes in the second cycle.
 
-    labels : Tuple[str, str]
+    :param labels : Tuple[str, str]
         Labels that will be used to mark the edges of the graph.
 
-    filepath : str
+    :param filepath : str
         Path to file.
     """
     graph = labeled_two_cycles_graph(nodes_first, nodes_second, labels=labels)
@@ -38,19 +36,13 @@ def create_graph(
 def get_graph_by_name(name: str) -> nx.MultiDiGraph:
     """Loads graph and returns it.
 
-    Parameters
-    ----------
-    name : str
+    :param name : str
         Name of the file.
 
-    Raises
-    ----------
-    FileNotFoundError
+    :raise FileNotFoundError
         If graph with this name doesn't exist
 
-    Returns
-    -------
-    g : MultiDiGraph
+    :return g : MultiDiGraph
         Loaded graph.
     """
     path_to_graph = cfpq_data.download(name)
@@ -60,14 +52,10 @@ def get_graph_by_name(name: str) -> nx.MultiDiGraph:
 def get_graph_info(name: str):
     """Loads graph and returns it.
 
-    Parameters
-    ----------
-    name : str
+    :param name : str
         Name of the file.
 
-    Returns
-    -------
-    g : GraphInfo
+    :return g : GraphInfo
         Actual information about graph.
     """
     graph = get_graph_by_name(name)

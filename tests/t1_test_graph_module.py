@@ -1,6 +1,6 @@
 import os
 
-import project.graph_module as gm
+import project.t1_graph_module as gm
 
 
 def setup_module(module):

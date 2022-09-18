@@ -3,5 +3,6 @@ black
 cfpq-data
 pre-commit
 pydot
+pyformlang~=0.1.26
 pytest
 scipy
