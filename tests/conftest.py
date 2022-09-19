@@ -55,6 +55,9 @@ def expected_nfa():
     a = Symbol("a")
     b = Symbol("b")
 
+    exp_nfa.add_start_state(state0)
+    exp_nfa.add_final_state(state4)
+
     exp_nfa.add_transition(state0, a, state1)
     exp_nfa.add_transition(state0, b, state2)
     exp_nfa.add_transition(state1, a, state0)

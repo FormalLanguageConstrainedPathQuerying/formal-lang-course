@@ -4,10 +4,11 @@ from pyformlang.regular_expression import PythonRegex
 from project.__init__ import *
 
 
-def test_correctness_min_dfa_by_regex():
+def test_equivalence_min_dfa_by_regex(expected_dfa):
     regex = PythonRegex("ac*|ded")
     dfa = create_min_dfa_by_regex(regex)
 
+    assert dfa.is_equivalent_to(expected_dfa)
     assert dfa.accepts("acccc")
     assert dfa.accepts("a")
     assert dfa.accepts("ded")
@@ -38,8 +39,7 @@ def test_create_nfa_by_graph_without_st_fin_states(two_cycles_graph):
 @pytest.mark.parametrize(
     "two_cycles_graph", [[1, 3, "a", "b"]], indirect=["two_cycles_graph"]
 )
-def test_compare_nfa(two_cycles_graph, expected_nfa):
-    nfa = create_nfa_by_graph(two_cycles_graph)
-    set_edges = set(nfa._transition_function.get_edges())
-    set_edges_expected = set(expected_nfa._transition_function.get_edges())
-    assert set_edges == set_edges_expected
+def test_equivalence_nfa_by_graph(two_cycles_graph, expected_nfa):
+    nfa = create_nfa_by_graph(two_cycles_graph, [0], [4])
+
+    assert nfa.is_equivalent_to(expected_nfa)
