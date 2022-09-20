@@ -27,5 +27,4 @@ def test_regex_str_to_dfa_binary_mess_ended_by_zero():
     assert dfa.is_deterministic
     for i in range(0, 42, 2):
         assert dfa.accepts("{0:b}".format(i))
-    assert not dfa.accepts("1")
-    assert not dfa.accepts("1001")
+        assert not dfa.accepts("{0:b}".format(i + 1))

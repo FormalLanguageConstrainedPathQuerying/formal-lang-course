@@ -7,7 +7,7 @@ import networkx as nx
 
 
 def regex_str_to_dfa(regex_str: str) -> DeterministicFiniteAutomaton:
-    return Regex(regex_str).to_epsilon_nfa().to_deterministic().minimize()
+    return Regex(regex_str).to_epsilon_nfa().minimize()
 
 
 def graph_to_nfa(
@@ -36,4 +36,4 @@ def graph_to_nfa(
     for i in final_states:
         nfa.add_final_state(i)
 
-    return nfa.minimize()
+    return nfa
