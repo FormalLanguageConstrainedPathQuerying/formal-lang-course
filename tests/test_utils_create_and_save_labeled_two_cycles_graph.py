@@ -1,6 +1,4 @@
-import pytest
 from project import *
-import cfpq_data
 import filecmp
 import os.path
 

@@ -1,7 +1,7 @@
-import cfpq_data
+import networkx as nx
 
 
-def find_cycles(graph):
+def find_cycles(graph: nx.MultiDiGraph) -> list:
     todo = set(graph.nodes)
     cycles = []
 
