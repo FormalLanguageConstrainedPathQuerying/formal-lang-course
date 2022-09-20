@@ -1,4 +1,4 @@
-from project.graph_utils import GraphData, from_named_graph
+from project.graph_utils import GraphData, from_named_graph_to_graph_data
 
 
 def test_from_named_graph():
@@ -29,5 +29,5 @@ def test_from_named_graph():
             "example",
         },
     )
-    actual_graph_data = from_named_graph("skos")
+    actual_graph_data = from_named_graph_to_graph_data("skos")
     assert actual_graph_data == expected_graph_data
