@@ -3,6 +3,8 @@ import pytest
 
 from project.graph_tools import *
 
+task_1_tests_dir_path = os.path.dirname(os.path.abspath(__file__))
+
 
 def test_load_graph_with_bad_input():
     with pytest.raises(FileNotFoundError):
@@ -33,7 +35,10 @@ def test_create_and_save_two_cycles_graph_1_0():
 def test_create_and_save_two_cycles_graph_1_1():
     create_and_save_two_cycles_graph(1, 1, ["a1", "a2"], "test.dot")
 
-    expected = open("expected/two_cycles_1_1_expected.dot", "r").read()
+    expected = open(
+        os.sep.join([task_1_tests_dir_path, "expected/two_cycles_1_1_expected.dot"]),
+        "r",
+    ).read()
 
     assert open("test.dot", "r").read() == expected
     os.remove("test.dot")
@@ -42,7 +47,10 @@ def test_create_and_save_two_cycles_graph_1_1():
 def test_create_and_save_two_cycles_graph_1_2():
     create_and_save_two_cycles_graph(1, 2, ["bas", "sebas"], "test.dot")
 
-    expected = open("expected/two_cycles_1_2_expected.dot", "r").read()
+    expected = open(
+        os.sep.join([task_1_tests_dir_path, "expected/two_cycles_1_2_expected.dot"]),
+        "r",
+    ).read()
 
     assert open("test.dot", "r").read() == expected
     os.remove("test.dot")
@@ -54,7 +62,9 @@ def test_get_graph_info_travel():
     assert nodes_num == 131
     assert edges_num == 277
 
-    with open("expected/travel_graph_labels.txt") as file:
+    with open(
+        os.sep.join([task_1_tests_dir_path, "expected/travel_graph_labels.txt"])
+    ) as file:
         expected_labels = [line.strip() for line in file]
 
     assert labels == expected_labels
