@@ -38,7 +38,7 @@ class BooleanDecomposition:
         """
         :return: adjacency matrix of states corresponding to transitive closure
         """
-        adjacency_matrix = sum(self._symbols_to_matrix.values())
+        adjacency_matrix = sum(self._symbols_to_matrix.values(), coo_matrix((self.states_count(), self.states_count())))
 
         last_values_count = 0
         while last_values_count != adjacency_matrix.nnz:
