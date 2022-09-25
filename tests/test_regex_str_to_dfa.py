@@ -1,4 +1,4 @@
-from project.dfa_utils import *
+from project import *
 import pytest
 from pyformlang.regular_expression import MisformedRegexError
 import networkx as nx

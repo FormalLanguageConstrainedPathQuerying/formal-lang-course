@@ -1,4 +1,4 @@
-from project.dfa_utils import *
+from project import *
 import networkx as nx
 import pytest
 
