@@ -4,8 +4,13 @@ from pyformlang.regular_expression import Regex
 from pyformlang.finite_automaton import DeterministicFiniteAutomaton, EpsilonNFA, State
 from scipy.sparse import coo_matrix, kron, find
 
-__all__ = ["from_regex_to_dfa", "intersect_enfa", "boolean_decompose_enfa", "BooleanDecomposition",
-           "boolean_decompose_enfa"]
+__all__ = [
+    "from_regex_to_dfa",
+    "intersect_enfa",
+    "boolean_decompose_enfa",
+    "BooleanDecomposition",
+    "boolean_decompose_enfa",
+]
 
 
 class BooleanDecomposition:
@@ -13,7 +18,9 @@ class BooleanDecomposition:
     Class representing boolean decomposition of finite automata
     """
 
-    def __init__(self, symbols_to_matrix: dict[Symbol, coo_matrix], states: list[State]):
+    def __init__(
+        self, symbols_to_matrix: dict[Symbol, coo_matrix], states: list[State]
+    ):
         """
         :param symbols_to_matrix: dict with mapping symbol on edges to adjacency matrix of these edges
         :param states: states of finite automata
@@ -24,6 +31,20 @@ class BooleanDecomposition:
         states_num = len(states)
         for matrix in symbols_to_matrix.values():
             assert (states_num, states_num) == matrix.get_shape()
+
+    def __eq__(self, other):
+        self_dict = self.to_dict()
+        other_dict = other.to_dict()
+        if not set(self.states()) == set(other.states()):
+            return False
+        if not set(self_dict.keys()) == set(other_dict.keys()):
+            return False
+        for i in self_dict.keys():
+            nonzero_self = set(zip(*self_dict[i].nonzero()))
+            nonzero2_other = set(zip(*other_dict[i].nonzero()))
+            if not nonzero_self == nonzero2_other:
+                return False
+        return True
 
     def states(self) -> list[State]:
         return self._states_list
@@ -38,7 +59,10 @@ class BooleanDecomposition:
         """
         :return: adjacency matrix of states corresponding to transitive closure
         """
-        adjacency_matrix = sum(self._symbols_to_matrix.values(), coo_matrix((self.states_count(), self.states_count())))
+        adjacency_matrix = sum(
+            self._symbols_to_matrix.values(),
+            coo_matrix((self.states_count(), self.states_count())),
+        )
 
         last_values_count = 0
         while last_values_count != adjacency_matrix.nnz:
@@ -61,6 +85,7 @@ def from_regex_to_dfa(regex: Regex) -> DeterministicFiniteAutomaton:
 def boolean_decompose_enfa(enfa: EpsilonNFA) -> BooleanDecomposition:
     """
     Produce boolean decomposition of EpsilonNFA
+
     :param enfa: EpsilonNFA to be decomposed
     :return: boolean decomposition of EpsilonNFA
     """
@@ -70,11 +95,15 @@ def boolean_decompose_enfa(enfa: EpsilonNFA) -> BooleanDecomposition:
         for (symbol, vs) in symbol_and_vs.items():
             if symbol not in boolean_decompose:
                 boolean_decompose[symbol] = list()
-            if enfa.is_deterministic():  # vs is one state in this case
-                boolean_decompose[symbol].append((states_data.index(u), states_data.index(vs)))
+            if not type(vs) is set:  # vs is one state in this case
+                boolean_decompose[symbol].append(
+                    (states_data.index(u), states_data.index(vs))
+                )
             else:
                 for v in vs:
-                    boolean_decompose[symbol].append((states_data.index(u), states_data.index(v)))
+                    boolean_decompose[symbol].append(
+                        (states_data.index(u), states_data.index(v))
+                    )
 
     states_num = len(enfa.states)
     coo_matrices = dict()
@@ -82,13 +111,16 @@ def boolean_decompose_enfa(enfa: EpsilonNFA) -> BooleanDecomposition:
         row = np.array([i for (i, _) in edges])
         col = np.array([j for (_, j) in edges])
         data = np.array([1 for _ in range(len(edges))])
-        coo_matrices[symbol] = coo_matrix((data, (row, col)), shape=(states_num, states_num))
+        coo_matrices[symbol] = coo_matrix(
+            (data, (row, col)), shape=(states_num, states_num)
+        )
 
     return BooleanDecomposition(coo_matrices, states_data)
 
 
-def kron_boolean_decompositions(decomposition1: BooleanDecomposition,
-                                decomposition2: BooleanDecomposition) -> BooleanDecomposition:
+def kron_boolean_decompositions(
+    decomposition1: BooleanDecomposition, decomposition2: BooleanDecomposition
+) -> BooleanDecomposition:
     """
     Produces kronecker production between matrices with same symbols in boolean decompositions
     :return: boolean decomposition of intersection of finite automatas, represented by decomposition1 and
@@ -103,12 +135,16 @@ def kron_boolean_decompositions(decomposition1: BooleanDecomposition,
         if symbol in dict1:
             coo_matrix1 = dict1[symbol]
         else:
-            coo_matrix1 = coo_matrix((decomposition1.states_count(), decomposition1.states_count()))
+            coo_matrix1 = coo_matrix(
+                (decomposition1.states_count(), decomposition1.states_count())
+            )
 
         if symbol in dict2:
             coo_matrix2 = dict2[symbol]
         else:
-            coo_matrix2 = coo_matrix((decomposition2.states_count(), decomposition2.states_count()))
+            coo_matrix2 = coo_matrix(
+                (decomposition2.states_count(), decomposition2.states_count())
+            )
 
         intersection_decomposition[symbol] = kron(coo_matrix1, coo_matrix2)
 
@@ -128,7 +164,9 @@ def intersect_enfa(enfa1: EpsilonNFA, enfa2: EpsilonNFA) -> EpsilonNFA:
     decomposition1 = boolean_decompose_enfa(enfa1)
     decomposition2 = boolean_decompose_enfa(enfa2)
 
-    intersection_decomposition = kron_boolean_decompositions(decomposition1, decomposition2)
+    intersection_decomposition = kron_boolean_decompositions(
+        decomposition1, decomposition2
+    )
 
     start_states = list()
     for state1 in enfa1.start_states:
@@ -146,7 +184,9 @@ def intersect_enfa(enfa1: EpsilonNFA, enfa2: EpsilonNFA) -> EpsilonNFA:
         (rows, cols, _) = find(matrix)
         assert len(cols) == len(rows)
         for i in range(len(cols)):
-            intersection_nfa.add_transition(intersection_states[rows[i]], symbol, intersection_states[cols[i]])
+            intersection_nfa.add_transition(
+                intersection_states[rows[i]], symbol, intersection_states[cols[i]]
+            )
 
     for start_state in start_states:
         intersection_nfa.add_start_state(start_state)

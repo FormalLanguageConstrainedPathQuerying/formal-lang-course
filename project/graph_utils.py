@@ -11,12 +11,16 @@ __all__ = [
     "from_named_graph_to_graph_data",
     "write_labeled_two_cycles_graph_as_dot",
     "from_graph_to_nfa",
-    "regular_path_query"
+    "regular_path_query",
 ]
 
 from pyformlang.regular_expression import Regex
 
-from project.automata_utils import from_regex_to_dfa, intersect_enfa, boolean_decompose_enfa
+from project.automata_utils import (
+    from_regex_to_dfa,
+    intersect_enfa,
+    boolean_decompose_enfa,
+)
 
 
 @dataclass
@@ -47,7 +51,7 @@ def from_named_graph_to_graph_data(name: str) -> GraphData:
 
 
 def write_labeled_two_cycles_graph_as_dot(
-        sizes: tuple[int, int], labels: tuple[str, str], path: str
+    sizes: tuple[int, int], labels: tuple[str, str], path: str
 ):
     """
     Generates cfpq_data.labeled_two_cycles_graph in file with given sizes of cycles and given labels on edges
@@ -62,7 +66,7 @@ def write_labeled_two_cycles_graph_as_dot(
 
 
 def from_graph_to_nfa(
-        graph: MultiDiGraph, start_states: list[any] = None, final_states: list[any] = None
+    graph: MultiDiGraph, start_states: list[any] = None, final_states: list[any] = None
 ) -> EpsilonNFA:
     """
     Generates epsilon NFA from given graph
@@ -87,8 +91,12 @@ def from_graph_to_nfa(
     return enfa
 
 
-def regular_path_query(regex: Regex, graph: MultiDiGraph, start_states: list[any] = None,
-                       final_states: list[any] = None) -> set[tuple[any, any]]:
+def regular_path_query(
+    regex: Regex,
+    graph: MultiDiGraph,
+    start_states: list[any] = None,
+    final_states: list[any] = None,
+) -> set[tuple[any, any]]:
     """
     Performs rpq (regular path query) in graph with regex
     :param regex: regex to define regular path query
@@ -109,14 +117,22 @@ def regular_path_query(regex: Regex, graph: MultiDiGraph, start_states: list[any
 
     boolean_decompose_intersection = boolean_decompose_enfa(intersection_enfa)
     intersection_states = boolean_decompose_intersection.states()
-    transitive_closure_of_intersection = boolean_decompose_intersection.transitive_closure()
-    transitive_closure_connected_states = zip(*transitive_closure_of_intersection.nonzero())
+    transitive_closure_of_intersection = (
+        boolean_decompose_intersection.transitive_closure()
+    )
+    transitive_closure_connected_states = zip(
+        *transitive_closure_of_intersection.nonzero()
+    )
     results = set()
     for (i, j) in transitive_closure_connected_states:
         (graph_start_state, regex_start_state) = intersection_states[i].value
         (graph_final_state, regex_final_state) = intersection_states[j].value
-        if graph_start_state in start_states and graph_final_state in final_states \
-                and regex_start_state in regex_as_enfa.start_states and regex_final_state in regex_as_enfa.final_states:
+        if (
+            graph_start_state in start_states
+            and graph_final_state in final_states
+            and regex_start_state in regex_as_enfa.start_states
+            and regex_final_state in regex_as_enfa.final_states
+        ):
             results.add((graph_start_state, graph_final_state))
 
     return results
