@@ -120,12 +120,3 @@ def regular_path_query(regex: Regex, graph: MultiDiGraph, start_states: list[any
             results.add((graph_start_state, graph_final_state))
 
     return results
-
-
-graph = MultiDiGraph()
-graph.add_node(0)
-graph.add_node(1)
-graph.add_node(2)
-graph.add_edge(0, 1, label="a")
-graph.add_edge(1, 2, label="b")
-print(regular_path_query(Regex("aa*b"), graph))
