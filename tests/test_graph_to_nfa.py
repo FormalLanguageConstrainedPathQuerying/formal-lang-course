@@ -17,12 +17,7 @@ def test_graph_to_nfa_nonexistent_start():
 def test_graph_to_nfa():
     for graph in all_test_graphs:
         nfa = graph_to_nfa(graph.graph, graph.start_states, graph.final_states)
-        assert nfa.is_equivalent_to(
+        assert nfa.minimize().is_equivalent_to(
             regex_str_to_dfa(graph.reg)
         ), f'{graph.name} failed, not equal to "{graph.reg}"'
-        for accept in graph.accepts:
-            assert nfa.accepts(accept), f'{graph.name} failed, "{accept}" not accepted'
-        for reject in graph.rejects:
-            assert not nfa.accepts(
-                reject
-            ), f'{graph.name} failed, "{reject}" not rejected'
+        acception_test(nfa, graph)

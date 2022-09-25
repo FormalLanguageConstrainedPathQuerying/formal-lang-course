@@ -1,8 +1,5 @@
-from cProfile import label
 from collections import namedtuple
 import networkx as nx
-
-from project.dfa_utils import graph_to_nfa
 
 test_graph = namedtuple(
     "test_graph", "name reg graph start_states final_states accepts rejects"
@@ -67,3 +64,14 @@ def banana_ananas() -> test_graph:
 
 
 all_test_graphs = [power_two(), binary_mess_ended_by_zero(), banana_ananas()]
+
+
+def acception_test(acceptable, graph: test_graph):
+    for accept in graph.accepts:
+        assert acceptable.accepts(
+            accept
+        ), f'{graph.name} failed, "{accept}" not accepted'
+    for reject in graph.rejects:
+        assert not acceptable.accepts(
+            reject
+        ), f'{graph.name} failed, "{reject}" not rejected'
