@@ -1,5 +1,5 @@
-from project import *
-from test_graphs import *
+from project import regex_str_to_dfa
+from test_graphs import all_test_graphs, acception_test
 import pytest
 from pyformlang.regular_expression import MisformedRegexError
 

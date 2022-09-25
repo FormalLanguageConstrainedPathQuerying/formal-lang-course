@@ -1,5 +1,5 @@
-from project import *
-from test_graphs import *
+from project import graph_to_nfa
+from test_graphs import binary_mess_ended_by_zero, all_test_graphs, acception_test
 import pytest
 
 reg_binary_mess_ended_by_zero = "(0|1)* 0"

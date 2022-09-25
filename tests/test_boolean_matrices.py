@@ -1,5 +1,11 @@
-from project import *
-from test_graphs import *
+from project import (
+    graph_to_nfa,
+    nfa_to_boolean_matrices,
+    boolean_matrices_to_nfa,
+    regex_str_to_dfa,
+    cross_boolean_matrices,
+)
+from test_graphs import all_test_graphs
 from collections import namedtuple
 
 
