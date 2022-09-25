@@ -2,7 +2,7 @@ import filecmp
 import networkx as nx
 from pytest import raises
 
-from project.utilities import (
+from project.graph_utils import (
     get_graph_info,
     get_graph_info_by_name,
     generate_two_cycles_graph,
