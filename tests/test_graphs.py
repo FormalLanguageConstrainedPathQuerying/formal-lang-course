@@ -31,11 +31,57 @@ def power_two() -> test_graph:
 
     accepts = []
     rejects = []
-    for i in range(2, 10, 2):
+    for i in range(2, 24, 2):
         accepts.append("{0:b}".format(2**i))
         rejects.append("{0:b}".format(i + 1))
 
     return test_graph("power_two", "1 (0)*", graph, {0}, {1}, accepts, rejects)
+
+
+def zero_one() -> test_graph:
+    graph = nx.MultiDiGraph()
+    graph.add_edge(0, 1, label="0")
+    graph.add_edge(1, 0, label="1")
+
+    accepts = set()
+    accepts.add("0")
+    rejects = []
+
+    for i in range(1, 12):
+        j = 0
+        for g in range(1, i * 2 + 1, 2):
+            j += 2**g
+        accepts.add("{0:b}".format(j))
+        accepts.add("{0:b}".format(j >> 1))
+        accepts.add("0" + "{0:b}".format(j))
+        accepts.add("0" + "{0:b}".format(j >> 1))
+
+    counter = 0
+    ind = 0
+    while counter < 64:
+        i = "{0:b}".format(ind)
+        if not i in accepts:
+            rejects.append(i)
+            counter += 1
+        ind += 1
+    while counter < 128:
+        i = "{0:b}".format(ind)
+        if not i in accepts:
+            rejects.append(i)
+            counter += 1
+        ind += 3
+
+    accepts = list(accepts)
+
+    return test_graph(
+        "zero_one",
+        "((0|(1 0)) (((1 0)*)|((1 0)* 1)))|1",
+        graph,
+        {0, 1},
+        {0, 1},
+        accepts,
+        rejects,
+    )
 
 
 def banana_ananas() -> test_graph:
@@ -63,7 +109,12 @@ def banana_ananas() -> test_graph:
     return test_graph("banana_ananas", reg_str, graph, {0}, {6, 7}, accepts, rejects)
 
 
-all_test_graphs = [power_two(), binary_mess_ended_by_zero(), banana_ananas()]
+all_test_graphs = [
+    power_two(),
+    binary_mess_ended_by_zero(),
+    zero_one(),
+    banana_ananas(),
+]
 
 
 def acception_test(acceptable, graph: test_graph):

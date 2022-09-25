@@ -1,5 +1,5 @@
 from project import *
-from tests.test_graphs import *
+from test_graphs import *
 import pytest
 from pyformlang.regular_expression import MisformedRegexError
 
