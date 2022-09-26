@@ -16,10 +16,10 @@ def nfa_to_boolean_matrices(
 
     if states_count == 0:
         return nfa_as_matrix(
-            dok_matrix((1, 1), dtype=bool),
+            matrix,
             0,
-            dok_matrix((1, 1), dtype=bool),
-            dok_matrix((1, 1), dtype=bool),
+            dok_matrix((1, 0), dtype=bool),
+            dok_matrix((1, 0), dtype=bool),
         )
 
     states = {old: ind for ind, old in enumerate(nfa.states)}
