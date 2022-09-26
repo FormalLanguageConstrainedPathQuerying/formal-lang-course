@@ -21,8 +21,6 @@ def create_nfa_by_graph(graph, start_nodes=None, final_nodes=None):
     :param start_nodes: set(Symbol)
     :return: NondeterministicFiniteAutomaton
     """
-    print(start_nodes)
-    print(final_nodes)
     nfa = NondeterministicFiniteAutomaton.from_networkx(graph)
     if start_nodes is not None:
         for node in start_nodes:

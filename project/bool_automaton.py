@@ -4,9 +4,6 @@ from scipy.sparse import dok_matrix, kron
 
 class BoolAutomaton:
     def __init__(self, automaton: FiniteAutomaton):
-        self.__state_by_number = {
-            index: state for index, state in enumerate(automaton.states)
-        }
         self.start_states = automaton.start_states
         self.final_states = automaton.final_states
         self.number_of_states = len(automaton.states)
@@ -70,13 +67,10 @@ class BoolAutomaton:
 
     def transitive_closure(self):
         adj_matrix = sum(self.edges.values())
-        nonzero_elms = 0
-        while nonzero_elms != adj_matrix.nnz:
+        prev_nnz = adj_matrix.nnz
+        cur_nnz = 0
+        while prev_nnz != cur_nnz:
             adj_matrix += adj_matrix @ adj_matrix
-            nonzero_elms = adj_matrix.nnz
+            prev_nnz = cur_nnz
+            cur_nnz = adj_matrix.nnz
         return adj_matrix
-
-    def get_state_by_number(self, n: int):
-        if n in self.__state_by_number.keys():
-            return self.__state_by_number.get(n)
-        return n

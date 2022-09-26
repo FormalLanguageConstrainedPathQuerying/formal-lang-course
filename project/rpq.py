@@ -3,6 +3,15 @@ from project.automata_utils import *
 
 
 def rpq(graph, regex, start_states=None, final_states=None):
+    """
+    Calculates which states can be reached by a given regex.
+
+    :param graph: MultiDiGraph
+    :param regex: PythonRegex
+    :param start_states: set()
+    :param final_states: set()
+    :return: set() of initial and final state pairs
+    """
     bool_by_graph = BoolAutomaton(
         create_nfa_by_graph(graph, start_nodes=start_states, final_nodes=final_states)
     )
@@ -15,12 +24,8 @@ def rpq(graph, regex, start_states=None, final_states=None):
         if i in bool_intersection.start_states and j in bool_intersection.final_states:
             result.add(
                 (
-                    bool_by_graph.get_state_by_number(
-                        i // bool_by_regex.number_of_states
-                    ),
-                    bool_by_graph.get_state_by_number(
-                        j // bool_by_regex.number_of_states
-                    ),
+                    i // bool_by_regex.number_of_states,
+                    j // bool_by_regex.number_of_states,
                 )
             )
     return result
