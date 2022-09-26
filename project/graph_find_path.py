@@ -20,12 +20,12 @@ def graph_find_path(
 
     tc = transitive_closure(cross)
 
+    start_vector_array = cross.start_vector.toarray()
+    final_vector_array = cross.final_vector.toarray()
+
     res = set()
     for start, final in zip(*tc.nonzero()):
-        if (
-            cross.start_vector.toarray()[0, start]
-            and cross.final_vector.toarray()[0, final]
-        ):
+        if start_vector_array[0, start] and final_vector_array[0, final]:
             res.add((start // reg_bm.states_count, final // reg_bm.states_count))
 
     return res
