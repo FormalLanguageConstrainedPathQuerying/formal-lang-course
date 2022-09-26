@@ -6,6 +6,13 @@ test_graph = namedtuple(
 )
 
 
+def empty_graph() -> test_graph:
+    graph = nx.MultiDiGraph()
+    accepts = []
+    rejects = []
+    return test_graph("empty_graph", "", graph, None, None, accepts, rejects)
+
+
 def binary_mess_ended_by_zero() -> test_graph:
     graph = nx.MultiDiGraph()
     graph.add_edge(0, 0, label="1")
@@ -110,6 +117,7 @@ def banana_ananas() -> test_graph:
 
 
 all_test_graphs = [
+    empty_graph(),
     power_two(),
     binary_mess_ended_by_zero(),
     zero_one(),

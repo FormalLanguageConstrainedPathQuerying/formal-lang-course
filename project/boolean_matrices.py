@@ -13,6 +13,15 @@ def nfa_to_boolean_matrices(
 ) -> nfa_as_matrix:
     matrix = {}
     states_count = len(nfa.states)
+
+    if states_count == 0:
+        return nfa_as_matrix(
+            dok_matrix((1, 1), dtype=bool),
+            0,
+            dok_matrix((1, 1), dtype=bool),
+            dok_matrix((1, 1), dtype=bool),
+        )
+
     states = {old: ind for ind, old in enumerate(nfa.states)}
     for start, final_dict in nfa.to_dict().items():
         for label, final_states in final_dict.items():
@@ -58,6 +67,9 @@ def cross_boolean_matrices(
 
 
 def transitive_closure(matrix: nfa_as_matrix) -> dok_matrix:
+    if len(matrix.matrices) == 0:
+        return dok_matrix((matrix.states_count, matrix.states_count), dtype=bool)
+
     res = sum(matrix.matrices.values())
     prev_nnz = None
     curr_nnz = res.nnz

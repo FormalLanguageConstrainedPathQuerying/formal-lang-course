@@ -14,9 +14,15 @@ def test_nfa_to_boolean_matrices():
         nfa_before = graph_to_nfa(graph.graph, graph.start_states, graph.final_states)
         matrix = nfa_to_boolean_matrices(nfa_before)
         nfa_after = boolean_matrices_to_nfa(matrix)
-        assert nfa_before.is_equivalent_to(
-            nfa_after
-        ), f"{graph.name} failed, nfa after boolean matrix is different from before"
+
+        if nfa_before.is_empty():
+            assert (
+                nfa_after.is_empty()
+            ), f"{graph.name} failed, nfa after boolean matrix is different from before"
+        else:
+            assert nfa_before.is_equivalent_to(
+                nfa_after
+            ), f"{graph.name} failed, nfa after boolean matrix is different from before"
 
 
 def test_cross_boolean_matrices():

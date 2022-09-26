@@ -1,6 +1,6 @@
 from project import graph_find_path
 import networkx as nx
-from test_graphs import all_test_graphs, banana_ananas
+from test_graphs import all_test_graphs, banana_ananas, power_two, empty_graph
 
 
 def generate_graph_by_word(word: str) -> nx.MultiDiGraph:
@@ -38,3 +38,13 @@ def test_graph_find_path_banana_ananas():
     graph.add_edge(2, 3, label="s")
     res = graph_find_path(graph, banana_ananas().reg)
     assert res == {(0, 2), (0, 3), (1, 3), (2, 3)}
+
+
+def test_graph_find_path_emty_some():
+    empty = empty_graph()
+    for some in all_test_graphs:
+        for a, b in ((some, empty), (empty, some)):
+            assert (
+                len(graph_find_path(a.graph, b.reg, a.start_states, a.final_states))
+                == 0
+            ), f"graph_find_path({a.name}, {b.name}) is not empty set"

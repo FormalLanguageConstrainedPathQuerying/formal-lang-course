@@ -18,9 +18,6 @@ def graph_find_path(
 
     cross = cross_boolean_matrices(graph_bm, reg_bm)
 
-    if len(cross.matrices) == 0:
-        return set()
-
     tc = transitive_closure(cross)
 
     res = set()
