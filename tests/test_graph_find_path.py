@@ -1,6 +1,6 @@
 from project import graph_find_path
 import networkx as nx
-from test_graphs import all_test_graphs, banana_ananas, power_two, empty_graph
+from test_graphs import all_test_graphs, banana_ananas, empty_graph
 
 
 def generate_graph_by_word(word: str) -> nx.MultiDiGraph:
