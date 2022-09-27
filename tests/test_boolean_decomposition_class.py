@@ -2,16 +2,13 @@ import numpy as np
 import pytest
 from pyformlang.finite_automaton import (
     State,
-    EpsilonNFA,
     Symbol,
 )
 from scipy.sparse import coo_matrix
 
 from project.automata_utils import (
     BooleanDecomposition,
-    boolean_decompose_enfa,
 )
-from test_utils import create_automata
 
 testdata = [
     (

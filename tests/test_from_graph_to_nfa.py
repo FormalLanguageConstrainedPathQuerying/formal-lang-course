@@ -1,5 +1,5 @@
 import pytest
-from pyformlang.finite_automaton import EpsilonNFA, NondeterministicFiniteAutomaton
+from pyformlang.finite_automaton import EpsilonNFA
 
 from project.graph_utils import from_graph_to_nfa
 from tests.test_utils import create_automata, create_graph

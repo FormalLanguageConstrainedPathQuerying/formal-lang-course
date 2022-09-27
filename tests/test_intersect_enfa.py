@@ -1,6 +1,5 @@
 import pytest
-from pyformlang.finite_automaton import DeterministicFiniteAutomaton, State, EpsilonNFA
-from pyformlang.regular_expression import Regex
+from pyformlang.finite_automaton import EpsilonNFA
 
 from project.automata_utils import intersect_enfa
 from test_utils import create_automata

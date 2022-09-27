@@ -1,20 +1,15 @@
 import numpy as np
 import pytest
 from pyformlang.finite_automaton import (
-    DeterministicFiniteAutomaton,
     State,
-    EpsilonNFA,
     Symbol,
 )
-from pyformlang.regular_expression import Regex
 from scipy.sparse import coo_matrix
 
 from project.automata_utils import (
-    intersect_enfa,
     BooleanDecomposition,
     kron_boolean_decompositions,
 )
-from test_utils import create_automata
 
 testdata = [
     (

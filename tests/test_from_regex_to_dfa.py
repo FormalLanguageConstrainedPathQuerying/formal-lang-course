@@ -3,7 +3,6 @@ from pyformlang.finite_automaton import DeterministicFiniteAutomaton
 from pyformlang.regular_expression import Regex
 
 from project.automata_utils import from_regex_to_dfa
-
 from tests.test_utils import create_automata
 
 testdata = [

@@ -2,7 +2,7 @@ import pytest
 from pyformlang.finite_automaton import DeterministicFiniteAutomaton, State
 from pyformlang.regular_expression import Regex
 
-from project.graph_utils import regular_path_query
+from project.regular_path_query import regular_path_query
 from test_utils import create_graph
 
 testdata = [
