@@ -8,7 +8,7 @@ __all__ = [
     "from_regex_to_dfa",
     "intersect_enfa",
     "boolean_decompose_enfa",
-    "boolean_decompose_enfa",
+    "kron_boolean_decompositions",
 ]
 
 from project.boolean_decomposition import BooleanDecomposition

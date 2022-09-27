@@ -8,9 +8,9 @@ from pyformlang.finite_automaton import (
 from scipy.sparse import coo_matrix
 
 from project.automata_utils import (
-    BooleanDecomposition,
     boolean_decompose_enfa,
 )
+from project.boolean_decomposition import BooleanDecomposition
 from test_utils import create_automata
 
 testdata = [
