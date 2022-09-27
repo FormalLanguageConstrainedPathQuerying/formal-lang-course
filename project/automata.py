@@ -1,8 +1,3 @@
-__all__ = [
-    "regex_to_min_dfa",
-    "graph_to_epsilon_nfa",
-]
-
 from typing import Set, Optional
 
 from networkx import MultiDiGraph
@@ -14,6 +9,14 @@ from pyformlang.finite_automaton import (
     Symbol,
 )
 from pyformlang.regular_expression import Regex
+
+from project import matrix_utils
+
+__all__ = [
+    "regex_to_min_dfa",
+    "graph_to_epsilon_nfa",
+    "intersect_automatons_kron",
+]
 
 
 def regex_to_min_dfa(regex: Regex) -> DeterministicFiniteAutomaton:
@@ -76,3 +79,26 @@ def graph_to_epsilon_nfa(
         epsilon_nfa.add_final_state(state)
 
     return epsilon_nfa
+
+
+def intersect_automatons_kron(
+    first_automaton: EpsilonNFA, second_automaton: EpsilonNFA
+) -> EpsilonNFA:
+    """Calculates intersection of two automatons using Kronecker multiplication of their bool matrices
+
+    Parameters
+    ----------
+    first_automaton : EpsilonNFA
+        First graph
+    second_automaton : EpsilonNFA
+        Second graph
+
+    Returns
+    -------
+    intersected_automaton: EpsilonNFA
+        Intersection of first_automaton and second_automaton
+    """
+    first_graph_mtx = matrix_utils.BoolMatrixAutomaton.from_nfa(first_automaton)
+    second_graph_mtx = matrix_utils.BoolMatrixAutomaton.from_nfa(second_automaton)
+    intersected = first_graph_mtx & second_graph_mtx
+    return intersected.to_nfa()
