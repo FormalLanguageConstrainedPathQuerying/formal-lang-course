@@ -1,10 +1,4 @@
-from project import (
-    graph_to_nfa,
-    nfa_to_boolean_matrices,
-    boolean_matrices_to_nfa,
-    reg_str_to_dfa,
-    cross_boolean_matrices,
-)
+from project import BoolDecomposedNFA, graph_to_nfa, reg_str_to_dfa
 from test_graphs import all_test_graphs
 from collections import namedtuple
 
@@ -12,8 +6,8 @@ from collections import namedtuple
 def test_nfa_to_boolean_matrices():
     for graph in all_test_graphs:
         nfa_before = graph_to_nfa(graph.graph, graph.start_states, graph.final_states)
-        matrix = nfa_to_boolean_matrices(nfa_before)
-        nfa_after = boolean_matrices_to_nfa(matrix)
+        bm = BoolDecomposedNFA(nfa_before)
+        nfa_after = bm.to_nfa()
 
         if nfa_before.is_empty():
             assert (
@@ -52,10 +46,10 @@ def test_cross_boolean_matrices():
     ), "no one crossable pair of graphs in test graphs, add more tests"
 
     for test in tests:
-        m1 = nfa_to_boolean_matrices(test.graph1_nfa)
-        m2 = nfa_to_boolean_matrices(test.graph2_nfa)
-        m3 = cross_boolean_matrices(m1, m2)
-        nfa = boolean_matrices_to_nfa(m3)
+        m1 = BoolDecomposedNFA(test.graph1_nfa)
+        m2 = BoolDecomposedNFA(test.graph2_nfa)
+        m3 = m1.intersect(m2)
+        nfa = m3.to_nfa()
         for i in test.accepts:
             assert nfa.accepts(
                 i

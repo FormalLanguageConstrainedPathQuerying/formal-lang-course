@@ -1,4 +1,4 @@
-from project import graph_find_path
+from project import regular_path_querying
 import networkx as nx
 from test_graphs import all_test_graphs, banana_ananas, empty_graph
 
@@ -19,7 +19,7 @@ def test_graph_find_path_word_graph():
             return f"{test.name} failed, {error}"
 
         for accept in test.accepts:
-            res = graph_find_path(
+            res = regular_path_querying(
                 generate_graph_by_word(accept), test.reg, {0}, {len(accept)}
             )
             assert len(res) == 1, fail_with("graph_find_path found more than one path")
@@ -36,7 +36,7 @@ def test_graph_find_path_banana_ananas():
     graph.add_edge(1, 2, label="a")
     graph.add_edge(2, 1, label="n")
     graph.add_edge(2, 3, label="s")
-    res = graph_find_path(graph, banana_ananas().reg)
+    res = regular_path_querying(graph, banana_ananas().reg)
     assert res == {(0, 2), (0, 3), (1, 3), (2, 3)}
 
 
@@ -45,6 +45,10 @@ def test_graph_find_path_emty_some():
     for some in all_test_graphs:
         for a, b in ((some, empty), (empty, some)):
             assert (
-                len(graph_find_path(a.graph, b.reg, a.start_states, a.final_states))
+                len(
+                    regular_path_querying(
+                        a.graph, b.reg, a.start_states, a.final_states
+                    )
+                )
                 == 0
             ), f"graph_find_path({a.name}, {b.name}) is not empty set"

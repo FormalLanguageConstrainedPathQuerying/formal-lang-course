@@ -5,6 +5,11 @@ from pyformlang.finite_automaton import (
 )
 import networkx as nx
 
+__all__ = [
+    "reg_str_to_dfa",
+    "graph_to_nfa",
+]
+
 
 def reg_str_to_dfa(reg_str: str) -> DeterministicFiniteAutomaton:
     return Regex(reg_str).to_epsilon_nfa().minimize()
