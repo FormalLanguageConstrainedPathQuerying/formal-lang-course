@@ -8,6 +8,8 @@ from pyformlang.finite_automaton import (
 from pyformlang.finite_automaton.finite_automaton import to_state
 from pyformlang.regular_expression import Regex
 
+from project.matrix_manager import MatrixManager
+
 
 class AutomatonManager:
     @staticmethod
@@ -44,3 +46,34 @@ class AutomatonManager:
         [nfa.add_final_state(state) for state in final_states]
 
         return nfa
+
+    @staticmethod
+    def rpq(
+        graph: MultiDiGraph,
+        query: str,
+        start_states: set = None,
+        final_states: set = None,
+    ) -> set:
+        nfa = AutomatonManager.create_nfa_from_graph(graph, start_states, final_states)
+        dfa = AutomatonManager.create_min_dfa_from_regex(query)
+
+        graph_matrix = MatrixManager.from_nfa_to_boolean_matrix(nfa)
+        query_matrix = MatrixManager.from_nfa_to_boolean_matrix(dfa)
+
+        intersected_matrix = MatrixManager.intersect_two_nfa(graph_matrix, query_matrix)
+        transitive_closure = MatrixManager.get_transitive_closure(intersected_matrix)
+
+        result = set()
+        for source, destination in zip(*transitive_closure.nonzero()):
+            if (
+                source in intersected_matrix.start_states
+                and destination in intersected_matrix.final_states
+            ):
+                result.add(
+                    (
+                        source // len(query_matrix.matrix),
+                        destination // len(query_matrix.matrix),
+                    )
+                )
+
+        return result

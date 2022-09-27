@@ -1,7 +1,11 @@
+import pytest
+
 from project.automaton_manager import AutomatonManager
+from project.graph_manager import GraphManager
 from pyformlang.finite_automaton import State, Symbol
 import os
 from networkx import nx_pydot, MultiDiGraph
+import networkx
 
 
 def load_expected_graph() -> MultiDiGraph:
@@ -60,3 +64,21 @@ def test_create_nfa_from_graph4():
     assert nfa.start_states == {1}
     assert nfa.is_final_state(State(2))
     assert not nfa.is_final_state(State(0))
+
+
+def test_rpq1():
+    graph = MultiDiGraph()
+    assert AutomatonManager.rpq(graph, "a*") == set()
+
+
+def test_rpq2():
+    sizes = (2, 3)
+    labels = ("a", "b")
+    graph = GraphManager._GraphManager__create_two_cycle_labeled_graph(sizes, labels)
+
+    query = "a|bb"
+    start_nodes = {0}
+    final_nodes = {1, 2, 3}
+    actual = AutomatonManager.rpq(graph, query, start_nodes, final_nodes)
+    expected = {(0, 1)}
+    assert actual == expected
