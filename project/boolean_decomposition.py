@@ -1,6 +1,8 @@
 from pyformlang.finite_automaton import Symbol, State
 from scipy.sparse import coo_matrix
 
+__all__ = ["BooleanDecomposition"]
+
 
 class BooleanDecomposition:
     """

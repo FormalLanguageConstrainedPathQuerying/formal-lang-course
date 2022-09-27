@@ -10,7 +10,6 @@ __all__ = [
     "from_named_graph_to_graph_data",
     "write_labeled_two_cycles_graph_as_dot",
     "from_graph_to_nfa",
-    "regular_path_query",
 ]
 
 

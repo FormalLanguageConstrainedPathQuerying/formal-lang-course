@@ -8,6 +8,8 @@ from project.automata_utils import (
 )
 from project.graph_utils import from_graph_to_nfa
 
+__all__ = ["regular_path_query"]
+
 
 def regular_path_query(
     regex: Regex,
