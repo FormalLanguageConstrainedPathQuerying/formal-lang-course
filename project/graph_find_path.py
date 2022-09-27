@@ -4,7 +4,7 @@ from project.boolean_matrices import (
     nfa_to_boolean_matrices,
     transitive_closure,
 )
-from project.dfa_utils import graph_to_nfa, regex_str_to_dfa
+from project.dfa_utils import graph_to_nfa, reg_str_to_dfa
 
 
 def graph_find_path(
@@ -14,7 +14,7 @@ def graph_find_path(
     final_states: set = None,
 ) -> set:
     graph_bm = nfa_to_boolean_matrices(graph_to_nfa(graph, start_states, final_states))
-    reg_bm = nfa_to_boolean_matrices(regex_str_to_dfa(reg_str))
+    reg_bm = nfa_to_boolean_matrices(reg_str_to_dfa(reg_str))
 
     cross = cross_boolean_matrices(graph_bm, reg_bm)
 

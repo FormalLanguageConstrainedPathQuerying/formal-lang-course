@@ -2,7 +2,7 @@ from project import (
     graph_to_nfa,
     nfa_to_boolean_matrices,
     boolean_matrices_to_nfa,
-    regex_str_to_dfa,
+    reg_str_to_dfa,
     cross_boolean_matrices,
 )
 from test_graphs import all_test_graphs
@@ -30,7 +30,7 @@ def test_cross_boolean_matrices():
         "test", "graph1 graph1_nfa graph2 graph2_nfa accepts rejects"
     )
     tests = []
-    nfas = [regex_str_to_dfa(i.reg) for i in all_test_graphs]
+    nfas = [reg_str_to_dfa(i.reg) for i in all_test_graphs]
     for x_ind in range(0, len(all_test_graphs)):
         for y_ind in range(x_ind + 1, len(all_test_graphs)):
             x = all_test_graphs[x_ind]
