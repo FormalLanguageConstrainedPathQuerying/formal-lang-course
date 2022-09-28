@@ -40,7 +40,7 @@ def test_graph_find_path_banana_ananas():
     assert res == {(0, 2), (0, 3), (1, 3), (2, 3)}
 
 
-def test_graph_find_path_emty_some():
+def test_graph_find_path_empty_some():
     empty = empty_graph()
     for some in all_test_graphs:
         for a, b in ((some, empty), (empty, some)):

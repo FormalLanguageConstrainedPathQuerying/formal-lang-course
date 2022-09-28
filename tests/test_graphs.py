@@ -125,7 +125,7 @@ all_test_graphs = [
 ]
 
 
-def acception_test(acceptable, graph: test_graph):
+def accepting_test(acceptable, graph: test_graph):
     for accept in graph.accepts:
         assert acceptable.accepts(
             accept

@@ -43,7 +43,7 @@ def test_cross_boolean_matrices():
 
     assert (
         len(tests) != 0
-    ), "no one crossable pair of graphs in test graphs, add more tests"
+    ), "no one intersectable pair of graphs in test graphs, add more tests"
 
     for test in tests:
         m1 = BoolDecomposedNFA(test.graph1_nfa)

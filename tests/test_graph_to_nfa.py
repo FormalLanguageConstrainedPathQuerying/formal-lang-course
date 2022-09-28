@@ -1,5 +1,5 @@
 from project import graph_to_nfa
-from test_graphs import binary_mess_ended_by_zero, all_test_graphs, acception_test
+from test_graphs import binary_mess_ended_by_zero, all_test_graphs, accepting_test
 import pytest
 
 reg_binary_mess_ended_by_zero = "(0|1)* 0"
@@ -16,4 +16,4 @@ def test_graph_to_nfa_nonexistent_start():
 def test_graph_to_nfa():
     for graph in all_test_graphs:
         nfa = graph_to_nfa(graph.graph, graph.start_states, graph.final_states)
-        acception_test(nfa, graph)
+        accepting_test(nfa, graph)
