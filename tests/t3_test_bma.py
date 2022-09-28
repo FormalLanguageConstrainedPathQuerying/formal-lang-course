@@ -1,6 +1,6 @@
 from pyformlang.finite_automaton import EpsilonNFA
 
-from project.t2_deterministic_finite_automata import *
+from project.t2_finite_automata import *
 from project.t3_boolean_matrix_automata import BooleanMatrixAutomata
 
 

@@ -2,7 +2,7 @@ import cfpq_data
 from pyformlang.finite_automaton import Symbol
 from pyformlang.regular_expression import PythonRegex
 
-import project.t2_deterministic_finite_automata as fsm
+import project.t2_finite_automata as fsm
 
 
 def test_build_minimal_dfa_from_regex():
