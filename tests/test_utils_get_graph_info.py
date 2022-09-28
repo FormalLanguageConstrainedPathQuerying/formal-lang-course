@@ -1,4 +1,4 @@
-from project import *
+from project import get_graph_info
 import cfpq_data
 
 

@@ -1,4 +1,4 @@
-from project import *
+from project import create_and_save_labeled_two_cycles_graph
 import filecmp
 import os.path
 
