@@ -44,13 +44,13 @@ def test_regex_to_minimal_dfa():
     assert expected_dfa.is_equivalent_to(actual_dfa)
 
 
-@pytest.mark.parametrize("dataset_graph_name", ["atom", "wine", "pizza"])
-def test_dataset_graph_to_nfa(dataset_graph_name):
-    graph = load_graph(dataset_graph_name)
-    nfa = graph_to_nfa(graph, start_states=None, final_states=None)
-
-    assert len(nfa.final_states) == len(graph.nodes)
-    assert len(nfa.start_states) == len(graph.nodes)
+# @pytest.mark.parametrize("dataset_graph_name", ["atom", "wine", "pizza"])
+# def test_dataset_graph_to_nfa(dataset_graph_name):
+#     graph = load_graph(dataset_graph_name)
+#     nfa = graph_to_nfa(graph, start_states=None, final_states=None)
+#
+#     assert len(nfa.final_states) == len(graph.nodes)
+#     assert len(nfa.start_states) == len(graph.nodes)
 
 
 def test_graph_to_nfa_without_start_and_final_states():
