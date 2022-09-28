@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 
+import cfpq_data
 from networkx import MultiDiGraph
 from networkx.drawing.nx_pydot import write_dot
 from pyformlang.finite_automaton import EpsilonNFA, State, Symbol
-
-import cfpq_data
 
 __all__ = [
     "GraphData",
@@ -57,12 +56,12 @@ def write_labeled_two_cycles_graph_as_dot(
 
 
 def from_graph_to_nfa(
-    graph: MultiDiGraph, start_states: list[int] = None, final_states: list[int] = None
+    graph: MultiDiGraph, start_states: list[any] = None, final_states: list[any] = None
 ) -> EpsilonNFA:
     """
     Generates epsilon NFA from given graph
 
-    :param graph: graph to be converted
+    :param graph: graph to be converted (edges must be marked with "label")
     :param start_states: start states in generated NFA
     :param final_states: final states in generated NFA
     :return: EpsilonNFA object representing NFA from given graph
