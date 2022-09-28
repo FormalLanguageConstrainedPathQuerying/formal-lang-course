@@ -1,6 +1,4 @@
-import string
 from typing import List
-
 from pyformlang.finite_automaton import (
     State,
     NondeterministicFiniteAutomaton,
