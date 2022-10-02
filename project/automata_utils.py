@@ -1,8 +1,6 @@
-import numpy as np
-from pyformlang.pda import Symbol
 from pyformlang.regular_expression import Regex
 from pyformlang.finite_automaton import DeterministicFiniteAutomaton, EpsilonNFA, State
-from scipy.sparse import coo_matrix, kron, find
+from scipy.sparse import find
 
 __all__ = [
     "from_regex_to_dfa",

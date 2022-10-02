@@ -1,5 +1,7 @@
+import numpy as np
 from networkx import MultiDiGraph
 from pyformlang.regular_expression import Regex
+from scipy.sparse import csr_matrix, SparseEfficiencyWarning, lil_matrix
 
 from project.automata_utils import (
     from_regex_to_dfa,
@@ -8,7 +10,47 @@ from project.automata_utils import (
 )
 from project.graph_utils import from_graph_to_nfa
 
-__all__ = ["regular_path_query"]
+from project.regular_path_query_bfs import regular_bfs
+
+__all__ = ["regular_path_query", "bfs_based_regular_path_query"]
+
+
+def bfs_based_regular_path_query(
+    regex: Regex,
+    graph: MultiDiGraph,
+    separated: bool,
+    start_states: list[any] = None,
+    final_states: list[any] = None,
+) -> set[any] | dict[any, set[any]]:
+    """
+    Performs rpq (regular path query) in graph with regex
+    :param regex: regex to define regular path query
+    :param graph: graph to be inspected
+    :param separated: if true result will be presented as dictionary where key node from start_states and value is set
+        of nodes which can be obtained from this node by rpq, otherwise result will be presented as set of graph nodes
+        which may be obtained from start_states
+    :param start_states: start nodes to rpq inside graph
+    :param final_states: final nodes to rpq inside graph
+    :return: if separated = True result will be presented as dictionary where key node from start_states and value is
+        set of nodes which can be obtained from this node by rpq, otherwise result will be presented as set of graph
+        nodes which may be obtained from start_states
+    """
+    result = regular_bfs(
+        boolean_decompose_enfa(from_graph_to_nfa(graph)),
+        regex,
+        separated,
+        start_states,
+        final_states,
+    )
+    if not separated:
+        return result
+    else:
+        divided_result = dict()
+        for (i, j) in result:
+            if i not in divided_result:
+                divided_result[i] = set()
+            divided_result[i].add(j)
+        return divided_result
 
 
 def regular_path_query(
