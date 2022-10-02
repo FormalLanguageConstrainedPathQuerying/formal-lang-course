@@ -222,21 +222,3 @@ def regular_bfs(
             result = result.union(subresult)
 
     return result
-
-
-graph = MultiDiGraph()
-graph.add_node(0)
-graph.add_node(1)
-graph.add_node(2)
-graph.add_edge(0, 1, label="a")
-graph.add_edge(1, 2, label="e")
-graph.add_edge(0, 2, label="c")
-print(
-    regular_bfs(
-        boolean_decompose_enfa(from_graph_to_nfa(graph)),
-        Regex("c|e"),
-        True,
-        [0, 1],
-        [2],
-    )
-)
