@@ -10,7 +10,7 @@ from project.automata_utils import (
 )
 from project.graph_utils import from_graph_to_nfa
 
-from project.regular_path_query_bfs import regular_bfs
+from project.regular_bfs import regular_bfs
 
 __all__ = ["regular_path_query", "bfs_based_regular_path_query"]
 
