@@ -125,7 +125,7 @@ def regular_bfs(
     graph_decomposition: BooleanDecomposition,
     regex: Regex,
     separated: bool,
-    start_states: list[any] = None,
+    start_states: list[any],
     final_states: list[any] = None,
 ) -> set[any] | set[tuple[any, any]]:
     """
@@ -134,12 +134,15 @@ def regular_bfs(
     :param regex: regular path constraints in a graph
     :param separated: if true result will be presented as set of 2-element tuples of graph nodes which may be connected
         by path, otherwise result will be presented as set of graph nodes which may be obtained from start_states
-    :param start_states: start nodes inside graph (all nodes in None)
+    :param start_states: start nodes inside graph
     :param final_states: final nodes inside graph (all nodes in None)
     :return: if separated = True result will be presented as set of 2-element tuples of graph nodes which may
         be connected by path, otherwise result will be presented as set of graph nodes which may be obtained
         from start_states
     """
+    if final_states is None:
+        final_states = graph_decomposition.states()
+
     regex_as_enfa = from_regex_to_dfa(regex)
     regex_decomposition = boolean_decompose_enfa(regex_as_enfa)
 
@@ -214,7 +217,7 @@ def regular_bfs(
                 )
                 for (_, j) in zip(*row.nonzero()):
                     state = graph_decomposition.states()[j].value
-                    if state not in start_states and state in final_states:
+                    if state != start_states[i] and state in final_states:
                         subresult.add((start_states[i], state))
             result = result.union(subresult)
 

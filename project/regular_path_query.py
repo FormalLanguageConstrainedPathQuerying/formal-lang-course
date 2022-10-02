@@ -19,7 +19,7 @@ def bfs_based_regular_path_query(
     regex: Regex,
     graph: MultiDiGraph,
     separated: bool,
-    start_states: list[any] = None,
+    start_states: list[any],
     final_states: list[any] = None,
 ) -> set[any] | dict[any, set[any]]:
     """
@@ -30,9 +30,9 @@ def bfs_based_regular_path_query(
         of nodes which can be obtained from this node by rpq, otherwise result will be presented as set of graph nodes
         which may be obtained from start_states
     :param start_states: start nodes to rpq inside graph
-    :param final_states: final nodes to rpq inside graph
+    :param final_states: final nodes to rpq inside graph (all nodes if None)
     :return: if separated = True result will be presented as set of 2-element tuples of graph nodes which may
-        be connected by path, otherwise result will be presented as set of graph nodes which may be obtained
+        be connected by path (paths which), otherwise result will be presented as set of graph nodes which may be obtained
         from start_states
     """
     return regular_bfs(
@@ -54,8 +54,8 @@ def regular_path_query(
     Performs rpq (regular path query) in graph with regex
     :param regex: regex to define regular path query
     :param graph: graph to be inspected
-    :param start_states: start nodes to rpq inside graph
-    :param final_states: final nodes to rpq inside graph
+    :param start_states: start nodes to rpq inside graph (all nodes if None)
+    :param final_states: final nodes to rpq inside graph (all nodes if None)
     :return: 2 element tuples with nodes satisfying rpq
     """
     if start_states is None:
