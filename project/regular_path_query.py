@@ -31,26 +31,17 @@ def bfs_based_regular_path_query(
         which may be obtained from start_states
     :param start_states: start nodes to rpq inside graph
     :param final_states: final nodes to rpq inside graph
-    :return: if separated = True result will be presented as dictionary where key node from start_states and value is
-        set of nodes which can be obtained from this node by rpq, otherwise result will be presented as set of graph
-        nodes which may be obtained from start_states
+    :return: if separated = True result will be presented as set of 2-element tuples of graph nodes which may
+        be connected by path, otherwise result will be presented as set of graph nodes which may be obtained
+        from start_states
     """
-    result = regular_bfs(
+    return regular_bfs(
         boolean_decompose_enfa(from_graph_to_nfa(graph)),
         regex,
         separated,
         start_states,
         final_states,
     )
-    if not separated:
-        return result
-    else:
-        divided_result = dict()
-        for (i, j) in result:
-            if i not in divided_result:
-                divided_result[i] = set()
-            divided_result[i].add(j)
-        return divided_result
 
 
 def regular_path_query(
