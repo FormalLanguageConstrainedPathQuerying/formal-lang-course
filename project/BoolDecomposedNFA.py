@@ -16,17 +16,29 @@ class BoolDecomposedNFA:
         else:
             BoolDecomposedNFA.from_nfa(nfa).move_to(self)
 
+    def take_matrices(self):
+        return self.__matrices
+
     def get_matrices(self):
         res = {}
         for label, dok in self.__matrices.items():
             res[label] = dok.copy()
         return res
 
+    def take_states_count(self):
+        return self.__states_count
+
     def get_states_count(self):
         return self.__states_count
 
+    def take_start_vector(self):
+        return self.__start_vector
+
     def get_start_vector(self):
         return self.__start_vector.copy()
+
+    def take_final_vector(self):
+        return self.__final_vector
 
     def get_final_vector(self):
         return self.__final_vector.copy()
@@ -36,6 +48,7 @@ class BoolDecomposedNFA:
         dest.__states_count = self.__states_count
         dest.__start_vector = self.__start_vector
         dest.__final_vector = self.__final_vector
+        return dest
 
     def copy(self):
         res = BoolDecomposedNFA()
@@ -83,11 +96,17 @@ class BoolDecomposedNFA:
             res.add_final_state(i)
         return res
 
+    def __iand__(self, other: "BoolDecomposedNFA") -> "BoolDecomposedNFA":
+        return self.intersect(other).move_to(self)
+
+    def __and__(self, other: "BoolDecomposedNFA") -> "BoolDecomposedNFA":
+        return self.intersect(other)
+
     def intersect(self, other: "BoolDecomposedNFA") -> "BoolDecomposedNFA":
         res = BoolDecomposedNFA()
         matrices = {}
-        cross_labels = self.__matrices.keys() & other.__matrices.keys()
-        for label in cross_labels:
+        intersecting_labels = self.__matrices.keys() & other.__matrices.keys()
+        for label in intersecting_labels:
             matrices[label] = sparse.kron(
                 self.__matrices[label], other.__matrices[label]
             )
