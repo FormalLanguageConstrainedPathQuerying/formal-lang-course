@@ -32,13 +32,15 @@ def create_nfa_from_graph(
 
     for statement_from, statement_to, transition in graph.edges(data=True):
         nfa.add_transition(
-            State(statement_from), Symbol(transition["label"]), State(statement_to)
+            State(int(statement_from)),
+            Symbol(transition["label"]),
+            State(int(statement_to)),
         )
 
-    for node in graph.nodes:
-        if not start_states or node in start_states:
+    for node in map(lambda node: int(node), graph.nodes):
+        if not start_states or node in map(lambda state: int(state), start_states):
             nfa.add_start_state(State(node))
-        if not final_states or node in final_states:
+        if not final_states or node in map(lambda state: int(state), final_states):
             nfa.add_final_state(State(node))
 
     return nfa

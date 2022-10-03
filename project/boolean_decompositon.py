@@ -1,10 +1,9 @@
-from scipy.sparse import dok_matrix
 from scipy import sparse
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, State
 
 
 class BooleanDecomposition:
-    def __init__(self, automaton: NondeterministicFiniteAutomaton = None):
+    def __init__(self, automaton: NondeterministicFiniteAutomaton = None) -> object:
         if automaton is None:
             self.states_num = 0
             self.state_indices = dict()
@@ -18,7 +17,7 @@ class BooleanDecomposition:
             }
             self.start_states = automaton.start_states
             self.final_states = automaton.final_states
-            self.bool_decomposition = self.init_bool_matrices(automaton)
+            self.bool_decomposition = self.__init_bool_matrices(automaton)
 
     def get_states(self):
         return self.state_indices.keys()
@@ -29,7 +28,7 @@ class BooleanDecomposition:
     def get_final_states(self):
         return self.final_states
 
-    def init_bool_matrices(self, automaton: NondeterministicFiniteAutomaton):
+    def __init_bool_matrices(self, automaton: NondeterministicFiniteAutomaton):
         bool_matrices = dict()
         nfa_dict = automaton.to_dict()
 
@@ -50,7 +49,7 @@ class BooleanDecomposition:
 
     def make_transitive_closure(self):
         if not self.bool_decomposition.values():
-            return dok_matrix((1, 1))
+            return sparse.dok_matrix((1, 1))
 
         transitive_closure = sum(self.bool_decomposition.values())
         prev_nnz = transitive_closure.nnz
