@@ -24,11 +24,11 @@ from tests.test_task3.utils import get_data, dot_to_graph
     ),
 )
 def test_rpq(
-    graph: nx.MultiDiGraph,
-    query: str,
-    starts: set | None,
-    finals: set | None,
-    expected: set,
+    graph,
+    query,
+    starts,
+    finals,
+    expected,
 ):
     actual = rpq(graph, query, starts, finals)
     assert actual == expected
