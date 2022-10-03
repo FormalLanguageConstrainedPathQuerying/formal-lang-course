@@ -1,9 +1,11 @@
 from scipy import sparse
-from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, State
+from pyformlang import finite_automaton
 
 
 class BooleanDecomposition:
-    def __init__(self, automaton: NondeterministicFiniteAutomaton = None) -> object:
+    def __init__(
+        self, automaton: finite_automaton.NondeterministicFiniteAutomaton = None
+    ) -> object:
         if automaton is None:
             self.states_num = 0
             self.state_indices = dict()
@@ -28,7 +30,9 @@ class BooleanDecomposition:
     def get_final_states(self):
         return self.final_states
 
-    def __init_bool_matrices(self, automaton: NondeterministicFiniteAutomaton):
+    def __init_bool_matrices(
+        self, automaton: finite_automaton.NondeterministicFiniteAutomaton
+    ):
         bool_matrices = dict()
         nfa_dict = automaton.to_dict()
 
@@ -92,16 +96,16 @@ def get_intersect_boolean_decomposition(
 
 
 def decomposition_to_automaton(decomposition: BooleanDecomposition):
-    automaton = NondeterministicFiniteAutomaton()
+    automaton = finite_automaton.NondeterministicFiniteAutomaton()
 
     for label, bool_matrix in decomposition.bool_decomposition.items():
         for state_from, state_to in zip(*bool_matrix.nonzero()):
             automaton.add_transition(state_from, label, state_to)
 
     for state in decomposition.start_states:
-        automaton.add_start_state(State(state))
+        automaton.add_start_state(finite_automaton.State(state))
 
     for state in decomposition.final_states:
-        automaton.add_final_state(State(state))
+        automaton.add_final_state(finite_automaton.State(state))
 
     return automaton
