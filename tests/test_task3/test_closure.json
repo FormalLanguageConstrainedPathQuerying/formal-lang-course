@@ -1,0 +1,30 @@
+{
+  "test_closure": [
+    {
+      "graph": "digraph {0;1;2;3; 0 -> 1 [label=a]; 0 -> 1 [label=b]; 1 -> 2 [label=c]; 0 -> 3 [label=c]}",
+      "starts": null,
+      "finals": null,
+      "matrix": [
+        [0, 1, 1, 1],
+        [0, 0, 1, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]
+      ]
+    },
+    {
+      "graph": "digraph {0;1; 0 -> 0 [label=b]; 0 -> 1 [label=b]; 1 -> 1 [label=b]; 1 -> 0 [label=a]}",
+      "starts": [0],
+      "finals": [1],
+      "matrix": [
+        [1, 1],
+        [1, 1]
+      ]
+    },
+    {
+      "graph": "digraph {}",
+      "starts": null,
+      "finals": null,
+      "matrix": []
+    }
+  ]
+}
