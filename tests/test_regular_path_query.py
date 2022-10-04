@@ -1,5 +1,4 @@
 import pytest
-from pyformlang.finite_automaton import DeterministicFiniteAutomaton, State
 from pyformlang.regular_expression import Regex
 
 from project.regular_path_query import regular_path_query
@@ -10,20 +9,20 @@ testdata = [
         regular_path_query(
             Regex("a*"), create_graph(nodes=[0, 1], edges=[(0, "a", 1)])
         ),
-        {(State(0), State(1))},
+        {(0, 1)},
     ),
     (
         regular_path_query(
             Regex("a.b"),
             create_graph(nodes=[0, 1, 2], edges=[(0, "a", 1), (1, "b", 2)]),
         ),
-        {(State(0), State(2))},
+        {(0, 2)},
     ),
     (
         regular_path_query(
             Regex("a*"), create_graph(nodes=[0, 1, 2], edges=[(0, "a", 1), (1, "a", 2)])
         ),
-        {(State(0), State(1)), (State(1), State(2)), (State(0), State(2))},
+        {(0, 1), (1, 2), (0, 2)},
     ),
     (
         regular_path_query(
@@ -32,7 +31,7 @@ testdata = [
                 nodes=[0, 1, 2], edges=[(0, "c", 0), (0, "a", 1), (1, "b", 2)]
             ),
         ),
-        {(State(0), State(2)), (State(0), State(0))},
+        {(0, 2), (0, 0)},
     ),
     (
         regular_path_query(
@@ -41,7 +40,7 @@ testdata = [
                 nodes=[0, 1, 2], edges=[(0, "c", 0), (0, "a", 1), (1, "b", 2)]
             ),
         ),
-        {(State(0), State(2))},
+        {(0, 2)},
     ),
 ]
 
