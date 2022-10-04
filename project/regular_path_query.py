@@ -32,16 +32,27 @@ def bfs_based_regular_path_query(
     :param start_states: start nodes to rpq inside graph
     :param final_states: final nodes to rpq inside graph (all nodes if None)
     :return: if separated = True result will be presented as set of 2-element tuples of graph nodes which may
-        be connected by path (paths which), otherwise result will be presented as set of graph nodes which may be obtained
+        be connected by path, otherwise result will be presented as set of graph nodes which may be obtained
         from start_states
     """
-    return regular_bfs(
+    if final_states is None:
+        final_states = graph.nodes
+
+    result = regular_bfs(
         boolean_decompose_enfa(from_graph_to_nfa(graph)),
         regex,
         separated,
         start_states,
-        final_states,
     )
+    if separated:
+        return set(
+            map(
+                lambda edge: (edge[0].value, edge[1].value),
+                filter(lambda edge: edge[1].value in final_states, result),
+            )
+        )
+    else:
+        return set(filter(lambda state: state.value in final_states, result))
 
 
 def regular_path_query(
@@ -86,6 +97,6 @@ def regular_path_query(
             and regex_start_state in regex_as_enfa.start_states
             and regex_final_state in regex_as_enfa.final_states
         ):
-            results.add((graph_start_state, graph_final_state))
+            results.add((graph_start_state.value, graph_final_state.value))
 
     return results

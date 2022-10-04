@@ -2,6 +2,7 @@ from copy import copy
 
 import numpy as np
 from networkx import MultiDiGraph
+from pyformlang.finite_automaton import State
 from pyformlang.regular_expression import Regex
 from scipy.sparse import lil_matrix, spmatrix, csr_matrix, identity, vstack
 
@@ -126,8 +127,7 @@ def regular_bfs(
     regex: Regex,
     separated: bool,
     start_states: list[any],
-    final_states: list[any] = None,
-) -> set[any] | set[tuple[any, any]]:
+) -> set[State] | set[tuple[State, State]]:
     """
     Performs bfs on graph according to restrictions imposed by regex
     :param graph_decomposition: boolean decomposition of graph
@@ -135,14 +135,10 @@ def regular_bfs(
     :param separated: if true result will be presented as set of 2-element tuples of graph nodes which may be connected
         by path, otherwise result will be presented as set of graph nodes which may be obtained from start_states
     :param start_states: start nodes inside graph
-    :param final_states: final nodes inside graph (all nodes in None)
     :return: if separated = True result will be presented as set of 2-element tuples of graph nodes which may
         be connected by path, otherwise result will be presented as set of graph nodes which may be obtained
         from start_states
     """
-    if final_states is None:
-        final_states = graph_decomposition.states()
-
     regex_as_enfa = from_regex_to_dfa(regex)
     regex_decomposition = boolean_decompose_enfa(regex_as_enfa)
 
@@ -204,8 +200,8 @@ def regular_bfs(
                 regex_decomposition.state_index(final_regex)
             )
             for (_, j) in zip(*row.nonzero()):
-                state = graph_decomposition.states()[j].value
-                if state not in start_states and state in final_states:
+                state = (graph_decomposition.states())[j]
+                if state.value not in start_states:
                     result.add(state)
     else:
         for i in range(len(start_states)):
@@ -216,9 +212,9 @@ def regular_bfs(
                     offset + regex_decomposition.state_index(final_regex)
                 )
                 for (_, j) in zip(*row.nonzero()):
-                    state = graph_decomposition.states()[j].value
-                    if state != start_states[i] and state in final_states:
-                        subresult.add((start_states[i], state))
+                    state = (graph_decomposition.states())[j]
+                    if state.value != start_states[i]:
+                        subresult.add((State(start_states[i]), state))
             result = result.union(subresult)
 
     return result
