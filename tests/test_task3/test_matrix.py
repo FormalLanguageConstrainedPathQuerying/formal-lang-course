@@ -5,10 +5,9 @@ from scipy.sparse import dok_matrix
 
 from project.boolean_decompositon import (
     BooleanDecomposition,
-    decomposition_to_automaton,
 )
 from project.regex_utils import create_nfa_from_graph
-from tests.test_task3.utils import dot_to_graph, get_data
+from tests.utils import dot_to_graph, get_data
 
 
 @pytest.mark.parametrize(
@@ -46,7 +45,7 @@ def test_transitive_closure(actual: BooleanDecomposition, expected):
     ),
 )
 def test_to_automaton(expected: NondeterministicFiniteAutomaton):
-    actual = decomposition_to_automaton(BooleanDecomposition(expected))
+    actual = BooleanDecomposition(expected).decomposition_to_automaton()
     assert (
         nx.drawing.nx_pydot.to_pydot(actual.to_networkx()).__str__()
         == nx.drawing.nx_pydot.to_pydot(expected.to_networkx()).__str__()

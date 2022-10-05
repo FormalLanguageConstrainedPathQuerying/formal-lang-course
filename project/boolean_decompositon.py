@@ -22,7 +22,7 @@ class BooleanDecomposition:
             self.bool_decomposition = self.__init_bool_matrices(automaton)
 
     def get_states(self):
-        return self.state_indices.keys()
+        return self.state_indices
 
     def get_start_states(self):
         return self.start_states
@@ -65,47 +65,45 @@ class BooleanDecomposition:
 
         return transitive_closure
 
+    def get_intersect_boolean_decomposition(self, other):
+        intersect = BooleanDecomposition()
 
-def get_intersect_boolean_decomposition(
-    self: BooleanDecomposition, other: BooleanDecomposition
-):
-    intersect = BooleanDecomposition()
-
-    common_symbols = self.bool_decomposition.keys() & other.bool_decomposition.keys()
-    for symbol in common_symbols:
-        intersect.bool_decomposition[symbol] = sparse.kron(
-            self.bool_decomposition[symbol],
-            other.bool_decomposition[symbol],
-            format="csr",
+        common_symbols = (
+            self.bool_decomposition.keys() & other.bool_decomposition.keys()
         )
-
-    for state_fst, state_fst_index in self.state_indices.items():
-        for state_snd, state_snd_idx in other.state_indices.items():
-            new_state = new_state_idx = (
-                state_fst_index * other.states_num + state_snd_idx
+        for symbol in common_symbols:
+            intersect.bool_decomposition[symbol] = sparse.kron(
+                self.bool_decomposition[symbol],
+                other.bool_decomposition[symbol],
+                format="csr",
             )
-            intersect.state_indices[new_state] = new_state_idx
 
-            if state_fst in self.start_states and state_snd in other.start_states:
-                intersect.start_states.add(new_state)
+        for state_fst, state_fst_index in self.state_indices.items():
+            for state_snd, state_snd_idx in other.state_indices.items():
+                new_state = new_state_idx = (
+                    state_fst_index * other.states_num + state_snd_idx
+                )
+                intersect.state_indices[new_state] = new_state_idx
 
-            if state_fst in self.final_states and state_snd in other.final_states:
-                intersect.final_states.add(new_state)
+                if state_fst in self.start_states and state_snd in other.start_states:
+                    intersect.start_states.add(new_state)
 
-    return intersect
+                if state_fst in self.final_states and state_snd in other.final_states:
+                    intersect.final_states.add(new_state)
 
+        return intersect
 
-def decomposition_to_automaton(decomposition: BooleanDecomposition):
-    automaton = finite_automaton.NondeterministicFiniteAutomaton()
+    def decomposition_to_automaton(self):
+        automaton = finite_automaton.NondeterministicFiniteAutomaton()
 
-    for label, bool_matrix in decomposition.bool_decomposition.items():
-        for state_from, state_to in zip(*bool_matrix.nonzero()):
-            automaton.add_transition(state_from, label, state_to)
+        for label, bool_matrix in self.bool_decomposition.items():
+            for state_from, state_to in zip(*bool_matrix.nonzero()):
+                automaton.add_transition(state_from, label, state_to)
 
-    for state in decomposition.start_states:
-        automaton.add_start_state(finite_automaton.State(state))
+        for state in self.start_states:
+            automaton.add_start_state(finite_automaton.State(state))
 
-    for state in decomposition.final_states:
-        automaton.add_final_state(finite_automaton.State(state))
+        for state in self.final_states:
+            automaton.add_final_state(finite_automaton.State(state))
 
-    return automaton
+        return automaton
