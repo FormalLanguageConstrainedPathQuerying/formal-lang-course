@@ -4,30 +4,37 @@ import networkx as nx
 from scipy import sparse
 from scipy.sparse import dok_matrix
 
-__all__ = ["regular_path_querying", "regular_path_querying_from_start"]
+__all__ = [
+    "rpq_by_bm",
+    "rpq_by_reg_str",
+    "rpq_by_bm_from_start",
+    "rpq_by_reg_str_from_start",
+]
 
 
-def regular_path_querying_from_start(
+def rpq_by_bm_from_start(
     graph: nx.MultiDiGraph,
-    reg_str: str,
+    bm: BoolDecomposedNFA,
     start_states: set = None,
-    separately_for_each: bool = False,
+    final_states: set = None,
+    separated: bool = False,
 ) -> set:
-    graph_bm = BoolDecomposedNFA(graph_to_nfa(graph, start_states))
+    graph_bm = BoolDecomposedNFA(graph_to_nfa(graph, start_states, final_states))
     graph_start_states = graph_bm.take_start_vector()
     start_states = graph_start_states.nonzero()[1]
+    final_states = set(graph_bm.take_final_vector().nonzero()[1])
     start_states_count = graph_start_states.nnz
     graph_states_count = graph_bm.take_states_count()
     graph_bm = graph_bm.take_matrices()
 
-    reg_bm = BoolDecomposedNFA(reg_str_to_dfa(reg_str))
+    reg_bm = bm
     reg_start_states = reg_bm.take_start_vector()
     reg_final_states = reg_bm.take_final_vector()
     reg_states_count = reg_bm.take_states_count()
     reg_bm = reg_bm.take_matrices()
 
     std_matrix_shape = None
-    if not separately_for_each:
+    if not separated:
         std_matrix_shape = (reg_states_count, graph_states_count + reg_states_count)
     else:
         std_matrix_shape = (
@@ -43,7 +50,7 @@ def regular_path_querying_from_start(
     curr_state = dok_matrix(std_matrix_shape, dtype=bool)
     mask = curr_state.copy()
 
-    if not separately_for_each:
+    if not separated:
         for i in reg_start_states.nonzero()[1]:
             curr_state[i, i] = True
             curr_state[i, reg_states_count:] = graph_start_states
@@ -72,7 +79,7 @@ def regular_path_querying_from_start(
         curr_nnz = mask.nnz
 
     res = None
-    if not separately_for_each:
+    if not separated:
         res = dok_matrix((1, graph_states_count), dtype=bool)
         for i in reg_final_states.nonzero()[1]:
             if mask[i, i]:
@@ -85,22 +92,40 @@ def regular_path_querying_from_start(
                 if mask[x, i]:
                     res[j] += mask[x, reg_states_count:]
 
-    if not separately_for_each:
-        res = set(res.nonzero()[1])
+    if not separated:
+        res = {i for i in res.nonzero()[1] if i in final_states}
     else:
-        res = {(start_states[s], f) for s, f in zip(*res.nonzero())}
+        res = {
+            (start_states[s], f) for s, f in zip(*res.nonzero()) if f in final_states
+        }
 
     return res
 
 
-def regular_path_querying(
+def rpq_by_reg_str_from_start(
     graph: nx.MultiDiGraph,
     reg_str: str,
     start_states: set = None,
     final_states: set = None,
+    separated: bool = False,
+) -> set:
+    return rpq_by_bm_from_start(
+        graph,
+        BoolDecomposedNFA(reg_str_to_dfa(reg_str)),
+        start_states,
+        final_states,
+        separated,
+    )
+
+
+def rpq_by_bm(
+    graph: nx.MultiDiGraph,
+    bm: BoolDecomposedNFA,
+    start_states: set = None,
+    final_states: set = None,
 ) -> set:
     graph_bm = BoolDecomposedNFA(graph_to_nfa(graph, start_states, final_states))
-    reg_bm = BoolDecomposedNFA(reg_str_to_dfa(reg_str))
+    reg_bm = bm
 
     intersected_bm = graph_bm & reg_bm
 
@@ -117,3 +142,14 @@ def regular_path_querying(
             )
 
     return res
+
+
+def rpq_by_reg_str(
+    graph: nx.MultiDiGraph,
+    reg_str: str,
+    start_states: set = None,
+    final_states: set = None,
+) -> set:
+    return rpq_by_bm(
+        graph, BoolDecomposedNFA(reg_str_to_dfa(reg_str)), start_states, final_states
+    )
