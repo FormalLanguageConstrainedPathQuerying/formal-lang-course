@@ -9,6 +9,7 @@ class BoolDecomposedNFA:
     def __init__(self, nfa: NondeterministicFiniteAutomaton = None):
         if nfa is None:
             self.__matrices = {}
+            self.__dict = {}
             self.__states_count = 0
             self.__start_vector = dok_matrix((1, 0), dtype=bool)
             self.__final_vector = dok_matrix((1, 0), dtype=bool)
@@ -24,6 +25,12 @@ class BoolDecomposedNFA:
         for label, dok in self.__matrices.items():
             res[label] = dok.copy()
         return res
+
+    def take_dict(self):
+        return self.__dict
+
+    def get_dict(self):
+        return self.__dict.copy()
 
     def take_states_count(self):
         return self.__states_count
@@ -45,6 +52,7 @@ class BoolDecomposedNFA:
 
     def move_to(self, dest: "BoolDecomposedNFA"):
         dest.__matrices = self.__matrices
+        dest.__dict = self.__dict
         dest.__states_count = self.__states_count
         dest.__start_vector = self.__start_vector
         dest.__final_vector = self.__final_vector
@@ -53,6 +61,7 @@ class BoolDecomposedNFA:
     def copy(self):
         res = BoolDecomposedNFA()
         res.__matrices = self.get_matrices()
+        res.__dict = self.get_dict()
         res.__states_count = self.get_states_count()
         res.__start_vector = self.get_start_vector()
         res.__final_vector = self.get_final_vector()
@@ -83,17 +92,18 @@ class BoolDecomposedNFA:
             res.__start_vector[0, states[i]] = True
         for i in nfa.final_states:
             res.__final_vector[0, states[i]] = True
+        res.__dict = {v: k for k, v in states.items()}
         return res
 
     def to_nfa(self) -> NondeterministicFiniteAutomaton:
         res = NondeterministicFiniteAutomaton()
         for label in self.__matrices:
             for start, final in zip(*self.__matrices[label].nonzero()):
-                res.add_transition(start, label, final)
+                res.add_transition(self.__dict[start], label, self.__dict[final])
         for i in self.__start_vector.nonzero()[1]:
-            res.add_start_state(i)
+            res.add_start_state(self.__dict[i])
         for i in self.__final_vector.nonzero()[1]:
-            res.add_final_state(i)
+            res.add_final_state(self.__dict[i])
         return res
 
     def __iand__(self, other: "BoolDecomposedNFA") -> "BoolDecomposedNFA":
@@ -113,6 +123,7 @@ class BoolDecomposedNFA:
 
         res.__matrices = matrices
         res.__states_count = self.__states_count * other.__states_count
+        res.__dict = {i: i for i in range(0, res.__states_count)}
         res.__start_vector = sparse.kron(self.__start_vector, other.__start_vector)
         res.__final_vector = sparse.kron(self.__final_vector, other.__final_vector)
         return res
