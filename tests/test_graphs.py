@@ -1,4 +1,6 @@
+from cProfile import label
 from collections import namedtuple
+from os import access
 import networkx as nx
 
 test_graph = namedtuple(
@@ -116,12 +118,25 @@ def banana_ananas() -> test_graph:
     return test_graph("banana_ananas", reg_str, graph, {0}, {6, 7}, accepts, rejects)
 
 
+def labels_as_nodes():
+    reg_str = "n a*"
+    graph = nx.MultiDiGraph()
+    graph.add_edge("a", "b", label="n")
+    graph.add_edge("b", "b", label="a")
+
+    accepts = ["n", "na", "naa", "naaa", "naaaa"]
+    rejects = ["a", "an", "banana", "ananas", "nanana"]
+
+    return test_graph("labels_as_nodes", reg_str, graph, {"a"}, {"b"}, accepts, rejects)
+
+
 all_test_graphs = [
     empty_graph(),
     power_two(),
     binary_mess_ended_by_zero(),
     zero_one(),
     banana_ananas(),
+    labels_as_nodes(),
 ]
 
 

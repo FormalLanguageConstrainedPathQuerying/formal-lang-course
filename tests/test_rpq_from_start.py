@@ -1,6 +1,6 @@
 from project import rpq_by_reg_str_from_start
 import networkx as nx
-from test_graphs import all_test_graphs, banana_ananas, empty_graph
+from test_graphs import all_test_graphs, banana_ananas, empty_graph, labels_as_nodes
 
 
 def test_rpq_by_reg_str_from_start_banana_ananas():
@@ -42,3 +42,9 @@ def test_rpq_by_reg_str_from_start_empty_some():
             assert (
                 len(rpq_by_reg_str_from_start(a.graph, b.reg, a.start_states)) == 0
             ), f"graph_find_path({a.name}, {b.name}) is not empty set"
+
+
+def test_rpq_by_reg_str_from_start_labels_as_nodes():
+    graph = labels_as_nodes()
+    res = rpq_by_reg_str_from_start(graph.graph, graph.reg, graph.start_states)
+    assert res == {"b"}

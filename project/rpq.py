@@ -25,6 +25,7 @@ def rpq_by_bm_from_start(
     final_states = set(graph_bm.take_final_vector().nonzero()[1])
     start_states_count = graph_start_states.nnz
     graph_states_count = graph_bm.take_states_count()
+    graph_dict = graph_bm.take_dict()
     graph_bm = graph_bm.take_matrices()
 
     reg_bm = bm
@@ -93,10 +94,12 @@ def rpq_by_bm_from_start(
                     res[j] += mask[x, reg_states_count:]
 
     if not separated:
-        res = {i for i in res.nonzero()[1] if i in final_states}
+        res = {graph_dict[i] for i in res.nonzero()[1] if i in final_states}
     else:
         res = {
-            (start_states[s], f) for s, f in zip(*res.nonzero()) if f in final_states
+            (graph_dict[start_states[s]], graph_dict[f])
+            for s, f in zip(*res.nonzero())
+            if f in final_states
         }
 
     return res
@@ -138,7 +141,10 @@ def rpq_by_bm(
     for start, final in zip(*tc.nonzero()):
         if start_vector_array[0, start] and final_vector_array[0, final]:
             res.add(
-                (start // reg_bm.get_states_count(), final // reg_bm.get_states_count())
+                (
+                    graph_bm.take_dict()[start // reg_bm.get_states_count()],
+                    graph_bm.take_dict()[final // reg_bm.get_states_count()],
+                )
             )
 
     return res
