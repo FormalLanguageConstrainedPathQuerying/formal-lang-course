@@ -77,3 +77,16 @@ class AutomatonManager:
                 )
 
         return result
+
+    @staticmethod
+    def rpq_multisource(
+        graph: MultiDiGraph,
+        query: str,
+        start_states: set = None,
+        final_states: set = None,
+        separate=False,
+    ) -> set:
+        nfa = AutomatonManager.create_nfa_from_graph(graph, start_states, final_states)
+        dfa = AutomatonManager.create_min_dfa_from_regex(query)
+
+        return MatrixManager.bfs(nfa, dfa, separate)

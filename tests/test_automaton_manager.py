@@ -82,3 +82,27 @@ def test_rpq2():
     actual = AutomatonManager.rpq(graph, query, start_nodes, final_nodes)
     expected = {(0, 1)}
     assert actual == expected
+
+
+def test_rpq_multisource1():
+    graph = MultiDiGraph()
+
+    actual = AutomatonManager.rpq_multisource(graph, "a*")
+    expected = set()
+
+    assert actual == expected
+
+
+def test_rpq_multisource2():
+    sizes = (2, 3)
+    labels = ("a", "b")
+    graph = GraphManager._GraphManager__create_two_cycle_labeled_graph(sizes, labels)
+
+    query = "a|bb"
+    start_nodes = {0}
+    final_nodes = {1, 2, 3}
+
+    actual = AutomatonManager.rpq_multisource(graph, query, start_nodes, final_nodes)
+    expected = {1}
+
+    assert actual == expected

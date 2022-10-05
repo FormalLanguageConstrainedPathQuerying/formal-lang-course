@@ -1,7 +1,11 @@
-from pyformlang.finite_automaton.finite_automaton import to_state, to_symbol
-from pyformlang.finite_automaton import NondeterministicFiniteAutomaton
+from pyformlang.finite_automaton.finite_automaton import (
+    to_state,
+    to_symbol,
+    FiniteAutomaton,
+)
+from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, State
 from scipy import sparse
-from scipy.sparse import csr_matrix, kron
+from scipy.sparse import csr_matrix, kron, lil_array, vstack, lil_matrix
 
 from project.boolean_matrix import BooleanMatrix
 
@@ -97,3 +101,156 @@ class MatrixManager:
                     final_states.add(new_state)
 
         return BooleanMatrix(idx_states, start_states, final_states, matrix)
+
+    @staticmethod
+    def _calc_direct_sum(first: BooleanMatrix, second: BooleanMatrix) -> BooleanMatrix:
+        first_states_len = len(first.idx_states)
+        second_states_len = len(second.idx_states)
+
+        idx_states = dict()
+        for _, first_index in first.idx_states.items():
+            for _, second_index in second.idx_states.items():
+                state = first_index * second_states_len + second_index
+                idx_states[state] = state
+
+        start_states = first.start_states | {
+            State(state.value + first_states_len) for state in second.start_states
+        }
+        final_states = first.final_states | {
+            State(state.value + first_states_len) for state in second.final_states
+        }
+
+        symbols = first.matrix.keys() & second.matrix.keys()
+        matrix = dict()
+        for symbol in symbols:
+            matrix[symbol] = sparse.bmat(
+                [
+                    [first.matrix[symbol], None],
+                    [None, second.matrix[symbol]],
+                ]
+            )
+
+        return BooleanMatrix(idx_states, start_states, final_states, matrix)
+
+    @staticmethod
+    def _transform_front(front: csr_matrix, states_num: int) -> csr_matrix:
+        transformed_front = lil_array(front.shape)
+
+        for (i, j) in zip(*front.nonzero()):
+            if j < states_num:
+                non_zero_row_right = front.getrow(i).tolil()[[0], states_num:]
+
+                if non_zero_row_right.nnz > 0:
+                    row_shift = i // states_num * states_num
+                    transformed_front[row_shift + j, j] = 1
+                    transformed_front[
+                        [row_shift + j], states_num:
+                    ] += non_zero_row_right
+
+        return transformed_front.tocsr()
+
+    @staticmethod
+    def _construct_single_front(
+        first: BooleanMatrix, second: BooleanMatrix
+    ) -> csr_matrix:
+        first_states_len = len(first.idx_states)
+        second_states_len = len(second.idx_states)
+
+        first_states = MatrixManager.from_boolean_matrix_to_nfa(first).states
+        front = lil_matrix((second_states_len, second_states_len + first_states_len))
+
+        right_part_front = lil_array(
+            [[state in first.start_states for state in first_states]]
+        )
+
+        for _, idx in second.idx_states.items():
+            front[idx, idx] = True
+            front[idx, second_states_len:] = right_part_front
+
+        return front.tocsr()
+
+    @staticmethod
+    def _construct_front(
+        first: BooleanMatrix, second: BooleanMatrix, separate: bool
+    ) -> csr_matrix:
+        first_states_len = len(first.idx_states)
+        second_states_len = len(second.idx_states)
+
+        if separate:
+            start_state_idx = {
+                idx
+                for idx in range(first_states_len)
+                if first.idx_states[idx] in first.start_states
+            }
+
+            fronts = [
+                MatrixManager._construct_single_front(first, second)
+                for _ in start_state_idx
+            ]
+
+            if len(fronts) > 0:
+                return csr_matrix(vstack(fronts))
+            else:
+                return csr_matrix(
+                    (second_states_len, second_states_len + first_states_len)
+                )
+        else:
+            return MatrixManager._construct_single_front(first, second)
+
+    @staticmethod
+    def bfs(first: FiniteAutomaton, second: FiniteAutomaton, separate: bool) -> set:
+        first_states = first.states
+        second_states = second.states
+
+        first = MatrixManager.from_nfa_to_boolean_matrix(first)
+        second = MatrixManager.from_nfa_to_boolean_matrix(second)
+
+        direct_sum = MatrixManager._calc_direct_sum(second, first)
+        first_states_len = len(first.idx_states)
+        second_states_len = len(second.idx_states)
+
+        first_start_state_idx = [
+            idx for idx, state in enumerate(first_states) if state in first.start_states
+        ]
+
+        first_final_state_idx = [
+            idx for idx, state in enumerate(first_states) if state in first.final_states
+        ]
+
+        second_final_state_indices = [
+            idx
+            for idx, state in enumerate(second_states)
+            if state in second.final_states
+        ]
+
+        front = MatrixManager._construct_front(first, second, separate)
+        visited = csr_matrix(front.shape)
+
+        while True:
+            visited_copy = visited.copy()
+
+            for _, matrix in direct_sum.matrix.items():
+                alt_front = visited @ matrix if front is None else front @ matrix
+                visited += MatrixManager._transform_front(alt_front, second_states_len)
+            front = None
+
+            if visited.nnz == visited_copy.nnz:
+                break
+
+        result = set()
+        for (i, j) in zip(*visited.nonzero()):
+            if (
+                j >= second_states_len
+                and i % second_states_len in second_final_state_indices
+            ):
+                if j - second_states_len in first_final_state_idx:
+                    result.add(
+                        j - second_states_len
+                        if not separate
+                        else (
+                            first_start_state_idx[i // first_states_len],
+                            j - second_states_len,
+                        )
+                    )
+
+        return result
