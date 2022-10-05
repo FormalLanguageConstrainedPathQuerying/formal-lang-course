@@ -18,8 +18,7 @@ def build_minimal_dfa_from_regex(regex: PythonRegex) -> DeterministicFiniteAutom
     :return dfa: DeterministicFiniteAutomaton
         Minimal deterministic FA
     """
-    epsilon_nfa = regex.to_epsilon_nfa()
-    return epsilon_nfa.to_deterministic().minimize()
+    return regex.to_epsilon_nfa().minimize()
 
 
 def build_nfa_from_graph(
