@@ -1,5 +1,5 @@
 from pyformlang.finite_automaton import FiniteAutomaton
-from scipy.sparse import dok_matrix, kron
+from scipy.sparse import dok_matrix, kron, block_diag, vstack
 
 
 class BoolAutomaton:
@@ -74,3 +74,96 @@ class BoolAutomaton:
             prev_nnz = cur_nnz
             cur_nnz = adj_matrix.nnz
         return adj_matrix
+
+    def direct_sum(self, target_automaton):
+        labels = set(self.edges.keys()).intersection(set(target_automaton.edges.keys()))
+        direct_sum = dict()
+        for label in labels:
+            direct_sum[label] = dok_matrix(
+                block_diag((target_automaton.edges[label], self.edges[label]))
+            )
+        return direct_sum
+
+    def create_front(self, target_automaton, start_states_indices):
+        front = dok_matrix(
+            (
+                target_automaton.number_of_states,
+                self.number_of_states + target_automaton.number_of_states,
+            ),
+            dtype=bool,
+        )
+        self_start_row = dok_matrix((1, self.number_of_states), dtype=bool)
+        for i in start_states_indices:
+            self_start_row[0, i] = True
+        for state_name in target_automaton.start_states:
+            i = target_automaton.state_number[state_name]
+            front[i, i] = True
+            front[i, target_automaton.number_of_states :] = self_start_row
+        return front
+
+    def transform_front(self, target_automaton, front):
+        transformed_front = dok_matrix(front.shape, dtype=bool)
+        for i, j in zip(*front.nonzero()):
+            if j < target_automaton.number_of_states:
+                nnz_row_for_self_automaton = front[
+                    i, target_automaton.number_of_states :
+                ]
+                if nnz_row_for_self_automaton.nnz > 0:
+                    row_for_each_start = (
+                        i
+                        // target_automaton.number_of_states
+                        * target_automaton.number_of_states
+                    )
+                    transformed_front[row_for_each_start + j, j] = True
+                    transformed_front[
+                        row_for_each_start + j, target_automaton.number_of_states :
+                    ] += nnz_row_for_self_automaton
+        return transformed_front
+
+    def bfs(self, target_automaton, for_each_start=False):
+        start_states_indices = [self.state_number[state] for state in self.start_states]
+        front = (
+            vstack(
+                [self.create_front(target_automaton, {i}) for i in start_states_indices]
+            )
+            if for_each_start
+            else self.create_front(target_automaton, start_states_indices)
+        )
+        direct_sum = self.direct_sum(target_automaton)
+        visited = dok_matrix(front.shape, dtype=bool)
+        while True:
+            old_visited = visited.copy()
+            for dir_sum_matrix in direct_sum.values():
+                new_front = (
+                    visited @ dir_sum_matrix
+                    if front is None
+                    else front @ dir_sum_matrix
+                )
+                visited += self.transform_front(target_automaton, new_front)
+            front = None
+            if visited.nnz == old_visited.nnz:
+                break
+
+        results = set()
+        target_states_names = list(target_automaton.state_number.keys())
+        self_states_names = list(self.state_number.keys())
+        for i, j in zip(*visited.nonzero()):
+            if (
+                j >= target_automaton.number_of_states
+                and target_states_names[i % target_automaton.number_of_states]
+                in target_automaton.final_states
+            ):
+                self_state = j - target_automaton.number_of_states
+                if self_states_names[self_state] in self.final_states:
+                    if for_each_start:
+                        results.add(
+                            (
+                                start_states_indices[
+                                    i // target_automaton.number_of_states
+                                ],
+                                self_state,
+                            )
+                        )
+                    else:
+                        results.add(self_state)
+        return results

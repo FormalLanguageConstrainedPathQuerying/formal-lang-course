@@ -2,7 +2,7 @@ from project.bool_automaton import *
 from project.automata_utils import *
 
 
-def rpq(graph, regex, start_states=None, final_states=None):
+def rpq_by_tensor(graph, regex, start_states=None, final_states=None):
     """
     Calculates which states can be reached by a given regex.
 
@@ -28,4 +28,16 @@ def rpq(graph, regex, start_states=None, final_states=None):
                     j // bool_by_regex.number_of_states,
                 )
             )
+    return result
+
+
+def rpq_by_bfs(
+    graph, regex, start_states=None, final_states=None, for_each_start=False
+):
+    a = create_nfa_by_graph(graph, start_nodes=start_states, final_nodes=final_states)
+    b = create_min_dfa_by_regex(regex)
+    bool_by_graph = BoolAutomaton(a)
+    bool_by_regex = BoolAutomaton(b)
+    result = bool_by_graph.bfs(bool_by_regex, for_each_start)
+
     return result
