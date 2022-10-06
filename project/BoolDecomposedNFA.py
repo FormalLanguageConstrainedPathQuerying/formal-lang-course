@@ -1,6 +1,7 @@
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton
 from scipy import sparse
 from scipy.sparse import dok_matrix
+from collections.abc import Iterable
 
 __all__ = ["BoolDecomposedNFA"]
 
@@ -121,9 +122,18 @@ class BoolDecomposedNFA:
                 self.__matrices[label], other.__matrices[label]
             )
 
+        for self_ind, self_node in self.__dict.items():
+            for other_ind, other_node in other.__dict.items():
+                new_ind = self_ind * other.__states_count + other_ind
+                if not isinstance(self_node, Iterable):
+                    self_node = [self_node]
+                if not isinstance(other_node, Iterable):
+                    other_node = [other_node]
+                new_node = tuple(list(self_node) + list(other_node))
+                res.__dict[new_ind] = new_node
+
         res.__matrices = matrices
         res.__states_count = self.__states_count * other.__states_count
-        res.__dict = {i: i for i in range(0, res.__states_count)}
         res.__start_vector = sparse.kron(self.__start_vector, other.__start_vector)
         res.__final_vector = sparse.kron(self.__final_vector, other.__final_vector)
         return res
