@@ -1,5 +1,7 @@
+import numpy as np
 from networkx import MultiDiGraph
 from pyformlang.regular_expression import Regex
+from scipy.sparse import csr_matrix, SparseEfficiencyWarning, lil_matrix
 
 from project.automata_utils import (
     from_regex_to_dfa,
@@ -8,7 +10,49 @@ from project.automata_utils import (
 )
 from project.graph_utils import from_graph_to_nfa
 
-__all__ = ["regular_path_query"]
+from project.regular_bfs import regular_bfs
+
+__all__ = ["regular_path_query", "bfs_based_regular_path_query"]
+
+
+def bfs_based_regular_path_query(
+    regex: Regex,
+    graph: MultiDiGraph,
+    separated: bool,
+    start_states: list[any],
+    final_states: list[any] = None,
+) -> set[any] | dict[any, set[any]]:
+    """
+    Performs rpq (regular path query) in graph with regex
+    :param regex: regex to define regular path query
+    :param graph: graph to be inspected
+    :param separated: if true result will be presented as dictionary where key node from start_states and value is set
+        of nodes which can be obtained from this node by rpq, otherwise result will be presented as set of graph nodes
+        which may be obtained from start_states
+    :param start_states: start nodes to rpq inside graph
+    :param final_states: final nodes to rpq inside graph (all nodes if None)
+    :return: if separated = True result will be presented as set of 2-element tuples of graph nodes which may
+        be connected by path, otherwise result will be presented as set of graph nodes which may be obtained
+        from start_states
+    """
+    if final_states is None:
+        final_states = graph.nodes
+
+    result = regular_bfs(
+        boolean_decompose_enfa(from_graph_to_nfa(graph)),
+        regex,
+        separated,
+        start_states,
+    )
+    if separated:
+        return set(
+            map(
+                lambda edge: (edge[0].value, edge[1].value),
+                filter(lambda edge: edge[1].value in final_states, result),
+            )
+        )
+    else:
+        return set(filter(lambda state: state.value in final_states, result))
 
 
 def regular_path_query(
@@ -21,8 +65,8 @@ def regular_path_query(
     Performs rpq (regular path query) in graph with regex
     :param regex: regex to define regular path query
     :param graph: graph to be inspected
-    :param start_states: start nodes to rpq inside graph
-    :param final_states: final nodes to rpq inside graph
+    :param start_states: start nodes to rpq inside graph (all nodes if None)
+    :param final_states: final nodes to rpq inside graph (all nodes if None)
     :return: 2 element tuples with nodes satisfying rpq
     """
     if start_states is None:
@@ -53,6 +97,6 @@ def regular_path_query(
             and regex_start_state in regex_as_enfa.start_states
             and regex_final_state in regex_as_enfa.final_states
         ):
-            results.add((graph_start_state, graph_final_state))
+            results.add((graph_start_state.value, graph_final_state.value))
 
     return results

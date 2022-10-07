@@ -6,10 +6,14 @@ from pyformlang.finite_automaton import (
 )
 from scipy.sparse import coo_matrix
 
-from project.automata_utils import (
-    kron_boolean_decompositions,
-)
 from project.boolean_decomposition import BooleanDecomposition
+
+
+def kron_boolean_decompositions(
+    d1: BooleanDecomposition, d2: BooleanDecomposition
+) -> BooleanDecomposition:
+    return d1.kron(d2)
+
 
 testdata = [
     (
