@@ -23,7 +23,7 @@ def non_empty_graph():
 
 
 def test_rpq_empty_graph(empty_graph):
-    result = rpq(
+    result = rpq_tensor(
         graph=empty_graph,
         query=Regex("abc"),
         start_states=None,
@@ -33,7 +33,7 @@ def test_rpq_empty_graph(empty_graph):
 
 
 def test_rpq_non_empty_graph_one_start_state_one_final_state(non_empty_graph):
-    result = rpq(
+    result = rpq_tensor(
         graph=non_empty_graph,
         query=Regex("(a|b)(c|d)"),
         start_states={0},
@@ -43,7 +43,7 @@ def test_rpq_non_empty_graph_one_start_state_one_final_state(non_empty_graph):
 
 
 def test_rpq_non_empty_graph_all_states_are_start_and_final(non_empty_graph):
-    result = rpq(
+    result = rpq_tensor(
         graph=non_empty_graph,
         query=Regex("(a|b)(c|d)"),
         start_states=None,
