@@ -30,6 +30,14 @@ class BooleanDecomposition:
     def get_final_states(self):
         return self.final_states
 
+    def get_index(self, state):
+        return self.state_indices[state]
+
+    def state_by_index(self, index):
+        for state, ind in self.state_indices.items():
+            if ind == index:
+                return state
+
     def __init_bool_matrices(
         self, automaton: finite_automaton.NondeterministicFiniteAutomaton
     ):

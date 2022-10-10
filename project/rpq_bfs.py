@@ -1,112 +1,135 @@
-from networkx import MultiDiGraph
+from typing import Union
+
+import networkx as nx
 from pyformlang.regular_expression import Regex
+from scipy import sparse
 
 from project.boolean_decompositon import BooleanDecomposition
 from project.regex_utils import create_nfa_from_graph, regex_to_dfa
-from scipy.sparse import block_diag, csr_matrix, vstack
-from pyformlang.finite_automaton import State
+from scipy.sparse import csr_matrix
 
 
 def rpq_bfs(
-    graph: MultiDiGraph,
+    graph: nx.MultiDiGraph,
     regex: Regex,
-    start_states: set[int] = None,
-    final_states: set[int] = None,
+    start_states: set = None,
+    final_states: set = None,
     is_for_each: bool = False,
 ) -> set:
+    if len(start_states) == 0 or len(final_states) == 0:
+        return set()
+
     graph_bool_decomposition = BooleanDecomposition(
         create_nfa_from_graph(graph, start_states, final_states)
     )
     regex_bool_decomposition = BooleanDecomposition(regex_to_dfa(regex))
+    result = bfs_sync(
+        graph_bool_decomposition,
+        regex_bool_decomposition,
+        is_for_each,
+        start_states,
+        final_states,
+    )
 
-    return bfs_sync(graph_bool_decomposition, regex_bool_decomposition, is_for_each)
+    return (
+        {(start.value, end.value) for (start, ends) in result.items() for end in ends}
+        if is_for_each
+        else {end.value for end in result}
+    )
 
 
-def get_reachable_nodes(regex, graph, front, direct_sum, is_for_each):
-    visited = csr_matrix(front.shape, dtype=bool)
-    is_first_step = True
-    while True:
-        old_visited_nnz = visited.nnz
-        for mtx in direct_sum.values():
-            step = front @ mtx if is_first_step else visited @ mtx
-            visited += transform_rows(step, regex.states_num, is_for_each)
-
-        is_first_step = False
-
-        if old_visited_nnz == visited.nnz:
-            break
-
-    reachable_nodes_acc = set()
-    regex_states = list(regex.state_indices.keys())
-    graph_states = list(graph.state_indices.keys())
-    for row, col in zip(*visited.nonzero()):
-        if (
-            not col < regex.states_num
-            and regex_states[row % regex.states_num] in regex.final_states
-        ):
-            state_index = col - regex.states_num
-            if graph_states[state_index] in graph.final_states:
-                if is_for_each:
-                    reachable_nodes_acc.add(
-                        (State(row // regex.states_num), State(state_index))
-                    )
-                else:
-                    reachable_nodes_acc.add(State(state_index))
-
-    return reachable_nodes_acc
+def _get_reachable_nodes(
+    sub_front_indexes,
+    graph: BooleanDecomposition,
+    regex: BooleanDecomposition,
+    visited,
+) -> set:
+    sub_front_padding = sub_front_indexes * regex.states_num
+    reachable = sparse.csr_matrix((1, graph.states_num), dtype=bool)
+    for i in map(lambda state: regex.get_index(state), regex.get_final_states()):
+        reachable += visited[sub_front_padding + i, :]
+    return set(
+        graph.state_by_index(i)
+        for i in reachable.nonzero()[1]
+        if i in map(lambda state: graph.get_index(state), graph.get_final_states())
+    )
 
 
 def bfs_sync(
-    graph: BooleanDecomposition, regex: BooleanDecomposition, is_for_each: bool = False
-) -> set:
-    if len(graph.state_indices.keys()) == 0 or len(regex.state_indices.keys()) == 0:
-        return set()
+    graph: BooleanDecomposition,
+    regex: BooleanDecomposition,
+    is_for_each: bool = False,
+    start_states: set = None,
+    final_states: set = None,
+) -> Union[set, dict]:
+    if len(graph.get_states()) == 0 or len(start_states) == 0 or len(final_states) == 0:
+        return dict() if is_for_each else set()
 
-    direct_sum = {}
-    for label in graph.bool_decomposition.keys() & regex.bool_decomposition.keys():
-        direct_sum[label] = block_diag(
-            (regex.bool_decomposition[label], graph.bool_decomposition[label])
-        )
-
+    common_symbols = graph.bool_decomposition.keys() & (regex.bool_decomposition.keys())
     front = (
-        vstack([create_front(graph, regex, {st}) for st in graph.get_start_states()])
+        sparse.vstack(
+            [
+                _create_front(graph, regex, {i})
+                for i in map(
+                    lambda state: graph.get_index(state),
+                    graph.get_start_states(),
+                )
+            ]
+        )
         if is_for_each
-        else create_front(graph, regex, graph.get_start_states())
+        else _create_front(
+            graph,
+            regex,
+            map(
+                lambda state: graph.get_index(state),
+                graph.get_start_states(),
+            ),
+        )
     )
 
-    return get_reachable_nodes(regex, graph, front, direct_sum, is_for_each)
+    visited = front
+    while True:
+        next_front = sparse.csr_matrix(front.shape, dtype=bool)
+        for label in common_symbols:
+            next_front_part = front * (graph.bool_decomposition[label])
+            for index in range(len(graph.get_start_states()) if is_for_each else 1):
+                padding = index * regex.states_num
+                for (i, j) in zip(*regex.bool_decomposition[label].nonzero()):
+                    next_front[padding + j, :] += next_front_part[padding + i, :]
+        front = next_front > visited
+        visited += front
+        if front.count_nonzero() == 0:
+            break
+
+    return (
+        {
+            graph.state_by_index(start_state_idx): _get_reachable_nodes(
+                sub_front_indexes, graph, regex, visited
+            )
+            for sub_front_indexes, start_state_idx in enumerate(
+                map(
+                    lambda state: graph.get_index(state),
+                    graph.get_start_states(),
+                )
+            )
+        }
+        if is_for_each
+        else _get_reachable_nodes(0, graph, regex, visited)
+    )
 
 
-def create_front(
+def _create_front(
     graph: BooleanDecomposition, regex: BooleanDecomposition, start_states
 ) -> csr_matrix:
-    front = csr_matrix(
-        (regex.states_num, regex.states_num + graph.states_num), dtype=bool
-    )
+    front_row = sparse.dok_matrix((1, graph.states_num), dtype=bool)
 
-    for state in regex.get_start_states():
-        i = regex.state_indices[state]
-        front[i, i] = True
+    for i in start_states:
+        front_row[0, i] = True
+    front_row = front_row.tocsr()
 
-        for graph_st in start_states:
-            front[i, regex.states_num + graph_st.value] = True
+    front = sparse.csr_matrix((regex.states_num, graph.states_num), dtype=bool)
+
+    for i in map(lambda state: regex.get_index(state), regex.get_start_states()):
+        front[i, :] = front_row
 
     return front
-
-
-def transform_rows(step: csr_matrix, regex_states, is_for_each) -> csr_matrix:
-    result = csr_matrix(step.shape, dtype=bool)
-
-    for row, col in zip(*step.nonzero()):
-        if col < regex_states:
-            right_row = step[row, regex_states:]
-            if right_row.nnz != 0:
-                if not is_for_each:
-                    result[col, col] = True
-                    result[col, regex_states:] += right_row
-                else:
-                    node_number = row // regex_states
-                    result[node_number * regex_states + col, col] = True
-                    result[node_number * regex_states + col, regex_states:] += right_row
-
-    return result
