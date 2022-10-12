@@ -48,7 +48,7 @@ def test_cross_boolean_matrices():
     for test in tests:
         m1 = BoolDecomposedNFA(test.graph1_nfa)
         m2 = BoolDecomposedNFA(test.graph2_nfa)
-        m3 = m1.intersect(m2)
+        m3 = m1 & m2
         nfa = m3.to_nfa()
         for i in test.accepts:
             assert nfa.accepts(
