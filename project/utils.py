@@ -9,6 +9,7 @@ __all__ = [
     "get_graph_info_by_name",
     "create_labeled_two_cycles_graph",
     "save_graph_as_dot",
+    "load_graph_from_dot",
     "create_and_save_labeled_two_cycles_graph",
 ]
 
@@ -36,6 +37,10 @@ def create_labeled_two_cycles_graph(
 
 def save_graph_as_dot(graph: nx.MultiDiGraph, path: str) -> None:
     nx.drawing.nx_pydot.write_dot(graph, path)
+
+
+def load_graph_from_dot(path: str) -> nx.MultiDiGraph:
+    return nx.drawing.nx_pydot.read_dot(path)
 
 
 def create_and_save_labeled_two_cycles_graph(
