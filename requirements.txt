@@ -2,6 +2,7 @@ antlr4-python3-runtime
 black
 cfpq-data
 pre-commit
+pycubool
 pydot
 pytest
 scipy
