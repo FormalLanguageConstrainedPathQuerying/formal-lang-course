@@ -1,4 +1,4 @@
-from scipy.sparse import spmatrix, vstack, csr_matrix
+from scipy.sparse import spmatrix, vstack, coo_matrix
 
 
 class LeftRightMatrix:
@@ -41,7 +41,9 @@ class LeftRightMatrix:
     def right_submatrix(self) -> spmatrix:
         return self._right_submatrix
 
-    def tocsr(self):
+    _convert_to_spmatrix = lambda mat: mat.tocsr()
+
+    def tospmatrix(self):
         _, width_left = self._left_submatrix.get_shape()
         height_right, width_right = self._right_submatrix.get_shape()
         left_submatrix = self._left_submatrix.tocsr()
@@ -55,8 +57,10 @@ class LeftRightMatrix:
         col = [j for (_, j) in zip(*left_submatrix.nonzero())] + [
             width_left + j for (_, j) in zip(*right_submatrix.nonzero())
         ]
-        return csr_matrix(
-            (data, (row, col)), shape=(height_right, width_right + width_left)
+        return LeftRightMatrix._convert_to_spmatrix(
+            coo_matrix(
+                (data, (row, col)), shape=(height_right, width_right + width_left)
+            )
         )
 
     def exclude_visited(self, visited: "LeftRightMatrix"):

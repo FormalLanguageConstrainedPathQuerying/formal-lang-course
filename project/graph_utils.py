@@ -8,6 +8,7 @@ from pyformlang.finite_automaton import EpsilonNFA, State, Symbol
 __all__ = [
     "GraphData",
     "from_named_graph_to_graph_data",
+    "from_graph_to_graph_data",
     "write_labeled_two_cycles_graph_as_dot",
     "from_graph_to_nfa",
 ]
