@@ -60,6 +60,7 @@ def get_graph_info(name: str):
     """
     graph = get_graph_by_name(name)
     labels = set()
+    graph
     for edge in graph.edges(data="label"):
         labels.add(edge[2])
     return GraphInfo(graph.number_of_nodes(), graph.number_of_edges(), labels)

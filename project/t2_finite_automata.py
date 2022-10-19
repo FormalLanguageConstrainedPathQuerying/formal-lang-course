@@ -4,12 +4,12 @@ from pyformlang.finite_automaton import (
     NondeterministicFiniteAutomaton,
     DeterministicFiniteAutomaton,
 )
-from pyformlang.regular_expression import PythonRegex
+from pyformlang.regular_expression import Regex
 import networkx as nx
 import pyformlang.finite_automaton as pfl
 
 
-def build_minimal_dfa_from_regex(regex: PythonRegex) -> DeterministicFiniteAutomaton:
+def build_minimal_dfa_from_regex(regex: Regex) -> DeterministicFiniteAutomaton:
     """Build minimal DFA from regular expression
 
     :param regex: PythonRegex

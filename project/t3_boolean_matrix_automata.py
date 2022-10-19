@@ -1,15 +1,7 @@
 from typing import Set, Dict
 
 from pyformlang.finite_automaton import State, EpsilonNFA
-from scipy.sparse import (
-    dok_matrix,
-    kron,
-    block_diag,
-    dok_array,
-    vstack,
-    csr_matrix,
-    csr_array,
-)
+from scipy.sparse import dok_matrix, kron, block_diag, vstack
 
 
 class BooleanMatrixAutomata:
@@ -17,9 +9,10 @@ class BooleanMatrixAutomata:
     states_indexes: Dict[State, int]
     start_state_indexes: Set[int]
     final_state_indexes: Set[int]
-    boolean_matrix: Dict[int, dok_matrix]
+    type_of_matrix = dok_matrix
+    boolean_matrix: Dict[int, type_of_matrix]
 
-    def __init__(self, nfa: EpsilonNFA = None):
+    def __init__(self, nfa: EpsilonNFA = None, tom=dok_matrix):
         if nfa is None:
             self.number_of_states = 0
             self.states_indexes = dict()
@@ -34,6 +27,7 @@ class BooleanMatrixAutomata:
             self.start_state_indexes = {i.value for i in nfa.start_states}
             self.final_state_indexes = {i.value for i in nfa.final_states}
             self.boolean_matrix = self.create_boolean_matrix_from_nfa(nfa)
+        self.type_of_matrix = tom
 
     def create_boolean_matrix_from_nfa(self, nfa: EpsilonNFA):
         boolean_matrix = {}
@@ -43,7 +37,7 @@ class BooleanMatrixAutomata:
                     target_states = {target_states}
                 for target_state in target_states:
                     if label not in boolean_matrix:
-                        boolean_matrix[label] = dok_matrix(
+                        boolean_matrix[label] = self.type_of_matrix(
                             (self.number_of_states, self.number_of_states), dtype=bool
                         )
                     boolean_matrix[label][
@@ -58,8 +52,8 @@ class BooleanMatrixAutomata:
             nfa.add_start_state(State(state))
         for state in self.final_state_indexes:
             nfa.add_final_state(State(state))
-        for label, dok_matrix_self in self.boolean_matrix.items():
-            matrix_array = dok_matrix_self.toarray()
+        for label, matrix_self in self.boolean_matrix.items():
+            matrix_array = matrix_self.toarray()
             for initial_state, i in self.states_indexes.items():
                 for target_state, j in self.states_indexes.items():
                     if matrix_array[i][j]:
@@ -106,11 +100,10 @@ class BooleanMatrixAutomata:
         self_n = self.number_of_states
         second_n = second.number_of_states
 
-        # second_states =
         def get_front(start_states=None):
-            front1 = dok_matrix((second_n, self_n + second_n), dtype=bool)
+            front1 = self.type_of_matrix((second_n, self_n + second_n), dtype=bool)
 
-            front_for_self = dok_matrix((1, self_n), dtype=bool)
+            front_for_self = self.type_of_matrix((1, self_n), dtype=bool)
             for i in start_states:
                 front_for_self[0, i] = True
             for ss in second.start_state_indexes:
@@ -119,8 +112,8 @@ class BooleanMatrixAutomata:
                 front1[[i], second_n:] = front_for_self
             return front1
 
-        def transform_rows(front_part: dok_array):
-            new_fp = dok_array(front_part.shape, dtype=bool)
+        def transform_rows(front_part):
+            new_fp = self.type_of_matrix(front_part.shape, dtype=bool)
             xx, yy = front_part.nonzero()
             for ii, jj in zip(xx, yy):
                 if jj < second_n:
@@ -144,7 +137,7 @@ class BooleanMatrixAutomata:
             else get_front(self.start_state_indexes)
         )
 
-        visited = dok_array(front.shape, dtype=bool)
+        visited = self.type_of_matrix(front.shape, dtype=bool)
         is_first_step = True
         while True:
             visited_nnz = visited.nnz

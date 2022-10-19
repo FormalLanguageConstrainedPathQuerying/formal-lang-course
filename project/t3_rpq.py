@@ -1,12 +1,14 @@
 from project.t2_finite_automata import *
-from project.t3_boolean_matrix_automata import BooleanMatrixAutomata
+from project.t3_boolean_matrix_automata import *
 
 
-def rpq(graph, regex, start_states=None, final_states=None):
+def rpq(graph, regex, start_states=None, final_states=None, type_of_matrix=dok_matrix):
     bool_matrix_for_graph = BooleanMatrixAutomata(
-        build_nfa_from_graph(graph, start_states, final_states)
+        build_nfa_from_graph(graph, start_states, final_states), type_of_matrix
     )
-    bool_matrix_for_regex = BooleanMatrixAutomata(build_minimal_dfa_from_regex(regex))
+    bool_matrix_for_regex = BooleanMatrixAutomata(
+        build_minimal_dfa_from_regex(regex), type_of_matrix
+    )
     intersection = bool_matrix_for_graph.intersect(bool_matrix_for_regex)
     tc = intersection.transitive_closure()
     row, col = tc.nonzero()
