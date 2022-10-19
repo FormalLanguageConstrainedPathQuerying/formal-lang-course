@@ -36,23 +36,23 @@ def test_get_graph_info_by_graph(two_cycles_graph):
     assert info_by_graph.labels == {"a", "b"}
 
 
-# def test_get_graph_info_by_name():
-#     info_by_name = get_info_by_name("univ")
-#     assert info_by_name.number_of_nodes == 179
-#     assert info_by_name.number_of_edges == 293
-#     assert info_by_name.labels == {
-#         "someValuesFrom",
-#         "first",
-#         "intersectionOf",
-#         "subClassOf",
-#         "range",
-#         "rest",
-#         "comment",
-#         "type",
-#         "versionInfo",
-#         "subPropertyOf",
-#         "label",
-#         "domain",
-#         "onProperty",
-#         "inverseOf",
-#     }
+def test_get_graph_info_by_name():
+    info_by_name = get_info_by_name("univ")
+    assert info_by_name.number_of_nodes == 179
+    assert info_by_name.number_of_edges == 293
+    assert info_by_name.labels == {
+        "someValuesFrom",
+        "first",
+        "intersectionOf",
+        "subClassOf",
+        "range",
+        "rest",
+        "comment",
+        "type",
+        "versionInfo",
+        "subPropertyOf",
+        "label",
+        "domain",
+        "onProperty",
+        "inverseOf",
+    }

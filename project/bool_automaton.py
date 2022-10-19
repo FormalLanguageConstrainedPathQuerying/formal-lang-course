@@ -1,9 +1,10 @@
 from pyformlang.finite_automaton import FiniteAutomaton
-from scipy.sparse import dok_matrix, kron, block_diag, vstack
+from scipy.sparse import lil_matrix, kron, block_diag, vstack
 
 
 class BoolAutomaton:
-    def __init__(self, automaton: FiniteAutomaton):
+    def __init__(self, automaton: FiniteAutomaton, type_of_matrix=lil_matrix):
+        self.type_of_matrix = type_of_matrix
         self.start_states = automaton.start_states
         self.final_states = automaton.final_states
         self.number_of_states = len(automaton.states)
@@ -23,7 +24,7 @@ class BoolAutomaton:
                     }
                 for to_state in transitions.get(from_state).get(label):
                     if label not in self.edges.keys():
-                        self.edges[label] = dok_matrix(
+                        self.edges[label] = type_of_matrix(
                             (self.number_of_states, self.number_of_states), dtype=bool
                         )
                     i = self.state_number.get(from_state)
@@ -79,20 +80,20 @@ class BoolAutomaton:
         labels = set(self.edges.keys()).intersection(set(target_automaton.edges.keys()))
         direct_sum = dict()
         for label in labels:
-            direct_sum[label] = dok_matrix(
+            direct_sum[label] = self.type_of_matrix(
                 block_diag((target_automaton.edges[label], self.edges[label]))
             )
         return direct_sum
 
     def create_front(self, target_automaton, start_states_indices):
-        front = dok_matrix(
+        front = self.type_of_matrix(
             (
                 target_automaton.number_of_states,
                 self.number_of_states + target_automaton.number_of_states,
             ),
             dtype=bool,
         )
-        self_start_row = dok_matrix((1, self.number_of_states), dtype=bool)
+        self_start_row = self.type_of_matrix((1, self.number_of_states), dtype=bool)
         for i in start_states_indices:
             self_start_row[0, i] = True
         for state_name in target_automaton.start_states:
@@ -102,7 +103,7 @@ class BoolAutomaton:
         return front
 
     def transform_front(self, target_automaton, front):
-        transformed_front = dok_matrix(front.shape, dtype=bool)
+        transformed_front = self.type_of_matrix(front.shape, dtype=bool)
         for i, j in zip(*front.nonzero()):
             if j < target_automaton.number_of_states:
                 nnz_row_for_self_automaton = front[
@@ -130,7 +131,7 @@ class BoolAutomaton:
             else self.create_front(target_automaton, start_states_indices)
         )
         direct_sum = self.direct_sum(target_automaton)
-        visited = dok_matrix(front.shape, dtype=bool)
+        visited = self.type_of_matrix(front.shape, dtype=bool)
         while True:
             old_visited = visited.copy()
             for dir_sum_matrix in direct_sum.values():

@@ -1,5 +1,12 @@
+import time
+from collections import Counter
+
+import cfpq_data
 import pytest
-from pyformlang.regular_expression import PythonRegex
+from prettytable import PrettyTable
+from pyformlang.regular_expression import PythonRegex, Regex
+from scipy import stats, mean
+from scipy.sparse import csr_matrix, dok_matrix, csc_matrix
 
 from project.rpq import *
 
@@ -9,6 +16,7 @@ from project.rpq import *
     [
         ("a*b*", {1}, {6}, {(1, 6)}),
         ("aa", {0}, {2}, {(0, 2)}),
+        ("(a|c)*b", {0, 1}, {4, 5}, {(0, 4), (1, 4)}),
         ("d*a*n*i*e*l*", {0}, {1, 2, 3}, {(0, 1), (0, 2), (0, 3)}),
     ],
 )
@@ -26,6 +34,7 @@ def test_rpq(two_cycles_graph, regex, start_states, final_states, expected):
     [
         ("a*b*", {1}, {6}, {6}),
         ("aa", {0}, {2}, {2}),
+        ("(a|c)*b", {0, 1}, {4, 5}, {4}),
         ("d*a*n*i*e*l*", {0, 1}, {1, 2, 3}, {1, 2, 3}),
     ],
 )
@@ -43,6 +52,7 @@ def test_rpq_by_bfs(two_cycles_graph, regex, start_states, final_states, expecte
     [
         ("a*b*", {1}, {6}, {(1, 6)}),
         ("aa", {0}, {2}, {(0, 2)}),
+        ("(a|c)*b", {0, 1}, {4, 5}, {(0, 4), (1, 4)}),
         (
             "d*a*n*i*e*l*",
             {0, 1},
