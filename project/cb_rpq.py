@@ -4,10 +4,10 @@ import networkx as nx
 import pycubool as cb
 
 __all__ = [
-    "cb_rpq_by_bm",
-    "cb_rpq_by_reg_str",
-    "cb_rpq_by_bm_from_start",
-    "cb_rpq_by_reg_str_from_start",
+    "cb_rpq",
+    "cb_rpq_reg_str",
+    "cb_rpq_bfs",
+    "cb_rpq_bfs_reg_str",
 ]
 
 
@@ -23,7 +23,7 @@ def block_diag(m1: cb.Matrix, m1_size: int, m2: cb.Matrix, m2_size: int) -> cb.M
     return m3
 
 
-def cb_rpq_by_bm_from_start(
+def cb_rpq_bfs(
     graph: nx.MultiDiGraph,
     bm: CBBoolDecomposedNFA,
     start_states: set = None,
@@ -36,7 +36,6 @@ def cb_rpq_by_bm_from_start(
     graph_start_states = graph_bm.take_start_vector()
     start_states = graph_start_states.to_lists()[1]
     final_states = set(graph_bm.take_final_vector().to_lists()[1])
-    start_states_count = graph_start_states.nvals
     graph_states_count = graph_bm.take_states_count()
     graph_dict = graph_bm.take_dict()
     graph_bm = graph_bm.take_matrices()
@@ -49,14 +48,7 @@ def cb_rpq_by_bm_from_start(
     reg_states_count = reg_bm.take_states_count()
     reg_bm = reg_bm.take_matrices()
 
-    std_matrix_shape = None
-    if not separated:
-        std_matrix_shape = (reg_states_count, graph_states_count + reg_states_count)
-    else:
-        std_matrix_shape = (
-            reg_states_count * start_states_count,
-            graph_states_count + reg_states_count,
-        )
+    shape = (reg_states_count, graph_states_count + reg_states_count)
 
     intersecting_labels = graph_bm.keys() & reg_bm.keys()
     block_bm = {}
@@ -65,83 +57,77 @@ def cb_rpq_by_bm_from_start(
             reg_bm[i], reg_states_count, graph_bm[i], graph_states_count
         )
 
-    curr_state = cb.Matrix.empty(shape=std_matrix_shape)
-    mask = curr_state.dup()
+    curr_state = dict()
+    mask = dict()
+    queue = []
 
     if not separated:
+        curr_state[0] = cb.Matrix.empty(shape=shape)
         for i in reg_start_states.to_lists()[1]:
-            curr_state[i, i] = True
+            curr_state[0][i, i] = True
             for j in graph_start_states.to_lists()[1]:
-                curr_state[i, j + reg_states_count] = True
+                curr_state[0][i, j + reg_states_count] = True
+        queue.append(0)
     else:
-        for j in range(0, start_states_count):
+        for s in start_states:
+            curr_state[s] = cb.Matrix.empty(shape=shape)
             for i in reg_start_states.to_lists()[1]:
-                x = reg_states_count * j + i
-                curr_state[x, i] = True
-                curr_state[x, reg_states_count + start_states[j]] = True
+                curr_state[s][i, i] = True
+                curr_state[s][i, reg_states_count + s] = True
+            queue.append(s)
 
-    prev_nnz = None
-    curr_nnz = mask.nvals
-    while prev_nnz != curr_nnz:
-        new_state = cb.Matrix.empty(shape=std_matrix_shape)
-        for m in block_bm.values():
-            m_state = curr_state.mxm(m)
-            m_state_reg = m_state[0:, 0:reg_states_count]
-            m_state_graph = m_state[0:, reg_states_count:]
-            for x, y in m_state_reg.to_list():
-                x_ns = reg_states_count * (x // reg_states_count) + y
-                new_state[x_ns, y % reg_states_count] = True
-                new_row = new_state[x_ns : x_ns + 1, reg_states_count:].ewiseadd(
-                    m_state_graph[x : x + 1, 0:]
-                )
-                for i in new_row.to_lists()[1]:
-                    new_state[x_ns, i + reg_states_count] = True
-        curr_state = new_state
-        mask = mask.ewiseadd(curr_state)
+    mask = {i: m.dup() for i, m in curr_state.items()}
+
+    curr_nnz = {i: m.nvals for i, m in mask.items()}
+    while queue != []:
+        for s in queue:
+            new_state = cb.Matrix.empty(shape=shape)
+            for m in block_bm.values():
+                m_state = curr_state[s].mxm(m)
+                m_state_reg = m_state[0:, 0:reg_states_count]
+                m_state_graph = m_state[0:, reg_states_count:]
+                for x, y in m_state_reg.to_list():
+                    new_state[y, y] = True
+                    new_row = new_state[y : y + 1, reg_states_count:].ewiseadd(
+                        m_state_graph[x : x + 1, 0:]
+                    )
+                    for i in new_row.to_lists()[1]:
+                        new_state[y, i + reg_states_count] = True
+            curr_state[s] = new_state
+            mask[s] = mask[s].ewiseadd(new_state)
         prev_nnz = curr_nnz
-        curr_nnz = mask.nvals
+        curr_nnz = {i: m.nvals for i, m in mask.items()}
+        queue = [s for s in queue if prev_nnz[s] != curr_nnz[s]]
 
     res = None
-
-    mask_set = set(mask.to_list())
-
     if not separated:
         res = cb.Matrix.empty(shape=(1, graph_states_count))
         for i in reg_final_states.to_lists()[1]:
-            if (i, i) in mask:
-                res = res.ewiseadd(mask[i : i + 1, reg_states_count:])
-    else:
-        res = cb.Matrix.empty(shape=(start_states_count, graph_states_count))
-        for j in range(0, start_states_count):
-            for i in reg_final_states.to_lists()[1]:
-                x = reg_states_count * j + i
-                if (x, i) in mask:
-                    new_row = res[j : j + 1, 0:].ewiseadd(
-                        mask[x : x + 1, reg_states_count:]
-                    )
-                    for r in new_row.to_lists()[1]:
-                        res[j, r] = True
-
-    if not separated:
+            if (i, i) in mask[0]:
+                res = res.ewiseadd(mask[0][i : i + 1, reg_states_count:])
         res = {graph_dict[i] for i in res.to_lists()[1] if i in final_states}
     else:
-        res = {
-            (graph_dict[start_states[s]], graph_dict[f])
-            for s, f in res.to_list()
-            if f in final_states
-        }
+        res = set()
+        for s in start_states:
+            pre_res = cb.Matrix.empty(shape=(1, graph_states_count))
+            for i in reg_final_states.to_lists()[1]:
+                if (i, i) in mask[s]:
+                    pre_res = pre_res.ewiseadd(mask[s][i : i + 1, reg_states_count:])
+            for f in pre_res.to_lists()[1]:
+                if f in final_states:
+                    res.add((graph_dict[s], graph_dict[f]))
 
     return res
 
 
-def cb_rpq_by_reg_str_from_start(
+def cb_rpq_bfs_reg_str(
     graph: nx.MultiDiGraph,
     reg_str: str,
     start_states: set = None,
     final_states: set = None,
     separated: bool = False,
 ) -> set:
-    return cb_rpq_by_bm_from_start(
+    return cb_rpq_bfs(
         graph,
         CBBoolDecomposedNFA(reg_str_to_dfa(reg_str)),
         start_states,
@@ -150,7 +136,7 @@ def cb_rpq_by_reg_str_from_start(
     )
 
 
-def cb_rpq_by_bm(
+def cb_rpq(
     graph: nx.MultiDiGraph,
     bm: CBBoolDecomposedNFA,
     start_states: set = None,
@@ -182,12 +168,12 @@ def cb_rpq_by_bm(
     return res
 
 
-def cb_rpq_by_reg_str(
+def cb_rpq_reg_str(
     graph: nx.MultiDiGraph,
     reg_str: str,
     start_states: set = None,
     final_states: set = None,
 ) -> set:
-    return cb_rpq_by_bm(
+    return cb_rpq(
         graph, CBBoolDecomposedNFA(reg_str_to_dfa(reg_str)), start_states, final_states
     )
