@@ -3,4 +3,5 @@ __all__ = [
     "automata_utils",
     "boolean_decomposition",
     "regular_path_query",
+    "cfg_utils",
 ]
