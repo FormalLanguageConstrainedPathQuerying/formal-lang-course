@@ -1,16 +1,12 @@
-import networkx as nx
 import pytest
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton
 
-from project.boolean_decompositon import (
-    get_intersect_boolean_decomposition,
-    decomposition_to_automaton,
-)
+
 from project.regex_utils import create_nfa_from_graph
 from project.rpq import (
     BooleanDecomposition,
 )
-from tests.test_task3.utils import get_data, dot_to_graph
+from tests.utils import get_data, dot_to_graph
 
 
 @pytest.mark.parametrize(
@@ -44,9 +40,10 @@ def test_intersection(
     decomposition1 = BooleanDecomposition(graph1)
     decomposition2 = BooleanDecomposition(graph2)
 
-    intersected = get_intersect_boolean_decomposition(decomposition1, decomposition2)
+    # intersected = get_intersect_boolean_decomposition(decomposition1, decomposition2)
+    intersected = decomposition1.get_intersect_boolean_decomposition(decomposition2)
 
-    actual = decomposition_to_automaton(intersected)
+    actual = intersected.decomposition_to_automaton()
 
     if len(expected.states) == 0:
         assert actual.to_networkx().__str__() == expected.to_networkx().__str__()

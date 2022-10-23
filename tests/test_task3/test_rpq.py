@@ -1,8 +1,7 @@
-import networkx as nx
 import pytest
 
 from project.rpq import rpq
-from tests.test_task3.utils import get_data, dot_to_graph
+from tests.utils import get_data, dot_to_graph
 
 
 @pytest.mark.parametrize(
