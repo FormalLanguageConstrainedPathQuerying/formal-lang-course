@@ -3,7 +3,6 @@ from pyformlang.regular_expression import Regex
 
 from project.boolean_decompositon import (
     BooleanDecomposition,
-    get_intersect_boolean_decomposition,
 )
 from project.regex_utils import create_nfa_from_graph, regex_to_dfa
 
@@ -17,8 +16,8 @@ def rpq(
     nfa_decomposition = BooleanDecomposition(nfa)
     query_decomposition = BooleanDecomposition(dfa)
 
-    intersected = get_intersect_boolean_decomposition(
-        nfa_decomposition, query_decomposition
+    intersected = nfa_decomposition.get_intersect_boolean_decomposition(
+        query_decomposition
     )
     transitive_closure = intersected.make_transitive_closure()
 
