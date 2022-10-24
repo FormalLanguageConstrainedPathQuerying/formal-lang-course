@@ -1,12 +1,5 @@
-import time
-from collections import Counter
-
-import cfpq_data
 import pytest
-from prettytable import PrettyTable
-from pyformlang.regular_expression import PythonRegex, Regex
-from scipy import stats, mean
-from scipy.sparse import csr_matrix, dok_matrix, csc_matrix
+from pyformlang.regular_expression import PythonRegex
 
 from project.rpq import *
 

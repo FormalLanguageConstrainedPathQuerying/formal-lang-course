@@ -1,0 +1,6 @@
+S -> A B | z
+S -> z
+A -> "VAR:a#CNF#" "VAR:b#CNF#"
+a#CNF# -> a
+b#CNF# -> b
+B -> $

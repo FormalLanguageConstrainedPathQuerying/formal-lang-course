@@ -1,0 +1,5 @@
+S -> C D E
+C -> f G
+G -> h
+D -> i
+E -> j

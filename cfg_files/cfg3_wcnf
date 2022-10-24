@@ -1,0 +1,4 @@
+S -> A "VAR:C#CNF#1" | c
+C#CNF#1 -> S B
+B -> b
+A -> a
