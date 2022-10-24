@@ -7,7 +7,7 @@ from pyformlang.cfg import CFG, Terminal, Variable
 
 from project.cfg_utils import import_cfg_from_file, from_cfg_to_weak_cnf
 
-path_to_tests = "./resources/test_from_cfg_to_weak_cnf/"
+path_to_tests = "tests/resources/test_from_cfg_to_weak_cnf/"
 max_word_len = 10
 
 testdata = [
@@ -40,7 +40,7 @@ def test_from_cfg_to_weak_cnf(path_to_actual: str):
     cfg = import_cfg_from_file(path_to_actual)
     weak_cnf_cfg = from_cfg_to_weak_cnf(cfg)
 
-    # in tests we dont use wide words but there are infinite grammars
+    # in tests we dont use grammars with wide words but there are infinite grammars
     expected_words = set()
     for word in cfg.get_words(max_length=max_word_len):
         expected_words.add(reduce(lambda acc, symbol: acc + str(symbol), word, ""))
