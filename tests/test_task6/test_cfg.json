@@ -1,0 +1,59 @@
+{
+  "test_cfg": [
+    {
+      "cfg": "",
+      "start": null,
+      "wcnf": ""
+    },
+    {
+      "cfg": "S1 -> a",
+      "start": "S1",
+      "wcnf": "S1 -> a"
+    },
+    {
+      "cfg": "S1 -> a",
+      "start": "S",
+      "wcnf": ""
+    },
+    {
+      "cfg": "S -> A B\nA -> a\nB -> b",
+      "start": "S",
+      "wcnf": "S -> A B\nA -> a\nB -> b"
+    },
+    {
+      "cfg": "S -> a b",
+      "start": null,
+      "wcnf": "S -> \"VAR:a#CNF#\" \"VAR:b#CNF#\" \n \"VAR:a#CNF#\" -> a \n \"VAR:b#CNF#\" -> b"
+    },
+    {
+      "cfg": "S -> A S | epsilon\nA -> a",
+      "start": null,
+      "wcnf": "S -> A S | epsilon\nA -> a"
+    },
+    {
+      "cfg": "S -> A \n A -> a",
+      "start": null,
+      "wcnf": "S -> a"
+    },
+    {
+      "cfg": "S -> epsilon",
+      "start": null,
+      "wcnf": "S -> epsilon"
+    },
+    {
+      "cfg": "S -> A B C D E\nA -> a\nB -> b\nC -> c\nD -> d\nE -> e",
+      "start": null,
+      "wcnf": "S -> A C#CNF#1\nC#CNF#1 -> B C#CNF#2\nC#CNF#2 -> C C#CNF#3\nC#CNF#3 -> D E\nA -> a\nB -> b\nC -> c\nD -> d\nE -> e"
+    },
+    {
+      "cfg": "S -> a b c epsilon",
+      "start": null,
+      "wcnf": "S -> \"VAR:a#CNF#\" C#CNF#1\nC#CNF#1 -> \"VAR:b#CNF#\" \"VAR:c#CNF#\"\na#CNF# -> a\nb#CNF# -> b\nc#CNF# -> c\n"
+    },
+    {
+      "cfg": "S -> A\nA -> B\nB -> b",
+      "start": null,
+      "wcnf": "S -> b"
+    }
+  ]
+}
