@@ -1,0 +1,4 @@
+S ->
+S -> a S b S
+X -> x o
+T -> z X c
