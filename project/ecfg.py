@@ -21,12 +21,13 @@ class ECFG:
         start_variable = cfg.start_symbol
         productions = dict()
         for production in cfg.productions:
-            if production.head not in productions:
-                productions[production.head] = Regex("")
             body = Regex(
                 ".".join(symbol.value for symbol in production.body)
                 if len(production.body) > 0
                 else "$"
             )
-            productions[production.head].union(body)
+            if production.head not in productions:
+                productions[production.head] = body
+            else:
+                productions[production.head] = productions[production.head].union(body)
         return ECFG(start_variable, productions)
