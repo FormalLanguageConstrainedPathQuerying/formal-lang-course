@@ -15,3 +15,6 @@ from project.rsm import *
 
 import project.ecfg
 from project.ecfg import *
+
+import project.cyk
+from project.cyk import *
