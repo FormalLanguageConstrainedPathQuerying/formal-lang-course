@@ -5,5 +5,5 @@ networkx
 pre-commit
 pydot
 pyformlang
-pytest
+pytest==7.1.3
 scipy
