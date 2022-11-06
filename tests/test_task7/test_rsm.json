@@ -1,0 +1,65 @@
+{
+  "test_rsm": [
+    {
+      "cfg": "",
+      "expected": {
+        "start": "S",
+        "boxes": {}
+      }
+    },
+    {
+      "cfg": "S -> a",
+      "expected": {
+        "start": "S",
+        "boxes": {
+          "S": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [key=0, label=a]}"
+        }
+      }
+    },
+    {
+      "cfg": "S -> A S | B S | $\nA -> a\nB -> b",
+      "expected": {
+        "start": "S",
+        "boxes": {
+          "S": "digraph {1 [is_start=True, is_final=True]; 2 [is_start=False, is_final=False]; 3 [is_start=False, is_final=True]; 1 -> 2 [key=0, label=A];2 -> 3 [key=0, label=S]; 1 -> 2 [key=1, label=B] }",
+          "A": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [key=0, label=a];}",
+          "B": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [key=0, label=b];}"
+        }
+      }
+    },
+    {
+      "cfg": "S -> A B C D E\nA -> a\nB -> b\nC -> c\nD -> d\nE -> e",
+      "expected": {
+        "start": "S",
+        "boxes": {
+          "S": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=False]; 3 [is_start=False, is_final=False]; 4 [is_start=False, is_final=False]; 5 [is_start=False, is_final=False]; 6 [is_start=False, is_final=True]; 1 -> 2 [key=0, label=A]; 2 -> 3 [key=1, label=B]; 3 -> 4 [key=2, label=C];4 -> 5 [key=3, label=D];5 -> 6 [key=4, label=E]; }",
+          "A": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [key=0, label=a];}",
+          "B": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [key=0, label=b];}",
+          "C": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [key=0, label=c];}",
+          "D": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [key=0, label=d];}",
+          "E": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [key=0, label=e];}"
+        }
+      }
+    },
+    {
+      "cfg": "S -> a b $ c",
+      "expected": {
+        "start": "S",
+        "boxes": {
+          "S": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=False]; 3 [is_start=False, is_final=False]; 4 [is_start=False, is_final=True]; 1 -> 2 [key=0, label=a]; 2 -> 3 [key=1, label=b]; 3 -> 4 [key=2, label=c]; }"
+        }
+      }
+    },
+    {
+      "cfg": "S -> A\nA -> B\nB -> b",
+      "expected": {
+        "start": "S",
+        "boxes": {
+          "S": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [key=0, label=A]}",
+          "A": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [key=0, label=B]}",
+          "B": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [key=0, label=b]}"
+        }
+      }
+    }
+  ]
+}
