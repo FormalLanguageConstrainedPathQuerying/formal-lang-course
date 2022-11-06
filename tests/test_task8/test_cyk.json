@@ -1,0 +1,39 @@
+{
+  "test_cyk": [
+    {
+      "cfg": "",
+      "word": "",
+      "expected": false
+    },
+    {
+      "cfg": "S -> a",
+      "word": "",
+      "expected": false
+    },
+    {
+      "cfg": "S -> $",
+      "word": "",
+      "expected": true
+    },
+    {
+      "cfg": "S -> a S b S | $",
+      "word": "aabbababaaabbb",
+      "expected": true
+    },
+    {
+      "cfg": "S -> a S b S | $",
+      "word": "",
+      "expected": true
+    },
+    {
+      "cfg": "S -> a S b S | $",
+      "word": "abcd",
+      "expected": false
+    },
+    {
+      "cfg": "S -> a S b S | $",
+      "word": "ab",
+      "expected": true
+    }
+  ]
+}
