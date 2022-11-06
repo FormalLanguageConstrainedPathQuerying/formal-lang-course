@@ -49,6 +49,7 @@ def regular_bfs(
     regex_decomposition = boolean_decompose_enfa(regex_as_enfa)
 
     direct_sum_decomposition = regex_decomposition.direct_sum(graph_decomposition)
+    direct_sum_decomposition_as_matrices = direct_sum_decomposition.to_dict().values()
     regex_states_count = regex_decomposition.states_count()
     graph_states_count = graph_decomposition.states_count()
     if not separated:
@@ -84,20 +85,24 @@ def regular_bfs(
                 graph_decomposition.state_index(state),
             ] = 1
 
+    last_iteration_visited = copy(visited.tospmatrix())
     while True:
-        last_iteration_visited = copy(visited)
         frontier.exclude_visited(visited)
+        frontier_as_spmatrix = frontier.tospmatrix()
         new_frontier = copy(frontier)
-        for matrix in direct_sum_decomposition.to_dict().values():
+        for matrix in direct_sum_decomposition_as_matrices:
             next_step = from_spmatrix_to_left_right_matrix(
-                frontier.tocsr() @ matrix.tocsr(), regex_states_count
+                frontier_as_spmatrix @ matrix, regex_states_count
             )
             new_frontier.merge(next_step, regex_states_count)
         visited.merge(frontier, regex_states_count)
         frontier = new_frontier
 
-        if last_iteration_visited.tocsr().nnz == visited.tocsr().nnz:
+        visited_as_spmatrix = visited.tospmatrix()
+        if last_iteration_visited.nnz == visited_as_spmatrix.nnz:
             break
+        else:
+            last_iteration_visited = visited_as_spmatrix
 
     result = set()
     if not separated:

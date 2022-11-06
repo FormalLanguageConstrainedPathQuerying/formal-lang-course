@@ -53,8 +53,13 @@ class BooleanDecomposition:
     def state_index(self, state) -> int:
         return self._states_list.index(state)
 
+    _convert_to_spmatrix = lambda mat: mat.tocsr()
+
     def to_dict(self) -> dict[Symbol, coo_matrix]:
-        return self._symbols_to_matrix
+        d = dict()
+        for (symbol, matrix) in self._symbols_to_matrix.items():
+            d[symbol] = BooleanDecomposition._convert_to_spmatrix(matrix)
+        return d
 
     def kron(self, other: "BooleanDecomposition") -> "BooleanDecomposition":
         """
@@ -78,7 +83,10 @@ class BooleanDecomposition:
             else:
                 coo_matrix2 = coo_matrix((other.states_count(), other.states_count()))
 
-            intersection_decomposition[symbol] = kron(coo_matrix1, coo_matrix2)
+            intersection_decomposition[symbol] = kron(
+                BooleanDecomposition._convert_to_spmatrix(coo_matrix1),
+                BooleanDecomposition._convert_to_spmatrix(coo_matrix2),
+            )
 
         intersection_states = list()
         for state1 in self.states():
@@ -95,6 +103,8 @@ class BooleanDecomposition:
             self._symbols_to_matrix.values(),
             coo_matrix((self.states_count(), self.states_count())),
         )
+
+        adjacency_matrix = BooleanDecomposition._convert_to_spmatrix(adjacency_matrix)
 
         last_values_count = 0
         while last_values_count != adjacency_matrix.nnz:
