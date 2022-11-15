@@ -18,3 +18,6 @@ from project.ecfg import *
 
 import project.cyk
 from project.cyk import *
+
+import project.cfpq
+from project.cfpq import *
