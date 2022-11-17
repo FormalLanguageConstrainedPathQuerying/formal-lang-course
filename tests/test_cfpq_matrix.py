@@ -1,4 +1,5 @@
 import pytest
+
 from networkx import MultiDiGraph
 from pyformlang.cfg import CFG
 
