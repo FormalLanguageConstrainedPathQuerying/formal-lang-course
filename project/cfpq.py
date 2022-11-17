@@ -1,4 +1,5 @@
 from collections import defaultdict, deque
+from enum import Enum, auto
 from typing import Tuple, Set, Any, Union
 from networkx import MultiDiGraph
 from pyformlang.cfg import CFG, Variable, Terminal
@@ -6,11 +7,29 @@ from project.graph_utils import load_graph
 from project.cfg_utils import cfg_to_wcnf, cfg_from_file
 
 __all__ = [
+    "CFPQAlgorithm",
     "cfpq",
 ]
 
 
+class CFPQAlgorithm(Enum):
+    """Class represents algorithm of CFPQ task
+
+    Values
+    ----------
+
+    HELLINGS : CFPQAlgorithm
+        Hellings algorithm
+    MATRIX : CFPQAlgorithm
+        Matrix algorithm that is based on sparse matrix multiplication
+    """
+
+    HELLINGS = auto()
+    MATRIX = auto()
+
+
 def cfpq(
+    algo: CFPQAlgorithm,
     graph: Union[str, MultiDiGraph],
     cfg: Union[str, CFG],
     start_nodes: Set[Any] = None,
@@ -21,6 +40,8 @@ def cfpq(
 
     Parameters
       ----------
+      algo : CFPQAlgorithm
+          The algorithm that will be used for CFPQ
       cfg : CFG
           Path to file containing context-free grammar or Context-free grammar itself
 
@@ -50,9 +71,14 @@ def cfpq(
         start_nodes = graph.nodes
     if not final_nodes:
         final_nodes = graph.nodes
+
+    result = {CFPQAlgorithm.HELLINGS: _hellings, CFPQAlgorithm.MATRIX: _matrix}[algo](
+        cfg, graph
+    )
+
     return {
         (i, j)
-        for (i, n, j) in _hellings(cfg, graph)
+        for (i, n, j) in result
         if start_symbol == n and i in start_nodes and j in final_nodes
     }
 
@@ -127,3 +153,28 @@ def _hellings(cfg: CFG, graph: MultiDiGraph) -> Set[Tuple[Any, Variable, Any]]:
         result |= to_add
 
     return result
+
+
+def _matrix(cfg: CFG, graph: MultiDiGraph) -> Set[Tuple[Any, Variable, Any]]:
+    """Runs Matrix algorithm on given context-free grammar and graph
+    in order to get triples, where the first element is the first vertex,
+    the second element is a non-terminal, and the third element is the second vertex
+    for which there is a path in the graph between these vertices derived from this non-terminal
+    from given context-free grammar
+
+      Parameters
+      ----------
+      cfg : CFG
+          Context-free grammar
+
+      graph : MultiDiGraph
+          Graph
+
+      Returns
+      -------
+      result: Set[Tuple[Any, Variable, Any]]
+          Triples of vertices between which there is a path with specified constraints
+          and a non-terminal from which the path is derived
+    """
+
+    return None
