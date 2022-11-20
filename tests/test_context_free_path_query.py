@@ -1,37 +1,38 @@
 import pytest
+from networkx import MultiDiGraph
 from pyformlang.cfg import CFG
 
-from project.context_free_path_query import context_free_path_query
+from project.context_free_path_query import context_free_path_query, Algorithm
 from tests.test_utils import create_graph
 
 testdata = [
     (
-        context_free_path_query(
-            cfg=CFG.from_text(
+        (
+            CFG.from_text(
                 """
                 S -> A B
                 A -> a
                 B -> b
             """
             ),
-            graph=create_graph(nodes=[0, 1, 2], edges=[(0, "a", 1), (1, "b", 2)]),
+            create_graph(nodes=[0, 1, 2], edges=[(0, "a", 1), (1, "b", 2)]),
         ),
         {(0, 2)},
     ),
     (
-        context_free_path_query(
-            cfg=CFG.from_text(
+        (
+            CFG.from_text(
                 """
                 S -> $
             """
             ),
-            graph=create_graph(nodes=[0, 1], edges=[(0, "a", 1), (1, "b", 0)]),
+            create_graph(nodes=[0, 1], edges=[(0, "a", 1), (1, "b", 0)]),
         ),
         {(0, 0), (1, 1)},
     ),
     (
-        context_free_path_query(
-            cfg=CFG.from_text(
+        (
+            CFG.from_text(
                 """
                 S -> A B C
                 A -> a
@@ -39,15 +40,15 @@ testdata = [
                 C -> c
             """
             ),
-            graph=create_graph(
+            create_graph(
                 nodes=[0, 1, 2, 3], edges=[(0, "a", 1), (1, "b", 2), (2, "c", 3)]
             ),
         ),
         {(0, 3)},
     ),
     (
-        context_free_path_query(
-            cfg=CFG.from_text(
+        (
+            CFG.from_text(
                 """
                 S -> A B C | S S | s
                 A -> a
@@ -55,7 +56,7 @@ testdata = [
                 C -> c
             """
             ),
-            graph=create_graph(
+            create_graph(
                 nodes=[0, 1, 2, 3],
                 edges=[(0, "s", 0), (0, "a", 1), (1, "b", 2), (2, "c", 3)],
             ),
@@ -63,15 +64,15 @@ testdata = [
         {(0, 3), (0, 0)},
     ),
     (
-        context_free_path_query(
-            cfg=CFG.from_text(
+        (
+            CFG.from_text(
                 """
                 S -> A B | S S
                 A -> a | $
                 B -> b
             """
             ),
-            graph=create_graph(
+            create_graph(
                 nodes=[0, 1, 2, 3, 4],
                 edges=[(0, "a", 1), (1, "b", 2), (2, "a", 3), (3, "b", 4)],
             ),
@@ -81,8 +82,19 @@ testdata = [
 ]
 
 
-@pytest.mark.parametrize("actual,expected", testdata)
-def test_context_free_path_query(
-    actual: set[tuple[any, any]], expected: set[tuple[any, any]]
+@pytest.mark.parametrize("actual_data, expected", testdata)
+def test_context_free_path_query_hellings(
+    actual_data: tuple[CFG, MultiDiGraph], expected: set[tuple[any, any]]
 ):
+    cfg, graph = actual_data
+    actual = context_free_path_query(cfg, graph, algorithm=Algorithm.HELLINGS)
+    assert actual == expected
+
+
+@pytest.mark.parametrize("actual_data, expected", testdata)
+def test_context_free_path_query_matrix(
+    actual_data: tuple[CFG, MultiDiGraph], expected: set[tuple[any, any]]
+):
+    cfg, graph = actual_data
+    actual = context_free_path_query(cfg, graph, algorithm=Algorithm.MATRIX)
     assert actual == expected
