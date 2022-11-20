@@ -1,7 +1,7 @@
 import pytest
 from pyformlang.cfg import CFG, Variable
-from project.cf_graph_recognizer import hellings
-from project.cfpq import hellings_cfpq
+from project.cf_graph_recognizer import matrix_based
+from project.cfpq import matrix_cfpq
 from tests.utils import get_data, dot_to_graph
 import networkx as nx
 
@@ -28,7 +28,7 @@ def test_cfpq(
     start_var: str,
     expected: set[tuple],
 ):
-    actual = hellings_cfpq(graph, query, start_nodes, final_nodes, start_var)
+    actual = matrix_cfpq(graph, query, start_nodes, final_nodes, start_var)
 
     assert actual == expected
 
@@ -50,6 +50,6 @@ def test_cfpq(
 def test_constrained_transitive_closure(
     graph: nx.Graph, cfg: CFG, expected: set[tuple]
 ):
-    actual = hellings(graph, cfg)
+    actual = matrix_based(graph, cfg)
 
     assert actual == expected
