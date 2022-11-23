@@ -6,6 +6,8 @@ from networkx import nx_pydot, MultiDiGraph
 from project.graph_manager import GraphManager
 from project.cfg_manager import CFGManager
 from pyformlang.cfg import Variable
+from project.algorithm import Algorithm
+from pyformlang.cfg import CFG
 
 path = os.path.dirname(os.path.abspath(__file__)) + "/res"
 
@@ -36,7 +38,7 @@ def test_create_two_cycle_labeled_graph():
     )
 
 
-def test_execute_cfpq():
+def test_execute_cfpq_hellings():
     graph_edges = [
         (0, 1, {"label": "a"}),
         (1, 2, {"label": "a"}),
@@ -76,7 +78,11 @@ def test_execute_cfpq():
     graph.add_edges_from(graph_edges)
 
     actual_cfpq = GraphManager.execute_cfpq(
-        cfg, graph, start_nodes=start_nodes, final_nodes=final_nodes
+        cfg,
+        graph,
+        start_nodes=start_nodes,
+        final_nodes=final_nodes,
+        algorithm=Algorithm.HELLINGS,
     )
     actual_hellings = GraphManager._GraphManager__run_hellings(cfg, graph)
 
@@ -88,4 +94,63 @@ def test_execute_cfpq():
 
     for triple in expected_hellings:
         if triple not in expected_hellings:
+            assert False
+
+
+def test_execute_cfpq_matrix():
+    graph_edges = [
+        (5, 1, {"label": "a"}),
+        (1, 2, {"label": "a"}),
+        (2, 5, {"label": "a"}),
+        (2, 3, {"label": "b"}),
+        (3, 2, {"label": "b"}),
+    ]
+
+    expected_cfg = {(5, 3), (2, 3)}
+
+    expected_matrix = [
+        (Variable("A"), 5, 1),
+        (Variable("A"), 1, 2),
+        (Variable("A"), 2, 5),
+        (Variable("B"), 2, 3),
+        (Variable("B"), 3, 2),
+        (Variable("S"), 1, 3),
+        (Variable("C"), 1, 2),
+        (Variable("S"), 5, 2),
+        (Variable("C"), 5, 3),
+        (Variable("S"), 2, 3),
+        (Variable("C"), 2, 2),
+        (Variable("S"), 1, 2),
+        (Variable("C"), 1, 3),
+        (Variable("S"), 5, 3),
+        (Variable("C"), 5, 2),
+        (Variable("S"), 2, 2),
+        (Variable("C"), 2, 3),
+    ]
+
+    start_nodes = {5, 2}
+    final_nodes = {3}
+
+    cfg = CFGManager.read_cfg_from_file(path + "/cfg_3")
+
+    graph = MultiDiGraph()
+    graph.add_edges_from(graph_edges)
+
+    actual_cfpq = GraphManager.execute_cfpq(
+        cfg,
+        graph,
+        start_nodes=start_nodes,
+        final_nodes=final_nodes,
+        algorithm=Algorithm.MATRIX,
+    )
+    actual_matrix = GraphManager._GraphManager__run_matrix(cfg, graph)
+
+    assert actual_cfpq == expected_cfg
+
+    for triple in actual_matrix:
+        if triple not in expected_matrix:
+            assert False
+
+    for triple in expected_matrix:
+        if triple not in expected_matrix:
             assert False
