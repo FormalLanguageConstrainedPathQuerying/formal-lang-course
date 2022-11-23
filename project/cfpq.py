@@ -25,7 +25,7 @@ def _cfpq(
     constrained_transitive_closure = get_constrained_transitive_closure(graph, query)
 
     return {
-        (start, final)
+        (start, var, final)
         for start, var, final in constrained_transitive_closure
         if start in start_nodes and var == start_var and final in final_nodes
     }

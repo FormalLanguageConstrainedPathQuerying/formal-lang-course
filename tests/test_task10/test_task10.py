@@ -16,7 +16,7 @@ import networkx as nx
             d["start_nodes"],
             d["final_nodes"],
             d["start_var"] if d["start_var"] is not None else "S",
-            {tuple(pair) for pair in d["expected"]},
+            {(triple[0], Variable(triple[1]), triple[2]) for triple in d["expected"]},
         ),
     ),
 )
@@ -29,7 +29,6 @@ def test_cfpq(
     expected: set[tuple],
 ):
     actual = matrix_cfpq(graph, query, start_nodes, final_nodes, start_var)
-
     assert actual == expected
 
 
