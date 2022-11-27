@@ -1,67 +1,57 @@
-import networkx as nx
 import pytest
-from pyformlang.regular_expression import Regex
+from scipy.sparse import csr_array
 
-from project.boolean_decompositon import BooleanDecomposition
-from project.regex_utils import create_nfa_from_graph, regex_to_dfa
-from project.rpq_bfs import rpq_bfs, bfs_sync
-from tests.utils import get_data, dot_to_graph
-
-
-def list_of_pairs_to_set(list) -> set:
-    acc = set()
-    for pair in list:
-        acc.add((pair[0], pair[1]))
-    return acc
-
-
-def dict_to_pairs(dict: dict):
-    acc = []
-    for key in dict.keys():
-        acc.append([key, list(dict.get(key))])
-    return acc
+from project.bool_decomp import BoolDecomp
+from tests.utils import get_data, _dict_to_nfa_state_info, _dict_to_adjs
 
 
 @pytest.mark.parametrize(
-    "graph, regex, starts, finals, expected, mode, bfs_res",
+    "main_states, main_adjs, constr_states, constr_adjs, expected",
     get_data(
-        "test_rpq_bfs",
-        lambda data: (
-            dot_to_graph(data["graph"]),
-            data["regex"],
-            set(data["starts"]),
-            set(data["finals"]),
-            set(data["expected"])
-            if not data["for_each"]
-            else list_of_pairs_to_set(data["expected"]),
-            data["for_each"],
-            data["bfs_res"],
+        "test_constr_bfs",
+        lambda d: (
+            [_dict_to_nfa_state_info(st) for st in d["main_states"]],
+            _dict_to_adjs(d["main_adjs"]),
+            [_dict_to_nfa_state_info(st) for st in d["constr_states"]],
+            _dict_to_adjs(d["constr_adjs"]),
+            {end for _, end in d["expected"]},
         ),
     ),
 )
-def test_rpq_bfs(
-    graph: nx.MultiDiGraph, regex, starts, finals, expected, mode, bfs_res
+def test_not_separated(
+    main_states: list[BoolDecomp.StateInfo],
+    main_adjs: dict[str, csr_array],
+    constr_states: list[BoolDecomp.StateInfo],
+    constr_adjs: dict[str, csr_array],
+    expected: set[int],
 ):
-    bfs = bfs_sync(
-        graph=BooleanDecomposition(
-            create_nfa_from_graph(graph=graph, start_states=starts, final_states=finals)
+    main_decomp = BoolDecomp(main_states, main_adjs)
+    constraint_decomp = BoolDecomp(constr_states, constr_adjs)
+    actual = main_decomp.constrained_bfs(constraint_decomp)
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
+    "main_states, main_adjs, constr_states, constr_adjs, expected",
+    get_data(
+        "test_constr_bfs",
+        lambda d: (
+            [_dict_to_nfa_state_info(st) for st in d["main_states"]],
+            _dict_to_adjs(d["main_adjs"]),
+            [_dict_to_nfa_state_info(st) for st in d["constr_states"]],
+            _dict_to_adjs(d["constr_adjs"]),
+            {(i, j) for i, j in d["expected"]},
         ),
-        regex=BooleanDecomposition(regex_to_dfa(Regex(regex))),
-        is_for_each=mode,
-        final_states=finals,
-        start_states=starts,
-    )
-    assert (
-        rpq_bfs(
-            graph=graph,
-            regex=Regex(regex),
-            start_states=starts,
-            final_states=finals,
-            is_for_each=mode,
-        )
-        == expected
-    )
-    if mode:
-        assert dict_to_pairs(bfs) == bfs_res
-    else:
-        assert list(bfs) == bfs_res
+    ),
+)
+def test_separated(
+    main_states: list[BoolDecomp.StateInfo],
+    main_adjs: dict[str, csr_array],
+    constr_states: list[BoolDecomp.StateInfo],
+    constr_adjs: dict[str, csr_array],
+    expected: set[tuple[int, int]],
+):
+    main_decomp = BoolDecomp(main_states, main_adjs)
+    constraint_decomp = BoolDecomp(constr_states, constr_adjs)
+    actual = main_decomp.constrained_bfs(constraint_decomp, separated=True)
+    assert actual == expected

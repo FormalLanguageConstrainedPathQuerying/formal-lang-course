@@ -1,0 +1,167 @@
+{
+  "test_from_nfa": [
+    {
+      "graph": "digraph {}",
+      "expected_states": [],
+      "expected_adjs": {}
+    },
+    {
+      "graph": "digraph {1 [is_start=False, is_final=False];}",
+      "expected_states": [],
+      "expected_adjs": {}
+    },
+    {
+      "graph": "digraph {1 [is_start=False, is_final=False]; 2 [is_start=True, is_final=False]; 3 [is_start=False, is_final=True]; 4 [is_start=True, is_final=True]}",
+      "expected_states": [
+        {
+          "data": "2",
+          "is_start": true,
+          "is_final": false
+        },
+        {
+          "data": "3",
+          "is_start": false,
+          "is_final": true
+        },
+        {
+          "data": "4",
+          "is_start": true,
+          "is_final": true
+        }
+      ],
+      "expected_adjs": {}
+    },
+    {
+      "graph": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [label=abc]}",
+      "expected_states": [
+        {
+          "data": "1",
+          "is_start": true,
+          "is_final": false
+        },
+        {
+          "data": "2",
+          "is_start": false,
+          "is_final": true
+        }
+      ],
+      "expected_adjs": {
+        "abc": [
+          [0, 1],
+          [0, 0]
+        ]
+      }
+    },
+    {
+      "graph": "digraph {1 [is_start=True, is_final=True]; 1 -> 1 [label=abc]}",
+      "expected_states": [
+        {
+          "data": "1",
+          "is_start": true,
+          "is_final": true
+        }
+      ],
+      "expected_adjs": {
+        "abc": [1]
+      }
+    },
+    {
+      "graph": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [label=one_two]; 2 -> 1 [label=two_one]}",
+      "expected_states": [
+        {
+          "data": "1",
+          "is_start": true,
+          "is_final": false
+        },
+        {
+          "data": "2",
+          "is_start": false,
+          "is_final": true
+        }
+      ],
+      "expected_adjs": {
+        "one_two": [
+          [0, 1],
+          [0, 0]
+        ],
+        "two_one": [
+          [0, 0],
+          [1, 0]
+        ]
+      }
+    },
+    {
+      "graph": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [label=first]; 1 -> 2 [label=second]}",
+      "expected_states": [
+        {
+          "data": "1",
+          "is_start": true,
+          "is_final": false
+        },
+        {
+          "data": "2",
+          "is_start": false,
+          "is_final": true
+        }
+      ],
+      "expected_adjs": {
+        "first": [
+          [0, 1],
+          [0, 0]
+        ],
+        "second": [
+          [0, 1],
+          [0, 0]
+        ]
+      }
+    },
+    {
+      "graph": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 3 [is_start=False, is_final=True]; 1 -> 2 [label=a]; 1 -> 3 [label=a]}",
+      "expected_states": [
+        {
+          "data": "1",
+          "is_start": true,
+          "is_final": false
+        },
+        {
+          "data": "2",
+          "is_start": false,
+          "is_final": true
+        },
+        {
+          "data": "3",
+          "is_start": false,
+          "is_final": true
+        }
+      ],
+      "expected_adjs": {
+        "a": [
+          [0, 1, 1],
+          [0, 0, 0],
+          [0, 0, 0]
+        ]
+      }
+    },
+    {
+      "graph": "digraph {1 [is_start=True, is_final=True]; 2 [is_start=True, is_final=True]; 1 -> 1 [label=all]; 1 -> 2 [label=all]; 2 -> 1 [label=all]; 2 -> 2 [label=all]}",
+      "expected_states": [
+        {
+          "data": "1",
+          "is_start": true,
+          "is_final": true
+        },
+        {
+          "data": "2",
+          "is_start": true,
+          "is_final": true
+        }
+      ],
+      "expected_adjs": {
+        "all": [
+          [1, 1],
+          [1, 1]
+        ]
+      }
+    }
+  ]
+}
