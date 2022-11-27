@@ -1,6 +1,6 @@
 import numpy as np
 from pyformlang.finite_automaton import Symbol, State, EpsilonNFA
-from scipy.sparse import coo_matrix, kron, csr_matrix
+from scipy.sparse import coo_matrix, kron, csr_matrix, spmatrix
 
 __all__ = ["BooleanDecomposition", "boolean_decompose_enfa"]
 
@@ -10,9 +10,7 @@ class BooleanDecomposition:
     Class representing boolean decomposition of finite automata
     """
 
-    def __init__(
-        self, symbols_to_matrix: dict[Symbol, coo_matrix], states: list[State]
-    ):
+    def __init__(self, symbols_to_matrix: dict[Symbol, spmatrix], states: list[State]):
         """
         :param symbols_to_matrix: dict with mapping symbol on edges to adjacency matrix of these edges
         :param states: states of finite automata
@@ -21,6 +19,8 @@ class BooleanDecomposition:
         self._symbols_to_matrix = symbols_to_matrix
         self._states_list = states
         states_num = len(states)
+        for symbol in symbols_to_matrix.keys():
+            symbols_to_matrix[symbol] = symbols_to_matrix[symbol].todok()
         for matrix in symbols_to_matrix.values():
             assert (states_num, states_num) == matrix.get_shape()
 
@@ -44,6 +44,10 @@ class BooleanDecomposition:
             s += str(symbol) + "\n" + str(matrix.toarray()) + "\n"
         return s
 
+    @property
+    def symbols_to_matrix(self):
+        return self._symbols_to_matrix
+
     def states(self) -> list[State]:
         return self._states_list
 
@@ -55,7 +59,7 @@ class BooleanDecomposition:
 
     _convert_to_spmatrix = lambda mat: mat.tocsr()
 
-    def to_dict(self) -> dict[Symbol, coo_matrix]:
+    def to_dict(self) -> dict[Symbol, spmatrix]:
         d = dict()
         for (symbol, matrix) in self._symbols_to_matrix.items():
             d[symbol] = BooleanDecomposition._convert_to_spmatrix(matrix)
@@ -95,7 +99,7 @@ class BooleanDecomposition:
 
         return BooleanDecomposition(intersection_decomposition, intersection_states)
 
-    def transitive_closure(self) -> coo_matrix:
+    def transitive_closure(self) -> spmatrix:
         """
         :return: adjacency matrix of states corresponding to transitive closure
         """

@@ -31,5 +31,8 @@ class RecursiveAutomata:
     def from_ecfg(cls, ecfg: ECFG) -> "RecursiveAutomata":
         return RecursiveAutomata(
             ecfg.start_variable,
-            {v: regex.to_epsilon_nfa() for v, regex in ecfg.productions.items()},
+            {
+                v: regex.to_epsilon_nfa().minimize()
+                for v, regex in ecfg.productions.items()
+            },
         )

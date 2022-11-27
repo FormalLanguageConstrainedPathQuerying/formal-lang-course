@@ -98,3 +98,12 @@ def test_context_free_path_query_matrix(
     cfg, graph = actual_data
     actual = context_free_path_query(cfg, graph, algorithm=Algorithm.MATRIX)
     assert actual == expected
+
+
+@pytest.mark.parametrize("actual_data, expected", testdata)
+def test_context_free_path_query_tensor(
+    actual_data: tuple[CFG, MultiDiGraph], expected: set[tuple[any, any]]
+):
+    cfg, graph = actual_data
+    actual = context_free_path_query(cfg, graph, algorithm=Algorithm.TENSOR)
+    assert actual == expected

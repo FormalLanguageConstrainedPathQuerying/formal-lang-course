@@ -1,5 +1,10 @@
+from pyformlang.finite_automaton import (
+    DeterministicFiniteAutomaton,
+    EpsilonNFA,
+    State,
+    Symbol,
+)
 from pyformlang.regular_expression import Regex
-from pyformlang.finite_automaton import DeterministicFiniteAutomaton, EpsilonNFA, State
 from scipy.sparse import find
 
 __all__ = [
@@ -8,7 +13,7 @@ __all__ = [
     "boolean_decompose_enfa",
 ]
 
-from project.boolean_decomposition import BooleanDecomposition, boolean_decompose_enfa
+from project.boolean_decomposition import boolean_decompose_enfa
 
 
 def from_regex_to_dfa(regex: Regex) -> DeterministicFiniteAutomaton:
@@ -58,3 +63,16 @@ def intersect_enfa(enfa1: EpsilonNFA, enfa2: EpsilonNFA) -> EpsilonNFA:
         intersection_nfa.add_final_state(final_state)
 
     return intersection_nfa
+
+
+def get_enfa_edges(enfa: EpsilonNFA) -> set[tuple[any, Symbol, any]]:
+    result = set()
+    for (u, symbol_and_vs) in enfa.to_dict().items():
+        for (symbol, vs) in symbol_and_vs.items():
+            if not type(vs) is set:  # vs is one state in this case
+                result.add((u, symbol, vs))
+            else:
+                for v in vs:
+                    result.add((u, symbol, v))
+
+    return result
