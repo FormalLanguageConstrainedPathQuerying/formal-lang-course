@@ -1,7 +1,7 @@
 import pytest
 from pyformlang.cfg import CFG, Variable
 from project.cf_graph_recognizer import matrix_based
-from project.cfpq import matrix_cfpq, tensor_cfpq
+from project.cfpq import matrix_cfpq
 from tests.utils import get_data, dot_to_graph
 import networkx as nx
 
