@@ -1,7 +1,7 @@
 import pytest
 from pyformlang.cfg import CFG, Variable
 from project.cf_graph_recognizer import matrix_based
-from project.cfpq import matrix_cfpq
+from project.cfpq import matrix_cfpq, tensor_cfpq
 from tests.utils import get_data, dot_to_graph
 import networkx as nx
 
@@ -28,7 +28,7 @@ def test_cfpq(
     start_var: str,
     expected: set[tuple],
 ):
-    actual = matrix_cfpq(graph, query, start_nodes, final_nodes, start_var)
+    actual = tensor_cfpq(graph, query, start_nodes, final_nodes, start_var)
     assert actual == expected
 
 

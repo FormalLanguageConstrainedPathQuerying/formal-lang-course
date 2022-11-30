@@ -1,0 +1,184 @@
+{
+  "TestFromRsm": [
+    {
+      "description": "empty RSM",
+      "rsm_boxes": {},
+      "expected_states": [],
+      "expected_adjs": {}
+    },
+    {
+      "description": "single box",
+      "rsm_boxes": {
+        "S": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [label=a]}"
+      },
+      "expected_states": [
+        {
+          "data": ["S", "1"],
+          "is_start": true,
+          "is_final": false
+        },
+        {
+          "data": ["S", "2"],
+          "is_start": false,
+          "is_final": true
+        }
+      ],
+      "expected_adjs": {
+        "a": [
+          [0, 1],
+          [0, 0]
+        ]
+      }
+    },
+    {
+      "description": "multiple boxes, unique labels",
+      "rsm_boxes": {
+        "S": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [label=A]}",
+        "A": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=False]; 3 [is_start=False, is_final=True]; 1 -> 2 [label=B]; 2 -> 3 [label=C]}",
+        "B": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [label=b]}",
+        "C": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [label=c]}"
+      },
+      "expected_states": [
+        {
+          "data": ["A", "1"],
+          "is_start": true,
+          "is_final": false
+        },
+        {
+          "data": ["A", "2"],
+          "is_start": false,
+          "is_final": false
+        },
+        {
+          "data": ["A", "3"],
+          "is_start": false,
+          "is_final": true
+        },
+        {
+          "data": ["B", "1"],
+          "is_start": true,
+          "is_final": false
+        },
+        {
+          "data": ["B", "2"],
+          "is_start": false,
+          "is_final": true
+        },
+        {
+          "data": ["C", "1"],
+          "is_start": true,
+          "is_final": false
+        },
+        {
+          "data": ["C", "2"],
+          "is_start": false,
+          "is_final": true
+        },
+        {
+          "data": ["S", "1"],
+          "is_start": true,
+          "is_final": false
+        },
+        {
+          "data": ["S", "2"],
+          "is_start": false,
+          "is_final": true
+        }
+      ],
+      "expected_adjs": {
+        "A": [
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 1],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ],
+        "B": [
+          [0, 1, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ],
+        "C": [
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 1, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ],
+        "b": [
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 1, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ],
+        "c": [
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 1, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+      }
+    },
+    {
+      "description": "same labels in different boxes",
+      "rsm_boxes": {
+        "A": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [label=a]}",
+        "B": "digraph {1 [is_start=False, is_final=True]; 2 [is_start=True, is_final=False]; 2 -> 1 [label=a]}"
+      },
+      "expected_states": [
+        {
+          "data": ["A", "1"],
+          "is_start": true,
+          "is_final": false
+        },
+        {
+          "data": ["A", "2"],
+          "is_start": false,
+          "is_final": true
+        },
+        {
+          "data": ["B", "1"],
+          "is_start": true,
+          "is_final": false
+        },
+        {
+          "data": ["B", "2"],
+          "is_start": false,
+          "is_final": true
+        }
+      ],
+      "expected_adjs": {
+        "a": [
+          [0, 1, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 1, 0]
+        ]
+      }
+    }
+  ]
+}

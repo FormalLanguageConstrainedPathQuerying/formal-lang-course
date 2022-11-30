@@ -1,0 +1,65 @@
+{
+  "test_cfpq": [
+    {
+      "graph": "digraph {}",
+      "query": "",
+      "start_nodes": [],
+      "final_nodes": [],
+      "start_var": null,
+      "expected": []
+    },
+    {
+      "graph": "digraph {}",
+      "query": "S -> a",
+      "start_nodes": [],
+      "final_nodes": [],
+      "start_var": null,
+      "expected": []
+    },
+    {
+      "graph": "digraph {}",
+      "query": "S -> a",
+      "start_nodes": null,
+      "final_nodes": null,
+      "start_var": null,
+      "expected": []
+    },
+    {
+      "graph": "digraph {1;2; 1 -> 2 [label=a]}",
+      "query": "A -> a",
+      "start_nodes": ["1"],
+      "final_nodes": ["2"],
+      "start_var": "A",
+      "expected": [
+        ["1", "A","2"]
+      ]
+    },
+    {
+      "graph": "digraph {0;1;2;3; 0 -> 1 [label=a]; 1 -> 2 [label=a]; 2 -> 0 [label=a]; 2 -> 3 [label=b]; 3 -> 2 [label=b]}",
+      "query": "S -> a S b | a b",
+      "start_nodes": null,
+      "final_nodes": null,
+      "start_var": null,
+      "expected": [
+        ["1", "S","2"],
+        ["2", "S","3"],
+        ["1", "S","3"],
+        ["0", "S","2"],
+        ["0", "S","3"],
+        ["2", "S","2"],
+        ["1", "S","2"]
+      ]
+    },
+    {
+      "graph": "digraph {0;1;2;3; 0 -> 1 [label=a]; 1 -> 2 [label=a]; 2 -> 0 [label=a]; 2 -> 3 [label=b]; 3 -> 2 [label=b]}",
+      "query": "S -> a S b | a b",
+      "start_nodes": ["0", "1", "3"],
+      "final_nodes": ["3"],
+      "start_var": null,
+      "expected": [
+        ["1", "S","3"],
+        ["0", "S","3"]
+      ]
+    }
+  ]
+}

@@ -1,6 +1,8 @@
 from pyformlang.cfg import Variable, Terminal, CFG
 from pyformlang.regular_expression import Regex
 
+from project.rsm import RSM
+
 
 class ECFG:
     def __init__(
@@ -39,3 +41,17 @@ class ECFG:
                 productions[p.head] = body
 
         return cls(variables, set(cfg.terminals), start_symbol, productions)
+
+    def to_rsm(self):
+        """Converts ECFG to RSM
+
+        Returns:
+            Recursive state machine
+        """
+        return RSM(
+            self.start,
+            {
+                h: r.to_epsilon_nfa().to_deterministic()
+                for h, r in self.productions.items()
+            },
+        )

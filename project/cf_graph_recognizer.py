@@ -1,7 +1,13 @@
 import networkx as nx
 import pyformlang.cfg as c
+from pyformlang.cfg import CFG
+from pyformlang.finite_automaton import EpsilonNFA
 from scipy import sparse
+from scipy.sparse import eye
+
+from project.boolean_decompositon import BooleanDecomposition
 from project.cfg import cfg_to_wcnf
+from project.ecfg import ECFG
 
 
 def matrix_based(graph: nx.Graph, cfg: c.CFG) -> set[tuple[int, c.Variable, int]]:
@@ -100,3 +106,42 @@ def hellings(graph: nx.Graph, cfg: c.CFG) -> set[tuple[int, c.Variable, int]]:
         new |= r_temp
 
     return r
+
+
+def tensor(
+    graph: nx.Graph, cfg: CFG
+) -> set[tuple[int, c.Variable, int]]:
+    cfg_bool_matrix = BooleanDecomposition.from_rsm(ECFG.from_cfg(cfg).to_rsm())
+    cfg_index_to_state = {i: s for s, i in cfg_bool_matrix.state_indices.items()}
+    graph_bool_matrix = BooleanDecomposition.from_nfa(EpsilonNFA.from_networkx(graph))
+    graph_bool_matrix_states = len(graph_bool_matrix.state_indices)
+    graph_index_to_state = {i: s for s, i in graph_bool_matrix.state_indices.items()}
+    self_loop_matrix = eye(len(graph_bool_matrix.state_indices), dtype=bool).todok()
+    for nonterm in cfg.get_nullable_symbols():
+        graph_bool_matrix.bool_matrices[nonterm.value] += self_loop_matrix
+    last_tc_sz = 0
+    while True:
+        intersection = cfg_bool_matrix & graph_bool_matrix
+        tc_indices = list(zip(*intersection.make_transitive_closure().nonzero()))
+        if len(tc_indices) == last_tc_sz:
+            break
+        last_tc_sz = len(tc_indices)
+        for i, j in tc_indices:
+            cfg_i, cfg_j = i // graph_bool_matrix_states, j // graph_bool_matrix_states
+            graph_i, graph_j = (
+                i % graph_bool_matrix_states,
+                j % graph_bool_matrix_states,
+            )
+            state_from, state_to = cfg_index_to_state[cfg_i], cfg_index_to_state[cfg_j]
+            nonterm, _ = state_from.value
+            if (
+                state_from in cfg_bool_matrix.start_states
+                and state_to in cfg_bool_matrix.final_states
+            ):
+                graph_bool_matrix.bool_decomposition[nonterm][graph_i, graph_j] = True
+    return {
+        (graph_index_to_state[graph_i], nonterm, graph_index_to_state[graph_j])
+        for nonterm, mtx in graph_bool_matrix.bool_decomposition.items()
+        for graph_i, graph_j in zip(*mtx.nonzero())
+    }
+

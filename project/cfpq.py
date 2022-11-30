@@ -1,4 +1,4 @@
-from project.cf_graph_recognizer import matrix_based, hellings
+from project.cf_graph_recognizer import matrix_based, hellings, tensor
 import networkx as nx
 import pyformlang.cfg as c
 
@@ -62,4 +62,21 @@ def matrix_cfpq(
         final_nodes,
         start_var,
         matrix_based,
+    )
+
+
+def tensor_cfpq(
+    graph: nx.Graph,
+    query: str | c.CFG,
+    start_nodes: set[int] | None = None,
+    final_nodes: set[int] | None = None,
+    start_var: str | c.Variable = c.Variable("S"),
+) -> set[tuple[int, int]]:
+    return _cfpq(
+        graph,
+        query,
+        start_nodes,
+        final_nodes,
+        start_var,
+        tensor,
     )
