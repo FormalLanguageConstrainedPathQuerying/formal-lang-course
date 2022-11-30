@@ -5,11 +5,16 @@ from pyformlang.finite_automaton import (
     State,
     Symbol,
     EpsilonNFA,
+    Epsilon,
 )
+from pyformlang.regular_expression import Regex
 
 
-def regex_to_dfa(regex) -> DeterministicFiniteAutomaton:
-    return regex.to_epsilon_nfa().to_deterministic().minimize()
+def regex_to_dfa(regex: str | Regex) -> DeterministicFiniteAutomaton:
+    if not isinstance(regex, Regex):
+        regex = Regex(regex)
+    min_dfa = regex.to_epsilon_nfa().minimize()
+    return min_dfa
 
 
 def create_automaton(start_states, final_states, transitions, automaton) -> EpsilonNFA:
@@ -25,8 +30,36 @@ def create_automaton(start_states, final_states, transitions, automaton) -> Epsi
     return automaton
 
 
+def graph_to_nfa(
+    graph: nx.Graph,
+    start_states: set | None = None,
+    final_states: set | None = None,
+) -> EpsilonNFA:
+    enfa = EpsilonNFA()
+
+    # Only iterating through edges as isolated nodes can be either start or final and
+    # thus will be added later anyway
+    for pred, succ, data in graph.edges.data():
+        pred_state = State(pred)
+        succ_state = State(succ)
+        symbol = Symbol(data["label"]) if "label" in data else Epsilon
+        enfa.add_transition(pred_state, symbol, succ_state)
+
+    if start_states is None:
+        start_states = set(graph.nodes)
+    if final_states is None:
+        final_states = set(graph.nodes)
+
+    for state in start_states:
+        enfa.add_start_state(state)
+    for state in final_states:
+        enfa.add_final_state(state)
+
+    return enfa
+
+
 def create_nfa_from_graph(
-    graph: nx.MultiDiGraph, start_states: set = None, final_states: set = None
+    graph: nx.Graph, start_states: set = None, final_states: set = None
 ) -> NondeterministicFiniteAutomaton:
     nfa = NondeterministicFiniteAutomaton()
 

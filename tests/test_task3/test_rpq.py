@@ -1,6 +1,7 @@
+import networkx as nx
 import pytest
 
-from project.rpq import rpq
+from project import rpq
 from tests.utils import get_data, dot_to_graph
 
 
@@ -8,26 +9,24 @@ from tests.utils import get_data, dot_to_graph
     "graph, query, starts, finals, expected",
     get_data(
         "test_rpq",
-        lambda data: (
-            dot_to_graph(data["graph"]),
-            data["query"],
-            data["starts"],
-            data["finals"],
-            {
-                tuple(pair)
-                for pair in map(
-                    lambda values: (int(values[0]), int(values[1])), data["expected"]
-                )
-            },
+        lambda d: (
+            dot_to_graph(d["graph"]),
+            d["query"],
+            d["starts"],
+            d["finals"],
+            {tuple(pair) for pair in d["expected"]},
         ),
     ),
 )
-def test_rpq(
-    graph,
-    query,
-    starts,
-    finals,
-    expected,
+def test_rpq_by_bfs_for_each(
+    graph: nx.Graph,
+    query: str,
+    starts: set | None,
+    finals: set | None,
+    expected: set[tuple],
 ):
-    actual = rpq(graph, query, starts, finals)
+    actual = rpq.rpq_by_bfs(
+        graph, query, starts, finals, mode=rpq.BfsMode.FIND_REACHABLE_FOR_EACH_START
+    )
+
     assert actual == expected

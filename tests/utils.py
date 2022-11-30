@@ -5,6 +5,9 @@ import pydot
 
 import networkx as nx
 import pyformlang.finite_automaton as fa
+from scipy.sparse import csr_array
+
+from project.bool_decomp import BoolDecomp
 
 
 def get_data(name, configurator) -> list:
@@ -44,3 +47,19 @@ def eq_automata(
         and len(min2.start_states) == 0
         or fa1.is_equivalent_to(fa2)
     )
+
+
+def _dict_to_nfa_state_info(d: dict) -> BoolDecomp.StateInfo:
+    return BoolDecomp.StateInfo(d["data"], d["is_start"], d["is_final"])
+
+
+def _dict_to_adjs(d: dict[str, list[list[int]]]) -> dict[str, csr_array]:
+    return {s: csr_array(l) for s, l in d.items()}
+
+
+def _check_adjs_are_equal(adjs1: dict[str, csr_array], adjs2: dict[str, csr_array]):
+    for (symbol1, adj1), (symbol2, adj2) in zip(
+        sorted(adjs1.items()), sorted(adjs2.items())
+    ):
+        assert symbol1 == symbol2
+        assert (adj1 - adj2).nnz == 0
