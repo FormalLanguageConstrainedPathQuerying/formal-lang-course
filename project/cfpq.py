@@ -78,5 +78,5 @@ def tensor_cfpq(
         start_nodes,
         final_nodes,
         start_var,
-        tensor,
+        tensor
     )
