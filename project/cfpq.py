@@ -72,11 +72,4 @@ def tensor_cfpq(
     final_nodes: set[int] | None = None,
     start_var: str | c.Variable = c.Variable("S"),
 ) -> set[tuple[int, int]]:
-    return _cfpq(
-        graph,
-        query,
-        start_nodes,
-        final_nodes,
-        start_var,
-        tensor
-    )
+    return _cfpq(graph, query, start_nodes, final_nodes, start_var, tensor)
