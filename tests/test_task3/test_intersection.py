@@ -4,7 +4,7 @@ from pyformlang.finite_automaton import NondeterministicFiniteAutomaton
 
 from project.regex_utils import create_nfa_from_graph
 from project.rpq import (
-    BooleanDecomposition,
+    BooleanDecompositionNFA,
 )
 from tests.utils import get_data, dot_to_graph
 
@@ -37,8 +37,8 @@ def test_intersection(
     graph2: NondeterministicFiniteAutomaton,
     expected: NondeterministicFiniteAutomaton,
 ):
-    decomposition1 = BooleanDecomposition(graph1)
-    decomposition2 = BooleanDecomposition(graph2)
+    decomposition1 = BooleanDecompositionNFA(graph1)
+    decomposition2 = BooleanDecompositionNFA(graph2)
 
     # intersected = get_intersect_boolean_decomposition(decomposition1, decomposition2)
     intersected = decomposition1.get_intersect_boolean_decomposition(decomposition2)

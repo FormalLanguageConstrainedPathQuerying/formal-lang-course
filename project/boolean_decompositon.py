@@ -10,7 +10,6 @@ from project.rsm import RSM
 
 
 class BooleanDecomposition:
-
     def __init__(
         self,
         states_num: int,
@@ -78,15 +77,15 @@ class BooleanDecomposition:
 
     @classmethod
     def from_nfa(cls, automaton: finite_automaton.EpsilonNFA):
-        state_to_index = {
-                state: index for index, state in enumerate(automaton.states)
-            }
+        state_to_index = {state: index for index, state in enumerate(automaton.states)}
         return cls(
             states_num=len(automaton.states),
             state_indices=state_to_index,
             start_states=automaton.start_states,
             final_states=automaton.final_states,
-            bool_decomposition=cls._create_boolean_matrix_from_nfa(nfa=automaton, state_to_index=state_to_index),
+            bool_decomposition=cls._create_boolean_matrix_from_nfa(
+                nfa=automaton, state_to_index=state_to_index
+            ),
         )
 
     def get_states(self):
@@ -106,27 +105,6 @@ class BooleanDecomposition:
             if ind == index:
                 return state
 
-    def __init_bool_matrices(
-        self, automaton: finite_automaton.EpsilonNFA
-    ):
-        bool_matrices = dict()
-        nfa_dict = automaton.to_dict()
-
-        for state_from, transition in nfa_dict.items():
-            for label, states_to in transition.items():
-                if not isinstance(states_to, set):
-                    states_to = {states_to}
-                for state_to in states_to:
-                    index_from = self.state_indices[state_from]
-                    index_to = self.state_indices[state_to]
-                    if label not in bool_matrices:
-                        bool_matrices[label] = sparse.csr_matrix(
-                            (self.states_num, self.states_num), dtype=bool
-                        )
-                    bool_matrices[label][index_from, index_to] = True
-
-        return bool_matrices
-
     def make_transitive_closure(self):
         if not self.bool_decomposition.values():
             return sparse.dok_matrix((1, 1))
@@ -140,51 +118,6 @@ class BooleanDecomposition:
             prev_nnz, curr_nnz = curr_nnz, transitive_closure.nnz
 
         return transitive_closure
-
-    def get_intersect_boolean_decomposition(self, other):
-        intersect = BooleanDecomposition()
-
-        common_symbols = (
-            self.bool_decomposition.keys() & other.bool_decomposition.keys()
-        )
-        for symbol in common_symbols:
-            intersect.bool_decomposition[symbol] = sparse.kron(
-                self.bool_decomposition[symbol],
-                other.bool_decomposition[symbol],
-                format="csr",
-            )
-
-        for state_fst, state_fst_index in self.state_indices.items():
-            for state_snd, state_snd_idx in other.state_indices.items():
-                new_state = new_state_idx = (
-                    state_fst_index * other.states_num + state_snd_idx
-                )
-                intersect.state_indices[new_state] = new_state_idx
-
-                if state_fst in self.start_states and state_snd in other.start_states:
-                    intersect.start_states.add(new_state)
-
-                if state_fst in self.final_states and state_snd in other.final_states:
-                    intersect.final_states.add(new_state)
-
-        return intersect
-
-    def decomposition_to_automaton(self):
-        automaton = finite_automaton.NondeterministicFiniteAutomaton()
-
-        for label, bool_matrix in self.bool_decomposition.items():
-            for state_from, state_to in zip(*bool_matrix.nonzero()):
-                automaton.add_transition(state_from, label, state_to)
-
-        for state in self.start_states:
-            automaton.add_start_state(finite_automaton.State(state))
-
-        for state in self.final_states:
-            automaton.add_final_state(finite_automaton.State(state))
-
-        return automaton
-
-
 
     @classmethod
     def from_rsm(cls, rsm: RSM) -> "BooleanDecomposition":
@@ -217,5 +150,3 @@ class BooleanDecomposition:
             final_states=final_states,
             bool_decomposition=b_mtx,
         )
-
-

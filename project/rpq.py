@@ -1,8 +1,8 @@
 import networkx as nx
 from pyformlang.regular_expression import Regex
 
-from project.boolean_decompositon import (
-    BooleanDecomposition,
+from project.boolean_decompositonNFA import (
+    BooleanDecompositionNFA,
 )
 from project.regex_utils import create_nfa_from_graph, regex_to_dfa
 
@@ -13,8 +13,8 @@ def rpq(
     nfa = create_nfa_from_graph(graph, start_nodes, final_nodes)
     dfa = regex_to_dfa(Regex(query))
 
-    nfa_decomposition = BooleanDecomposition(nfa)
-    query_decomposition = BooleanDecomposition(dfa)
+    nfa_decomposition = BooleanDecompositionNFA(nfa)
+    query_decomposition = BooleanDecompositionNFA(dfa)
 
     intersected = nfa_decomposition.get_intersect_boolean_decomposition(
         query_decomposition

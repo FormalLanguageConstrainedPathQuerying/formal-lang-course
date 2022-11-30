@@ -28,7 +28,7 @@ def test_cfpq(
     start_var: str,
     expected: set[tuple],
 ):
-    actual = tensor_cfpq(graph, query, start_nodes, final_nodes, start_var)
+    actual = matrix_cfpq(graph, query, start_nodes, final_nodes, start_var)
     assert actual == expected
 
 

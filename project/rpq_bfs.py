@@ -4,7 +4,7 @@ import networkx as nx
 from pyformlang.regular_expression import Regex
 from scipy import sparse
 
-from project.boolean_decompositon import BooleanDecomposition
+from project.boolean_decompositonNFA import BooleanDecompositionNFA
 from project.regex_utils import create_nfa_from_graph, regex_to_dfa
 from scipy.sparse import csr_matrix
 
@@ -19,10 +19,10 @@ def rpq_bfs(
     if len(start_states) == 0 or len(final_states) == 0:
         return set()
 
-    graph_bool_decomposition = BooleanDecomposition(
+    graph_bool_decomposition = BooleanDecompositionNFA(
         create_nfa_from_graph(graph, start_states, final_states)
     )
-    regex_bool_decomposition = BooleanDecomposition(regex_to_dfa(regex))
+    regex_bool_decomposition = BooleanDecompositionNFA(regex_to_dfa(regex))
     result = bfs_sync(
         graph_bool_decomposition,
         regex_bool_decomposition,
@@ -40,8 +40,8 @@ def rpq_bfs(
 
 def _get_reachable_nodes(
     sub_front_indexes,
-    graph: BooleanDecomposition,
-    regex: BooleanDecomposition,
+    graph: BooleanDecompositionNFA,
+    regex: BooleanDecompositionNFA,
     visited,
 ) -> set:
     sub_front_padding = sub_front_indexes * regex.states_num
@@ -56,8 +56,8 @@ def _get_reachable_nodes(
 
 
 def bfs_sync(
-    graph: BooleanDecomposition,
-    regex: BooleanDecomposition,
+    graph: BooleanDecompositionNFA,
+    regex: BooleanDecompositionNFA,
     is_for_each: bool = False,
     start_states: set = None,
     final_states: set = None,
@@ -119,7 +119,7 @@ def bfs_sync(
 
 
 def _create_front(
-    graph: BooleanDecomposition, regex: BooleanDecomposition, start_states
+    graph: BooleanDecompositionNFA, regex: BooleanDecompositionNFA, start_states
 ) -> csr_matrix:
     front_row = sparse.dok_matrix((1, graph.states_num), dtype=bool)
 

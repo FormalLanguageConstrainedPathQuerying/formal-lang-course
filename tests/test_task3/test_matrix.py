@@ -3,8 +3,8 @@ import pytest
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton
 from scipy.sparse import dok_matrix
 
-from project.boolean_decompositon import (
-    BooleanDecomposition,
+from project.boolean_decompositonNFA import (
+    BooleanDecompositionNFA,
 )
 from project.regex_utils import create_nfa_from_graph
 from tests.utils import dot_to_graph, get_data
@@ -15,7 +15,7 @@ from tests.utils import dot_to_graph, get_data
     get_data(
         "test_closure",
         lambda data: (
-            BooleanDecomposition(
+            BooleanDecompositionNFA(
                 create_nfa_from_graph(
                     dot_to_graph(data["graph"]),
                     start_states=data["starts"],
@@ -26,7 +26,7 @@ from tests.utils import dot_to_graph, get_data
         ),
     ),
 )
-def test_transitive_closure(actual: BooleanDecomposition, expected):
+def test_transitive_closure(actual: BooleanDecompositionNFA, expected):
     if len(expected) == 0:
         assert actual.make_transitive_closure().size == 0
     else:
@@ -45,7 +45,7 @@ def test_transitive_closure(actual: BooleanDecomposition, expected):
     ),
 )
 def test_to_automaton(expected: NondeterministicFiniteAutomaton):
-    actual = BooleanDecomposition(expected).decomposition_to_automaton()
+    actual = BooleanDecompositionNFA(expected).decomposition_to_automaton()
     assert (
         nx.drawing.nx_pydot.to_pydot(actual.to_networkx()).__str__()
         == nx.drawing.nx_pydot.to_pydot(expected.to_networkx()).__str__()
@@ -57,7 +57,7 @@ def test_to_automaton(expected: NondeterministicFiniteAutomaton):
     get_data(
         "test_init",
         lambda data: (
-            BooleanDecomposition(
+            BooleanDecompositionNFA(
                 create_nfa_from_graph(
                     dot_to_graph(data["decomposition"]),
                     start_states=data["starts"],
@@ -70,7 +70,7 @@ def test_to_automaton(expected: NondeterministicFiniteAutomaton):
         ),
     ),
 )
-def test_init(decomposition: BooleanDecomposition, expected, starts, finals):
+def test_init(decomposition: BooleanDecompositionNFA, expected, starts, finals):
     def eq_matrix(arr1, arr2):
         acc = True
         for i in range(len(arr1)):

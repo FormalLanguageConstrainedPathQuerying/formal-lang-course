@@ -5,6 +5,7 @@ from pyformlang.finite_automaton import EpsilonNFA
 from scipy import sparse
 from scipy.sparse import eye
 
+from project.boolean_decompositonNFA import BooleanDecompositionNFA
 from project.boolean_decompositon import BooleanDecomposition
 from project.cfg import cfg_to_wcnf
 from project.ecfg import ECFG
@@ -108,9 +109,7 @@ def hellings(graph: nx.Graph, cfg: c.CFG) -> set[tuple[int, c.Variable, int]]:
     return r
 
 
-def tensor(
-    graph: nx.Graph, cfg: CFG
-) -> set[tuple[int, c.Variable, int]]:
+def tensor(graph: nx.Graph, cfg: CFG) -> set[tuple[int, c.Variable, int]]:
     cfg_bool_matrix = BooleanDecomposition.from_rsm(ECFG.from_cfg(cfg).to_rsm())
     cfg_index_to_state = {i: s for s, i in cfg_bool_matrix.state_indices.items()}
     graph_bool_matrix = BooleanDecomposition.from_nfa(EpsilonNFA.from_networkx(graph))
@@ -118,7 +117,7 @@ def tensor(
     graph_index_to_state = {i: s for s, i in graph_bool_matrix.state_indices.items()}
     self_loop_matrix = eye(len(graph_bool_matrix.state_indices), dtype=bool).todok()
     for nonterm in cfg.get_nullable_symbols():
-        graph_bool_matrix.bool_matrices[nonterm.value] += self_loop_matrix
+        graph_bool_matrix.bool_decomposition[nonterm.value] += self_loop_matrix
     last_tc_sz = 0
     while True:
         intersection = cfg_bool_matrix & graph_bool_matrix
@@ -144,4 +143,3 @@ def tensor(
         for nonterm, mtx in graph_bool_matrix.bool_decomposition.items()
         for graph_i, graph_j in zip(*mtx.nonzero())
     }
-

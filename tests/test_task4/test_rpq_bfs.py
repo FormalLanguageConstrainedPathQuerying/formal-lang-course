@@ -2,7 +2,7 @@ import networkx as nx
 import pytest
 from pyformlang.regular_expression import Regex
 
-from project.boolean_decompositon import BooleanDecomposition
+from project.boolean_decompositonNFA import BooleanDecompositionNFA
 from project.regex_utils import create_nfa_from_graph, regex_to_dfa
 from project.rpq_bfs import rpq_bfs, bfs_sync
 from tests.utils import get_data, dot_to_graph
@@ -43,10 +43,10 @@ def test_rpq_bfs(
     graph: nx.MultiDiGraph, regex, starts, finals, expected, mode, bfs_res
 ):
     bfs = bfs_sync(
-        graph=BooleanDecomposition(
+        graph=BooleanDecompositionNFA(
             create_nfa_from_graph(graph=graph, start_states=starts, final_states=finals)
         ),
-        regex=BooleanDecomposition(regex_to_dfa(Regex(regex))),
+        regex=BooleanDecompositionNFA(regex_to_dfa(Regex(regex))),
         is_for_each=mode,
         final_states=finals,
         start_states=starts,
