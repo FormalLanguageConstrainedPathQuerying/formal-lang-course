@@ -5,9 +5,9 @@ from pyformlang.finite_automaton import (
     DeterministicFiniteAutomaton,
     EpsilonNFA,
     Epsilon,
+    Symbol,
 )
 from pyformlang.regular_expression import Regex
-from pyformlang.regular_expression.regex_objects import Symbol
 
 
 def regex_to_minimal_dfa(regex: Regex) -> DeterministicFiniteAutomaton:

@@ -6,12 +6,12 @@ digraph  {
 3 [is_final=True, is_start=False, label=3, peripheries=2];
 4 [is_final=False, is_start=False, label=4, peripheries=1];
 5 [is_final=True, is_start=False, label=5, peripheries=2];
-0 -> 1  [key=0, label="Symbol(a1)"];
-0 -> 3  [key=0, label="Symbol(a2)"];
+0 -> 1  [key=0, label=a1];
+0 -> 3  [key=0, label=a2];
 "0_starting" -> 0  [key=0];
-1 -> 2  [key=0, label="Symbol(a1)"];
-2 -> 0  [key=0, label="Symbol(a1)"];
-3 -> 4  [key=0, label="Symbol(a2)"];
-4 -> 5  [key=0, label="Symbol(a2)"];
-5 -> 0  [key=0, label="Symbol(a2)"];
+1 -> 2  [key=0, label=a1];
+2 -> 0  [key=0, label=a1];
+3 -> 4  [key=0, label=a2];
+4 -> 5  [key=0, label=a2];
+5 -> 0  [key=0, label=a2];
 }
