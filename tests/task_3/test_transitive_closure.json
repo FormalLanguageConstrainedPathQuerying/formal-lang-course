@@ -1,0 +1,36 @@
+{
+  "test_transitive_closure": [
+    {
+      "graph": "digraph {0;1;2;3; 0 -> 2 [label=a]; 1 -> 0 [label=a]; 3 -> 1 [label=a]}",
+      "matrix": [
+        [0,0,1,0],
+        [1,0,1,0],
+        [0,0,0,0],
+        [1,1,1,0]
+      ]
+    },
+    {
+      "graph": "digraph {0;1; 0 -> 1 [label=a]}",
+      "matrix": [
+        [0, 1],
+        [0, 0]
+      ]
+    },
+    {
+      "graph": "digraph {0;1;2;3; 0 -> 1 [label=a]; 0 -> 1 [label=b]; 1 -> 2 [label=c]; 0 -> 3 [label=c]}",
+      "matrix": [
+        [0, 1, 1, 1],
+        [0, 0, 1, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]
+      ]
+    },
+    {
+      "graph": "digraph {0;1; 0 -> 0 [label=b]; 0 -> 1 [label=b]; 1 -> 1 [label=b]; 1 -> 0 [label=a]}",
+      "matrix": [
+        [1, 1],
+        [1, 1]
+      ]
+    }
+  ]
+}
