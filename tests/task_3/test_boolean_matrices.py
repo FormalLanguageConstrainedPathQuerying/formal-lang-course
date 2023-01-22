@@ -110,3 +110,26 @@ def test_intersect(
         assert actual.to_networkx().__str__() == expected.to_networkx().__str__()
     else:
         assert actual.is_equivalent_to(expected)
+
+
+@pytest.mark.parametrize(
+    "self, other",
+    read_data_from_json(
+        "test_direct_sum",
+        lambda data: (
+            BooleanMatrices(
+                create_nfa_from_graph(
+                    dot_to_graph(data["g1"]), set(data["starts1"]), set(data["finals1"])
+                )
+            ),
+            BooleanMatrices(
+                create_nfa_from_graph(
+                    dot_to_graph(data["g2"]), set(data["starts2"]), set(data["finals2"])
+                )
+            ),
+        ),
+    ),
+)
+def test_direct_sum(self: BooleanMatrices, other: BooleanMatrices):
+    d_sum = self.direct_sum(other)
+    pass
