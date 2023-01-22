@@ -59,8 +59,8 @@ def rpq_bfs(
         if j >= k:
 
             state_constraint = constraint_bm.get_state_by_index(
-                i % k
-            )  # % для случая separated_for_each
+                i % k  # % для случая separated_for_each
+            )
 
             graph_state_index = j - k
             state_graph = graph_bm.get_state_by_index(graph_state_index)
