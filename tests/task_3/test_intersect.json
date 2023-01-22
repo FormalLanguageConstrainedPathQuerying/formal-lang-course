@@ -1,0 +1,37 @@
+{
+  "test_intersect": [
+    {
+      "graph1": "digraph {0;1;2; 0 -> 1 [label=a]; 0 -> 2 [label=a]; 1 -> 1 [label=c]; 1 -> 2 [label=c]}",
+      "start_states1": [0],
+      "final_states1": [2],
+      "graph2": "digraph {0;1;2; 0 -> 1 [label=a]; 0 -> 2 [label=a]; 1 -> 1 [label=c]}",
+      "start_states2": [0],
+      "final_states2": [2],
+      "graph_expected": "digraph {0;1;2; 0 -> 1 [label=a]; 0 -> 2 [label=a]; 1 -> 1 [label=c]}",
+      "start_states_expected": [0],
+      "final_states_expected": [2]
+    },
+    {
+      "graph1": "digraph  {0;1;2;0 -> 1  [key=0, label=a];0 -> 1  [key=1, label=b];0 -> 0  [key=0, label=c];1 -> 1  [key=0, label=b];1 -> 2  [key=0, label=c];2 -> 0  [key=0, label=d];}",
+      "start_states1": [0],
+      "final_states1": [0, 1, 2],
+      "graph2": "digraph  {}",
+      "start_states2": [],
+      "final_states2": [],
+      "graph_expected": "digraph  {}",
+      "start_states_expected": [],
+      "final_states_expected": []
+    },
+    {
+      "graph1": "digraph  {0;1;2;0 -> 1  [key=0, label=a];0 -> 1  [key=1, label=b];0 -> 0  [key=0, label=c];1 -> 1  [key=0, label=b];1 -> 2  [key=0, label=c];2 -> 0  [key=0, label=d];}",
+      "start_states1": [0],
+      "final_states1": [0, 1, 2],
+      "graph2": "digraph  {0;1;2;0 -> 1  [key=0, label=a];0 -> 0  [key=0, label=a];1 -> 1  [key=0, label=b];1 -> 2  [key=0, label=e];}",
+      "start_states2": [0],
+      "final_states2": [1],
+      "graph_expected": "digraph{0;1;0 -> 1[key = 0, label = a];1 -> 1[key = 0, label = b];}",
+      "start_states_expected": [0],
+      "final_states_expected": [1]
+    }
+  ]
+}

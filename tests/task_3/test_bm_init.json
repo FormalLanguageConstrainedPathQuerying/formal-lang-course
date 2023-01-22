@@ -1,0 +1,61 @@
+{
+  "test_bm_init": [
+    {
+      "graph": "digraph {0;1; 0 -> 0 [label=b]; 0 -> 1 [label=b]; 1 -> 1 [label=b]; 1 -> 0 [label=a]}",
+      "expected_bm": {
+        "b": [
+          [true,  true],
+          [false,  true]
+        ],
+        "a": [
+          [false, false],
+          [true, false]
+        ]
+      },
+      "start_states": [0, 1],
+      "final_states":[0, 1]
+    },
+    {
+      "graph": "digraph {0;1; 0 -> 1 [label=a]; 0 -> 0 [label=a]}",
+      "expected_bm": {
+        "a": [
+          [true, true],
+          [false, false]
+        ]
+      },
+      "start_states": [0,1],
+      "final_states":[0,1]
+    },
+    {
+      "graph": "digraph {0;1;2;3; 0 -> 1 [label=a]; 0 -> 2 [label=b]; 1 -> 2 [label=b]; 1 -> 3 [label=a]; 2 -> 0 [label=a]; 3 -> 0 [label=c]}",
+      "expected_bm": {
+        "a": [
+          [false, true, false, false],
+          [false, false, false, true],
+          [true, false, false, false],
+          [false, false, false, false]
+        ],
+        "b": [
+          [false, false, true, false],
+          [false, false, true, false],
+          [false, false, false, false],
+          [false, false, false, false]
+        ],
+        "c": [
+          [false, false, false, false],
+          [false, false, false, false],
+          [false, false, false, false],
+          [true, false, false, false]
+        ]
+      },
+      "start_states": [0,1,2,3],
+      "final_states":[0,1,2,3]
+    },
+    {
+      "graph": "digraph {}",
+      "expected_bm": {},
+      "start_states": [],
+      "final_states":[]
+    }
+  ]
+}
