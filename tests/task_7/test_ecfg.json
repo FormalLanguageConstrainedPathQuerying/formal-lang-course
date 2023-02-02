@@ -1,0 +1,87 @@
+{
+  "test_ecfg": [
+    {
+      "cfg": "",
+      "start": null,
+      "expected_productions": []
+    },
+    {
+      "cfg": "S -> a",
+      "start": null,
+      "expected_productions": [
+        {
+          "head": "S",
+          "body": "a"
+        }
+      ]
+    },
+    {
+      "cfg": "S -> a S b S | $",
+      "start": "S",
+      "expected_productions": [
+        {
+          "head": "S",
+          "body": "a S b S | $"
+        }
+      ]
+    },
+    {
+      "cfg": "S0 -> L S1 | $\nS -> L S1\nS1 -> b\nS2 -> b\nS1 -> R S\nS1 -> S S2\nS2 -> R S\nL -> a\nR -> b",
+      "start": "S0",
+      "expected_productions": [
+        {
+          "head": "S0",
+          "body": "L S1 | $"
+        },
+        {
+          "head": "S",
+          "body": "L S1"
+        },
+        {
+          "head": "S1",
+          "body": "b | R S | S S2"
+        },
+        {
+          "head": "S2",
+          "body": "b | R S"
+        },
+        {
+          "head": "L",
+          "body": "a"
+        },
+        {
+          "head": "R",
+          "body": "b"
+        }
+      ]
+    },
+    {
+      "cfg": "A -> A B\nA -> C\nA-> A a\nB -> A\nB -> $\n C -> A A | $",
+      "start": "A",
+      "expected_productions": [
+        {
+          "head": "A",
+          "body": "A B | C | A a"
+        },
+        {
+          "head": "B",
+          "body": "A | $"
+        },
+        {
+          "head": "C",
+          "body": "A A | $"
+        }
+      ]
+    },
+    {
+      "cfg": "S -> a S | $",
+      "start": "S",
+      "expected_productions": [
+        {
+          "head": "S",
+          "body": "a S | $"
+        }
+      ]
+    }
+  ]
+}
