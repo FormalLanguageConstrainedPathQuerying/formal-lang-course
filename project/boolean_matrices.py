@@ -1,4 +1,4 @@
-from pyformlang.finite_automaton import NondeterministicFiniteAutomaton
+from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, State
 from scipy import sparse
 from scipy.sparse import dok_matrix
 
@@ -6,12 +6,14 @@ from scipy.sparse import dok_matrix
 class BooleanMatrices:
     def __init__(self, nfa: NondeterministicFiniteAutomaton = None):
         if nfa is None:
+            self.states = set()
             self.num_states = 0
             self.start_states = set()
             self.final_states = set()
             self.bool_matrices = dict()
             self.state_indexes = dict()
         else:
+            self.states = nfa.states
             self.num_states = len(nfa.states)
             self.start_states = nfa.start_states
             self.final_states = nfa.final_states
@@ -96,3 +98,48 @@ class BooleanMatrices:
 
     def get_final_states(self):
         return self.final_states.copy()
+
+    def get_state_by_index(self, index):
+        for state, ind in self.state_indexes.items():
+            if ind == index:
+                return state
+
+    def direct_sum(self, other: "BooleanMatrices"):
+        d_sum = BooleanMatrices()
+        d_sum.num_states = self.num_states + other.num_states
+
+        common_symbols = self.bool_matrices.keys() & other.bool_matrices.keys()
+
+        for symbol in common_symbols:
+            d_sum.bool_matrices[symbol] = sparse.bmat(
+                [
+                    [self.bool_matrices[symbol], None],
+                    [None, other.bool_matrices[symbol]],
+                ]
+            )
+
+        for state in self.states:
+            d_sum.states.add(state)
+            d_sum.state_indexes[state] = self.state_indexes[state]
+
+            # если состояние является стартовым у одной из матриц, то и у матрицы прямой суммы оно тоже будет стартовым
+            if state in self.start_states:
+                d_sum.start_states.add(state)
+
+            if state in self.final_states:
+                d_sum.final_states.add(state)
+
+        for state in other.states:
+            new_state = State(state.value + self.num_states)
+            d_sum.states.add(new_state)
+            d_sum.state_indexes[new_state] = (
+                other.state_indexes[state] + self.num_states
+            )
+
+            if state in other.start_states:
+                d_sum.start_states.add(new_state)
+
+            if state in other.final_states:
+                d_sum.final_states.add(new_state)
+
+        return d_sum
