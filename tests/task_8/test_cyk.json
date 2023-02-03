@@ -1,0 +1,49 @@
+{
+  "test_cyk": [
+    {
+      "cfg": "S -> ε",
+      "word": "",
+      "expected": true
+    },
+    {
+      "cfg": "S -> a S b S | $",
+      "word": "",
+      "expected": true
+    },
+    {
+      "cfg": "S -> A S2 | Epsilon\nS2 -> b | B S1 | S1 S3\nA -> a\nS1 -> A S2\nS3 -> b | B S1\nB -> b",
+      "word": "aabbab",
+      "expected": true
+    },
+    {
+      "cfg": "S -> A S2 | Epsilon\nS2 -> b | B S1 | S1 S3\nA -> a\nS1 -> A S2\nS3 -> b | B S1\nB -> b",
+      "word": "aabbbab",
+      "expected": false
+    },
+    {
+      "cfg": "",
+      "word": "",
+      "expected": false
+    },
+    {
+      "cfg": "S -> a",
+      "word": "",
+      "expected": false
+    },
+    {
+      "cfg": "S -> a S b S | $",
+      "word": "aabbababaaabbb",
+      "expected": true
+    },
+    {
+      "cfg": "S -> a S b S | $",
+      "word": "abcd",
+      "expected": false
+    },
+    {
+      "cfg": "S -> a S b S | $",
+      "word": "ab",
+      "expected": true
+    }
+  ]
+}
