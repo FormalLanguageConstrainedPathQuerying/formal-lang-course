@@ -62,15 +62,3 @@ def test_read_cfg(path, starting: str, expected_cfg: CFG):
     actual = read_cfg(path, starting) if starting is not None else read_cfg(path)
 
     assert eq(actual, expected_cfg)
-
-
-@pytest.mark.parametrize(
-    "cfg",
-    read_data_from_json(
-        "test_cfg",
-        lambda data: (CFG.from_text(data["cfg"])),
-    ),
-)
-def test_to_normal_form(cfg: CFG):
-    cnf = cfg.to_normal_form()
-    print(cnf)
