@@ -1,0 +1,121 @@
+{
+  "test_matrix": [
+    {
+      "graph": "digraph {0 [is_start=True, is_final=True]; 1 [is_start=True, is_final=True]; 2 [is_start=True, is_final=True]; 3 [is_start=True, is_final=True]; 0 -> 1 [label=a]; 1 -> 2 [label=a]; 2 -> 0 [label=a]; 2 -> 3 [label=b]; 3 -> 2 [label=b]}",
+      "cfg": "S -> A B | A C\nC -> S B\nA -> a\nB -> b",
+      "expected": [
+        {
+          "from": "0",
+          "to": "1",
+          "var": "A"
+        },
+        {
+          "from": "1",
+          "to": "2",
+          "var": "A"
+        },
+        {
+          "from": "2",
+          "to": "0",
+          "var": "A"
+        },
+        {
+          "from": "2",
+          "to": "3",
+          "var": "B"
+        },
+        {
+          "from": "3",
+          "to": "2",
+          "var": "B"
+        },
+        {
+          "from": "1",
+          "to": "3",
+          "var": "S"
+        },
+        {
+          "from": "1",
+          "to": "2",
+          "var": "C"
+        },
+        {
+          "from": "0",
+          "to": "2",
+          "var": "S"
+        },
+        {
+          "from": "0",
+          "to": "3",
+          "var": "C"
+        },
+        {
+          "from": "2",
+          "to": "3",
+          "var": "S"
+        },
+        {
+          "from": "2",
+          "to": "2",
+          "var": "C"
+        },
+        {
+          "from": "1",
+          "to": "2",
+          "var": "S"
+        },
+        {
+          "from": "1",
+          "to": "3",
+          "var": "C"
+        },
+        {
+          "from": "0",
+          "to": "3",
+          "var": "S"
+        },
+        {
+          "from": "0",
+          "to": "2",
+          "var": "C"
+        },
+        {
+          "from": "2",
+          "to": "2",
+          "var": "S"
+        },
+        {
+          "from": "2",
+          "to": "3",
+          "var": "C"
+        }
+      ]
+    },
+    {
+      "graph": "digraph {}",
+      "cfg": "",
+      "expected": []
+    },
+    {
+      "graph": "digraph {}",
+      "cfg": "S -> a",
+      "expected": []
+    },
+    {
+      "graph": "digraph {1 [is_start=True, is_final=False]; 2 [is_start=False, is_final=True]; 1 -> 2 [label=a]}",
+      "cfg": "",
+      "expected": []
+    },
+    {
+      "graph": "digraph {1 [is_start=False, is_final=False]; 2 [is_start=False, is_final=False]; 1 -> 2 [label=a]}",
+      "cfg": "S -> a",
+      "expected": [
+        {
+          "from": "1",
+          "to": "2",
+          "var": "S"
+        }
+      ]
+    }
+  ]
+}

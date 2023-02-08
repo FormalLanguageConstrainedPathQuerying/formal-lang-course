@@ -3,7 +3,8 @@ from typing import Set
 import networkx as nx
 import pytest
 from pyformlang.cfg import CFG, Variable
-from project.hellings import hellings, cfpq_using_hellings
+from project.hellings import hellings
+from project.cfpq import cfpq_using_hellings
 
 from tests.utils import read_data_from_json, dot_to_graph
 
