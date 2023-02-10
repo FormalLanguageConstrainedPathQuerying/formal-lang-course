@@ -1,3 +1,5 @@
+from typing import Union
+
 import networkx as nx
 from pyformlang.regular_expression import Regex
 
@@ -18,8 +20,10 @@ def rpq_bfs(
         return set()
 
     # step-1 form bm
-    graph_bm = BooleanMatrices(create_nfa_from_graph(graph, start_states, final_states))
-    constraint_bm = BooleanMatrices(regex_to_minimal_dfa(reg_constraint))
+    graph_bm = BooleanMatrices.from_automaton(
+        create_nfa_from_graph(graph, start_states, final_states)
+    )
+    constraint_bm = BooleanMatrices.from_automaton(regex_to_minimal_dfa(reg_constraint))
     k = constraint_bm.num_states
     n = graph_bm.num_states
 
@@ -28,7 +32,7 @@ def rpq_bfs(
 
     # step-3 form front
     graph_start_states_indexes = [
-        graph_bm.state_indexes[start_st] for start_st in graph_bm.start_states
+        graph_bm.state_to_index[start_st] for start_st in graph_bm.start_states
     ]
     if separately_for_each:
         front = _create_front_for_each(
@@ -59,8 +63,8 @@ def rpq_bfs(
         if j >= k:
 
             state_constraint = constraint_bm.get_state_by_index(
-                i % k  # % для случая separated_for_each
-            )
+                i % k
+            )  # % для случая separated_for_each
 
             graph_state_index = j - k
             state_graph = graph_bm.get_state_by_index(graph_state_index)
@@ -117,7 +121,7 @@ def _create_front(
     )
 
     for start_st in constraint_bm.start_states:
-        i = constraint_bm.state_indexes[start_st]
+        i = constraint_bm.state_to_index[start_st]
         front[i, i] = True
         front[i, constraint_bm.num_states :] = right_part_of_row
 

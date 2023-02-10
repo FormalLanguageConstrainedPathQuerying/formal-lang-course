@@ -5,6 +5,34 @@ from pyformlang.cfg import CFG, Variable
 
 from project.hellings import hellings
 from project.matrix import matrix
+from project.tensor import tensor
+
+
+def cfpq_using_tensor(
+    graph: nx.Graph,
+    query: Union[CFG, str],
+    starts: Set[int] = None,
+    finals: Set[int] = None,
+    start_nonterminal: Union[str, Variable] = "S",
+):
+    if start_nonterminal is None:
+        start_nonterminal = "S"
+    if isinstance(start_nonterminal, str):
+        start_nonterminal = Variable(start_nonterminal)
+    if isinstance(query, str):
+        query = CFG.from_text(query, start_nonterminal)
+    if starts is None:
+        starts = {int(n) for n in graph.nodes}
+    if finals is None:
+        finals = {int(n) for n in graph.nodes}
+
+    data = tensor(graph, query)
+
+    return {
+        (i, v, j)
+        for (i, v, j) in data
+        if i in starts and j in finals and v == start_nonterminal
+    }
 
 
 def cfpq_using_matrix(

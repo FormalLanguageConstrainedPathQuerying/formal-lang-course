@@ -12,7 +12,9 @@ from project.boolean_matrices import BooleanMatrices
     read_data_from_json(
         "test_bm_init",
         lambda data: (
-            BooleanMatrices(create_nfa_from_graph(dot_to_graph(data["graph"]))),
+            BooleanMatrices.from_automaton(
+                create_nfa_from_graph(dot_to_graph(data["graph"]))
+            ),
             data["expected_bm"],
             set(data["start_states"]),
             set(data["final_states"]),
@@ -38,7 +40,9 @@ def test_bm_init(input_bm: BooleanMatrices, expected_bm, start_states, final_sta
     read_data_from_json(
         "test_transitive_closure",
         lambda data: (
-            BooleanMatrices(create_nfa_from_graph(dot_to_graph(data["graph"]))),
+            BooleanMatrices.from_automaton(
+                create_nfa_from_graph(dot_to_graph(data["graph"]))
+            ),
             data["matrix"],
         ),
     ),
@@ -53,7 +57,9 @@ def test_transitive_closure(input_bm: BooleanMatrices, expected_bm):
     read_data_from_json(
         "test_to_automaton",
         lambda data: (
-            BooleanMatrices(create_nfa_from_graph(dot_to_graph(data["expected"]))),
+            BooleanMatrices.from_automaton(
+                create_nfa_from_graph(dot_to_graph(data["expected"]))
+            ),
             create_nfa_from_graph(dot_to_graph(data["expected"])),
         ),
     ),
@@ -100,8 +106,8 @@ def test_intersect(
     g2: NondeterministicFiniteAutomaton,
     expected: NondeterministicFiniteAutomaton,
 ):
-    bm1 = BooleanMatrices(g1)
-    bm2 = BooleanMatrices(g2)
+    bm1 = BooleanMatrices.from_automaton(g1)
+    bm2 = BooleanMatrices.from_automaton(g2)
     intersection = bm1.intersect(bm2)
 
     actual = intersection.to_automaton()
@@ -117,12 +123,12 @@ def test_intersect(
     read_data_from_json(
         "test_direct_sum",
         lambda data: (
-            BooleanMatrices(
+            BooleanMatrices.from_automaton(
                 create_nfa_from_graph(
                     dot_to_graph(data["g1"]), set(data["starts1"]), set(data["finals1"])
                 )
             ),
-            BooleanMatrices(
+            BooleanMatrices.from_automaton(
                 create_nfa_from_graph(
                     dot_to_graph(data["g2"]), set(data["starts2"]), set(data["finals2"])
                 )
