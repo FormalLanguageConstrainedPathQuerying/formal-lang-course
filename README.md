@@ -1,4 +1,4 @@
-[![Check code style](https://github.com/JetBrains-Research/formal-lang-course/actions/workflows/code_style.yml/badge.svg)](https://github.com/JetBrains-Research/formal-lang-course/actions/workflows/code_style.yml)
+[![Check code style](https://github.com/FormalLanguageConstrainedPathQuerying/formal-lang-course/actions/workflows/code_style.yml/badge.svg)](https://github.com/FormalLanguageConstrainedPathQuerying/formal-lang-course/actions/workflows/code_style.yml)
 [![Code style](https://img.shields.io/badge/Code%20style-black-000000.svg)](https://github.com/psf/black)
 ---
 # Formal Language Course
@@ -8,10 +8,12 @@
 
 Актуальное:
 - [Таблица с текущими результатами](https://docs.google.com/spreadsheets/d/14h6hUWGMfVhwkxCb9KmRc_yt4VgeecyMEIMDC6zg95c/edit?usp=sharing)
-- [Список задач](https://github.com/JetBrains-Research/formal-lang-course/tree/main/tasks)
+- [Список задач](https://github.com/FormalLanguageConstrainedPathQuerying/formal-lang-course/tree/main/tasks)
 - [Стиль кода как референс](https://www.python.org/dev/peps/pep-0008/)
-- [Материалы по курсу](https://github.com/JetBrains-Research/formal-lang-course/blob/main/docs/lecture_notes/Formal_language_course.pdf)
-- [О достижимости с ограничениями в терминах формальных языков](https://github.com/JetBrains-Research/FormalLanguageConstrainedReachability-LectureNotes)
+- [Материалы по курсу](https://github.com/FormalLanguageConstrainedPathQuerying/formal-lang-course/blob/main/docs/lecture_notes/Formal_language_course.pdf)
+- [О достижимости с ограничениями в терминах формальных языков](https://github.com/FormalLanguageConstrainedPathQuerying/FormalLanguageConstrainedReachability-LectureNotes)
+- Классика по алгоритмам синтаксического анализа: [Dick Grune, Ceriel J. H. Jacobs, "Parsing Techniques A Practical Guide"](https://link.springer.com/book/10.1007/978-0-387-68954-8#bibliographic-information)
+- Классика по теории формальных языков: [M. A. Harrison. 1978. Introduction to Formal Language Theory](https://dl.acm.org/doi/book/10.5555/578595)
 
 Технологии:
 - Python 3.8+
