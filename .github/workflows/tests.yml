@@ -40,4 +40,4 @@ jobs:
           python -m pip list
 
       - name: Run tests
-        run: python -m ./scripts/run_tests.py
+        run: python ./scripts/run_tests.py
