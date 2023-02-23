@@ -7,19 +7,19 @@ from textwrap import dedent
 def test_graph_info():
     # Самый маленький граф из датасета,
     # но метки на рёбрах всё равно очень большие
-    info = proj.get_graph_info('skos')
+    info = proj.get_graph_info("skos")
     assert 144 == info.number_of_nodes
     assert 252 == info.number_of_edges
 
 
 def test_graph_save():
-    path = ''
+    path = ""
     with NamedTemporaryFile(delete=False) as f:
         path = f.name
-    proj.save_two_cycles(path, 2, 3, ('first', 'second'))
+    proj.save_two_cycles(path, 2, 3, ("first", "second"))
     with open(path) as f:
-        contents = ''.join(f.readlines())
-        expected = '''\
+        contents = "".join(f.readlines())
+        expected = """\
             digraph  {
             1;
             2;
@@ -35,7 +35,7 @@ def test_graph_save():
             4 -> 5  [key=0, label=second];
             5 -> 0  [key=0, label=second];
             }
-            '''
+            """
         expected = dedent(expected)
         contents = dedent(contents)
         assert expected == contents
