@@ -8,7 +8,7 @@ GraphInfo = namedtuple('GraphInfo',
                         'edges'])
 
 
-def get_graph_info(name: str) -> nx.MultiDiGraph:
+def get_graph_info(name: str) -> GraphInfo:
     path = cfpq.download(name)
     g = cfpq.graph_from_csv(path)
     return GraphInfo(g.number_of_nodes(),
