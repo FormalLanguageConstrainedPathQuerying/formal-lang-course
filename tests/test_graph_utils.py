@@ -83,7 +83,7 @@ def test_2_create_two_cycle_labeled_graph_and_save():
     try:
         os.mkdir(dir_name)
         GraphUtils.create_two_cycle_labeled_graph_and_save(
-            10, 20, ("a", "b"), dir_name + "/1s.dot"
+            10, 20, ("a", "b"), dir_name + "/1.dot"
         )
         GraphUtils.create_two_cycle_labeled_graph_and_save(
             10, 20, ("a", "b"), dir_name + "/2.dot"
