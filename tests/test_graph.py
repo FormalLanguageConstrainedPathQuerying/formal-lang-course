@@ -2,7 +2,7 @@ from project.task01.graph import *
 
 
 def test_graph_info():
-    graph_name = "generations"
+    graph_name = "ls"
     V, E, L = graph_info(graph_name)
     assert 1687 == V
     assert 1453 == E
