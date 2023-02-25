@@ -20,7 +20,7 @@ class GraphUtils(object):
 
     @classmethod
     def graph_info_by_name(cls, name: str) -> GraphInfo:
-        # По имени графа возвращает количество вершин, рёбер и перечисление различные метки, встречающиеся на рёбрах.
+        # Returning number of nodes, number of edges, label of graph by graph name
         graph = cls.download_graph(name)
         return cls.GraphInfo(
             graph.number_of_nodes(),
@@ -36,7 +36,7 @@ class GraphUtils(object):
         labels: tuple[str, str],
         file_path: str,
     ) -> None:
-        # По количеству вершин в циклах и именам меток строит граф из двух циклов и сохраняет его в указанный файл в формате DOT.
+        # Builds two cycle graph with its labels, saves graph with dot file
         graph = cfpq_data.labeled_two_cycles_graph(
             number_of_nodes_in_cycle_a, number_of_nodes_in_cycle_b, labels=labels
         )
