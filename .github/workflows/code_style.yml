@@ -55,3 +55,8 @@ jobs:
       - name: Run pre-commit
         run: |
           pre-commit run --all-files --color always --verbose --show-diff-on-failure
+
+      # Run tests
+      - name: Run tests
+        run: |
+          python ./scripts/run_tests.py
