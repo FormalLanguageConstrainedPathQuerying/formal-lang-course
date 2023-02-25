@@ -1,9 +1,10 @@
 import cfpq_data
 import networkx
 import pathlib
+from typing import Dict
 
 
-def get_graph_info(name: str) -> dict[str, int]:
+def get_graph_info(name: str) -> Dict[str, int]:
     graph = cfpq_data.graph_from_csv(cfpq_data.download(name))
     return {
         "number_of_nodes": graph.number_of_nodes(),
