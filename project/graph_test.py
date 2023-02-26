@@ -5,7 +5,7 @@ import pytest
 
 
 def test_info():
-    graph = c_d.labeled_cycle_graph(1000-7, "???")
+    graph = c_d.labeled_cycle_graph(1000 - 7, "???")
     assert gu.get_info(graph) == (993, 993, {"???"})
 
 
@@ -20,7 +20,8 @@ def test_build_two_cycles():
         f.seek(0)
         t = f.read()
     assert (
-        t == """digraph  {
+        t
+        == """digraph  {
 1;
 2;
 3;

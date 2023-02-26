@@ -10,5 +10,6 @@ def main():
     my_tests.test_load()
     my_tests.test_build_two_cycles()
 
+
 if __name__ == "__main__":
     main()
