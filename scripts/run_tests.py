@@ -1,6 +1,6 @@
 import subprocess
 import shared
-import tests.graph_test as my_tests
+import project.graph_test as my_tests
 
 
 def main():
