@@ -93,3 +93,45 @@ def test_2_create_two_cycle_labeled_graph_and_save():
         assert e is None
     finally:
         shutil.rmtree(dir_name)
+
+
+def test_3_check_correctness_of_graph_file():
+    dir_name = "test_3_check_correctness_of_graph_file"
+    try:
+        os.mkdir(dir_name)
+        GraphUtils.create_two_cycle_labeled_graph_and_save(
+            4, 5, ("a", "b"), dir_name + "/1.dot"
+        )
+
+        with open(dir_name + "/1.dot") as file:
+            file_lines = "".join(file.readlines())
+            original_graph = """\
+digraph  {
+1;
+2;
+3;
+4;
+0;
+5;
+6;
+7;
+8;
+9;
+1 -> 2  [key=0, label=a];
+2 -> 3  [key=0, label=a];
+3 -> 4  [key=0, label=a];
+4 -> 0  [key=0, label=a];
+0 -> 1  [key=0, label=a];
+0 -> 5  [key=0, label=b];
+5 -> 6  [key=0, label=b];
+6 -> 7  [key=0, label=b];
+7 -> 8  [key=0, label=b];
+8 -> 9  [key=0, label=b];
+9 -> 0  [key=0, label=b];
+}
+"""
+            assert original_graph == file_lines
+    except Exception as e:
+        assert e is None
+    finally:
+        shutil.rmtree(dir_name)
