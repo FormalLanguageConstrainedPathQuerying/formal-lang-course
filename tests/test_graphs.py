@@ -37,10 +37,12 @@ def test_two_cycles_eq():
         os.remove(file_name)
     assert isinstance(gr, nx.MultiDiGraph)
     if isinstance(gr, nx.MultiDiGraph):
-        if '\\n' in gr.nodes.keys():
-            gr.remove_node('\\n')
+        if "\\n" in gr.nodes.keys():
+            gr.remove_node("\\n")
         assert n + m + 1 == gr.number_of_nodes()
         assert n + m + 2 == gr.number_of_edges()
-        unique_labels = set((e[2] if (3 <= len(e)) else None) for e in gr.edges(data="label"))
+        unique_labels = set(
+            (e[2] if (3 <= len(e)) else None) for e in gr.edges(data="label")
+        )
         unique_labels.discard(None)
         assert {"uno", "duo"} == unique_labels

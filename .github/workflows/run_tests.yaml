@@ -46,7 +46,7 @@ jobs:
           python -m pip install --upgrade pip wheel setuptools
           python -m pip install -r requirements.txt
           python -m pip list
-          
+
         # Runs tests
       - name: Run tests
         run: python ./scripts/run_tests.py
