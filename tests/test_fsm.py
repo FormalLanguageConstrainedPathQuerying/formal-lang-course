@@ -1,4 +1,4 @@
-from project.fsm import *
+import project.fsm
 
 import pyformlang.regular_expression as re
 import pyformlang.finite_automaton as fa
@@ -32,7 +32,7 @@ def test_graph_to_nfa():
     expected.add_start_state(fa.State(0))
     expected.add_final_state(fa.State(3))
     expected.add_final_state(fa.State(2))
-    for (fr, to, label) in graph.edges(data="label"):
+    for fr, to, label in graph.edges(data="label"):
         expected.add_transition(fa.State(fr), fa.Symbol(label), fa.State(to))
 
     assert actual_nfa.is_equivalent_to(expected)

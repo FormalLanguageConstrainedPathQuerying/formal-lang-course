@@ -1,13 +1,13 @@
 from typing import Set
 
-import project.graph_utils as utils
 import pyformlang.regular_expression as re
 import pyformlang.finite_automaton as fa
 import networkx as nx
 
 # Используя возможности pyformlang реализовать функцию построения минимального ДКА по заданному регулярному выражению.
 
-def regex_to_dfa(regex : re.Regex) -> fa.DeterministicFiniteAutomaton:
+
+def regex_to_dfa(regex: re.Regex) -> fa.DeterministicFiniteAutomaton:
     nfa = regex.to_epsilon_nfa()
     return nfa.minimize().to_deterministic()
 
@@ -16,7 +16,9 @@ def regex_to_dfa(regex : re.Regex) -> fa.DeterministicFiniteAutomaton:
 # в том числе по любому из графов, которые можно получить, пользуясь функциональностью, реализованной в Задаче 1
 # (загруженный из набора данных по имени граф, сгенерированный синтетический граф). Предусмотреть возможность указывать
 # стартовые и финальные вершины. Если они не указаны, то считать все вершины стартовыми и финальными.
-def graph_to_nfa(graph : nx.MultiGraph,  start_states: Set = None, final_states: Set = None) -> fa.NondeterministicFiniteAutomaton:
+def graph_to_nfa(
+    graph: nx.MultiGraph, start_states: Set = None, final_states: Set = None
+) -> fa.NondeterministicFiniteAutomaton:
     all_nodes = set(graph)
 
     if start_states is None:
@@ -41,7 +43,7 @@ def graph_to_nfa(graph : nx.MultiGraph,  start_states: Set = None, final_states:
     for st in final_states:
         nfa.add_final_state(fa.State(st))
 
-    for (fr, to, label) in graph.edges(data="label"):
+    for fr, to, label in graph.edges(data="label"):
         nfa.add_transition(fa.State(fr), fa.Symbol(label), fa.State(to))
 
     return nfa
