@@ -30,7 +30,8 @@ def test_graph_to_nfa():
 
     expected = fa.NondeterministicFiniteAutomaton()
     expected.add_start_state(fa.State(0))
-    expected.add_final_state(fa.State(3, 2))
+    expected.add_final_state(fa.State(3))
+    expected.add_final_state(fa.State(2))
     for (fr, to, label) in graph.edges(data="label"):
         expected.add_transition(fa.State(fr), fa.Symbol(label), fa.State(to))
 
