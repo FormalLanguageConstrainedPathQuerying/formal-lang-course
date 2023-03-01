@@ -1,5 +1,5 @@
-import project.fsm
-
+from fsm import *
+import pytest
 import pyformlang.regular_expression as re
 import pyformlang.finite_automaton as fa
 import networkx as nx

@@ -1,10 +1,9 @@
 import os
-
 import pytest
 import networkx as nx
 import cfpq_data as cd
 
-from project.graph_utils import *
+from graph_utils import *
 
 graphs = [
     cd.graph_from_csv(cd.download("skos")),
