@@ -14,6 +14,6 @@ def graph_to_nka(graph, bs, es):
     for e in es:
         res.add_final_state(e)
     for v, u, data in graph.edges(data=True):
-        print(data['label'])
-        res.add_transition(v, Symbol(data['label']), u)
+        print(data["label"])
+        res.add_transition(v, Symbol(data["label"]), u)
     return res

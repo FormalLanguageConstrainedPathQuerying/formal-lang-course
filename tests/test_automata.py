@@ -43,11 +43,11 @@ def test_graph_to_nka():
     g.add_node(2)
     g.add_node(3)
 
-    g.add_edge(0, 1, label='01')
-    g.add_edge(0, 0, label='00')
-    g.add_edge(1, 2, label='12')
-    g.add_edge(1, 3, label='13')
-    g.add_edge(3, 2, label='32')
+    g.add_edge(0, 1, label="01")
+    g.add_edge(0, 0, label="00")
+    g.add_edge(1, 2, label="12")
+    g.add_edge(1, 3, label="13")
+    g.add_edge(3, 2, label="32")
 
     real = NFA()
 
@@ -61,11 +61,11 @@ def test_graph_to_nka():
     real.add_final_state(s2)
     real.add_final_state(s3)
 
-    real.add_transition(s0, Symbol('01'), s1)
-    real.add_transition(s0, Symbol('00'), s0)
-    real.add_transition(s1, Symbol('12'), s2)
-    real.add_transition(s1, Symbol('13'), s3)
-    real.add_transition(s3, Symbol('32'), s2)
+    real.add_transition(s0, Symbol("01"), s1)
+    real.add_transition(s0, Symbol("00"), s0)
+    real.add_transition(s1, Symbol("12"), s2)
+    real.add_transition(s1, Symbol("13"), s3)
+    real.add_transition(s3, Symbol("32"), s2)
 
     nka = graph_to_nka(g, [0], [2, 3])
 
