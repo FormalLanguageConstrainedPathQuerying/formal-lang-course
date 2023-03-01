@@ -1,9 +1,10 @@
-from fsm import *
 import pytest
 import pyformlang.regular_expression as re
 import pyformlang.finite_automaton as fa
 import networkx as nx
 import cfpq_data as cd
+
+from project.fsm import *
 
 
 def def_empty_regex_to_dfa():
