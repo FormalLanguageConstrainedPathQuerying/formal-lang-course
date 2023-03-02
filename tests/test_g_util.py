@@ -16,6 +16,6 @@ class GUtilTest(unittest.TestCase):
 
     def test_build_2_cycles(self):
         graph = build_two_cycle_labeled_graph(42, 29, edge_labels=("A", "B"))
-        save_graph(graph, "G")
+        save_graph_to_file(graph, "G")
         assert filecmp.cmp("G", "./tests/expected_2_cycles_graph")
         os.remove("G")

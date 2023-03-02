@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ 3.8 ]
+        python-version: [ 3.11 ]
         os: [ubuntu-latest]
     steps:
       - name: Set up Git repository
