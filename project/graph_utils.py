@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import NamedTuple
 import cfpq_data
 from networkx import MultiDiGraph
@@ -12,7 +13,11 @@ class GraphUtils(object):
 
     @classmethod
     def download_graph(cls, name: str) -> MultiDiGraph:
-        return cfpq_data.graph_from_csv(cfpq_data.download(name))
+        return cls.open_graph(cfpq_data.download(name))
+
+    @classmethod
+    def open_graph(cls, path: Path) -> MultiDiGraph:
+        return cfpq_data.graph_from_csv(path)
 
     @classmethod
     def write_graph_to_dot_file(cls, graph: MultiDiGraph, file_path: str):
@@ -29,6 +34,18 @@ class GraphUtils(object):
         )
 
     @classmethod
+    def create_two_cycle_labeled_graph(
+        cls,
+        number_of_nodes_in_cycle_a: int,
+        number_of_nodes_in_cycle_b: int,
+        labels: tuple[str, str],
+    ) -> MultiDiGraph:
+        # Builds two cycle graph with its labels
+        return cfpq_data.labeled_two_cycles_graph(
+            number_of_nodes_in_cycle_a, number_of_nodes_in_cycle_b, labels=labels
+        )
+
+    @classmethod
     def create_two_cycle_labeled_graph_and_save(
         cls,
         number_of_nodes_in_cycle_a: int,
@@ -37,7 +54,11 @@ class GraphUtils(object):
         file_path: str,
     ) -> None:
         # Builds two cycle graph with its labels, saves graph with dot file
-        graph = cfpq_data.labeled_two_cycles_graph(
-            number_of_nodes_in_cycle_a, number_of_nodes_in_cycle_b, labels=labels
+        cls.write_graph_to_dot_file(
+            cls.create_two_cycle_labeled_graph(
+                number_of_nodes_in_cycle_a,
+                number_of_nodes_in_cycle_b,
+                labels,
+            ),
+            file_path,
         )
-        cls.write_graph_to_dot_file(graph, file_path)
