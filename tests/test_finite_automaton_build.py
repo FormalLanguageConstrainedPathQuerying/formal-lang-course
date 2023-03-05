@@ -1,6 +1,8 @@
 import project.finite_automaton_build as fab
 import pyformlang.finite_automaton as fa
-import os
+import project.graphs as gr
+import cfpq_data as cd
+
 
 def test_min_dfa1():
     # Declaration of the DFA
@@ -31,7 +33,7 @@ def test_min_dfa1():
     dfa1.add_transition(state2, symb_d, state3)
 
     regex = "($.((a.b).(d|c)))"
-    dfa2 = fab.get_min_dfa_from_str(regex)
+    dfa2 = fab.get_min_dfa_from_regex_str(regex)
 
     assert dfa1.accepts("abc")
     assert dfa1.accepts("abd")
@@ -71,10 +73,11 @@ def test_min_dfa2():
     dfa1.add_transition(state1, symb_d, state3)
 
     regex = "($.(a.((b)*.c)))|($.(a.((b)*.d)))"
-    dfa2 = fab.get_min_dfa_from_str(regex)
+    dfa2 = fab.get_min_dfa_from_regex_str(regex)
 
     assert dfa1.is_equivalent_to(dfa2)
 
 
-test_min_dfa1()
-test_min_dfa2()
+def test_nfa1():
+    g = cd.labeled_two_cycles_graph(2, 2)
+    nfa = fab.get_nfa_from_graph(g, [1], [5])
