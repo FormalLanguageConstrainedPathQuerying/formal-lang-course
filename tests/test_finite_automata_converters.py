@@ -12,7 +12,7 @@ def teardown_module(module):
     print("finite_automata_converters teardown module")
 
 
-def test1_regex_to_min_dfa():
+def test_1_regex_to_min_dfa():
     converter = FAConverters()
     mdfa1 = converter.regex_to_min_dfa("abc|d")
     assert mdfa1.is_deterministic()
