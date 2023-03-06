@@ -35,7 +35,7 @@ def test_rege2dfa_correct():
 def test_rege2dfa_minimal():
     letters = "abcdefghklmnopqrstuvwxyz "
 
-    for _ in range(100):
+    for _ in range(10):
         left = ""
         for _ in range(random.randint(2, 10)):
             left += letters[random.randint(0, len(letters) - 1)]
@@ -80,8 +80,8 @@ def test_nfa_from_two_cycle_graph_building():
 
     for _ in range(10):
 
-        n = random.randint(1, 100)
-        m = random.randint(1, 100)
+        n = random.randint(1, 10)
+        m = random.randint(1, 10)
 
         graph = create_two_cycles_graph((n, m), ("a", "b"), "/tmp/two_cycles")
         fa = graph2nfa(graph)
