@@ -29,7 +29,7 @@ def to_matrices(e: EpsilonNFA, s2i: dict[any, int]) -> dict[str, sp.coo_matrix]:
     return result
 
 
-def intersect(e1: EpsilonNFA, e2: EpsilonNFA):
+def intersect(e1: EpsilonNFA, e2: EpsilonNFA) -> EpsilonNFA:
 
     """
 
