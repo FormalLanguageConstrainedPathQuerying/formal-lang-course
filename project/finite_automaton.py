@@ -52,6 +52,7 @@ def get_nfa_from_graph(
             nfa.add_final_state(state)
     return nfa
 
+
 def func():
     """
 

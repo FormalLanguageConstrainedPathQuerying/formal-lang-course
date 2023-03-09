@@ -44,4 +44,3 @@ def test_two_cycles_eq():
         )
         unique_labels.discard(None)
         assert {"uno", "duo"} == unique_labels
-
