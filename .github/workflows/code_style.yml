@@ -45,12 +45,10 @@ jobs:
           python -m pip install --upgrade pip wheel setuptools
           python -m pip install -r requirements.txt
           python -m pip list
-
       # Install pre-commit from .pre-commit-config.yaml
       - name: Install pre-commit
         run: |
           pre-commit install
-
       # Run pre-commit on all the files in the repo
       - name: Run pre-commit
         run: |
