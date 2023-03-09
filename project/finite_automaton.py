@@ -6,7 +6,7 @@ import networkx as nx
 def get_min_dfa_from_regex(expr: re.Regex) -> fa.DeterministicFiniteAutomaton:
     """Build a minimal DFA that matches the given regular expression
     Parameters:
-    reg (Regex) : regular expression
+    expr (Regex) : regular expression
     Returns
     dfa (DeterministicFiniteAutomaton): minimal DFA that matches the given regular expression
     """
@@ -14,10 +14,10 @@ def get_min_dfa_from_regex(expr: re.Regex) -> fa.DeterministicFiniteAutomaton:
     return dfa.minimize()
 
 
-def get_min_dfa_from_regex_str(expr: str) -> fa.DeterministicFiniteAutomaton:
+def get_min_dfa_from_str(expr: str) -> fa.DeterministicFiniteAutomaton:
     """Build a minimal DFA that matches the given regular expression
     Parameters:
-    reg (str) : regular expression
+    expr (str) : regular expression
     Returns
     dfa (DeterministicFiniteAutomaton): minimal DFA that matches the given regular expression
     """
@@ -27,11 +27,14 @@ def get_min_dfa_from_regex_str(expr: str) -> fa.DeterministicFiniteAutomaton:
 def get_nfa_from_graph(
     graph: nx.MultiDiGraph, start_states=None, final_states=None
 ) -> fa.NondeterministicFiniteAutomaton:
-    """
-    :param graph:
-    :param start_states:
-    :param final_states:
-    :return:
+    """Build NFA from given graph, start states and final states.
+    Default start and final states are all vercies in graph
+    Parameters:
+    graph (str) : graph
+    start_states ([int]) : start states of nfa
+    final_states ([int]) : final states of nfa
+    Returns
+    nfa (NondeterministicFiniteAutomaton): NFA built from graph and given states
     """
     nfa = fa.NondeterministicFiniteAutomaton.from_networkx(graph)
     nodes = graph.nodes()
@@ -48,3 +51,9 @@ def get_nfa_from_graph(
         for state in final_states:
             nfa.add_final_state(state)
     return nfa
+
+def func():
+    """
+
+    :return:
+    """
