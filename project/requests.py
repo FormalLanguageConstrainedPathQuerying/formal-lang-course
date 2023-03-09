@@ -3,6 +3,13 @@ from pyformlang.finite_automaton import EpsilonNFA
 
 
 def to_matrices(e: EpsilonNFA, s2i: dict[any, int]) -> dict[str, sp.coo_matrix]:
+    """
+
+    takes EpsilonNFA and NodeName-to-Index dictionary
+    returns dictionary of string keys and coo_matrix keys
+    result is corresponding to coo_matrices for each label of EpsilonNFA
+
+    """
     n = len(e.states)
     result = dict()
 
@@ -23,6 +30,13 @@ def to_matrices(e: EpsilonNFA, s2i: dict[any, int]) -> dict[str, sp.coo_matrix]:
 
 
 def intersect(e1: EpsilonNFA, e2: EpsilonNFA):
+
+    """
+
+    takes 2 EpsilonNFA parameters and returns their intersection
+
+    """
+
     s2i1 = {s: i for i, s in enumerate(e1.states)}
     s2i2 = {s: i for i, s in enumerate(e2.states)}
     m1 = to_matrices(e1, s2i1)
