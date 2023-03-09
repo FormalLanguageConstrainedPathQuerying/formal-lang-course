@@ -3,5 +3,7 @@ black
 cfpq-data
 pre-commit
 pydot
-pytest
-scipy
+pytest~=7.2.1
+scipy~=1.10.1
+
+pyformlang~=1.0.1
