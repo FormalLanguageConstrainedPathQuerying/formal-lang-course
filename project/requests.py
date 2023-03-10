@@ -55,7 +55,6 @@ def to_matrices(e: EpsilonNFA, s2i: dict[any, int]) -> dict[str, sp.coo_matrix]:
 
 
 def print_nfa(e, s):
-
     """
 
     takes EpsilonNFA e and string s
@@ -90,7 +89,6 @@ def intersect(e1: EpsilonNFA, e2: EpsilonNFA) -> EpsilonNFA:
 
 
 def intersect_s2i(e1: EpsilonNFA, e2: EpsilonNFA, s2i1, s2i2) -> EpsilonNFA:
-
     """
 
     takes 2 EpsilonNFA parameters and 2 State-to-Index dictionaries and returns their intersection
@@ -120,8 +118,8 @@ def intersect_s2i(e1: EpsilonNFA, e2: EpsilonNFA, s2i1, s2i2) -> EpsilonNFA:
     return r
 
 
-def graph_request(graph: MultiDiGraph, start_nodes: list[State], end_nodes: list[State], regex: Regex) -> set[(State, State)]:
-
+def graph_request(graph: MultiDiGraph, start_nodes: list[State], end_nodes: list[State], regex: Regex) -> set[
+    (State, State)]:
     """
 
     takes MultiDiGraph graph, list of start nodes, list of end nodes, Regex regex
@@ -170,7 +168,7 @@ def graph_request(graph: MultiDiGraph, start_nodes: list[State], end_nodes: list
             find2 = int(str(f)) % count
             si1 = sind1 * len(s2i2) + sind2
             fi1 = find1 * len(s2i2) + find2
-            if g.has_edge(si1, fi1) and i2s1[sind1] in nfa.start_states and i2s1[find1] in nfa.final_states\
+            if g.has_edge(si1, fi1) and i2s1[sind1] in nfa.start_states and i2s1[find1] in nfa.final_states \
                     and i2s2[sind2] in req.start_states and i2s2[find2] in req.final_states:
                 res.add((i2s1[sind1], i2s1[find1]))
 
