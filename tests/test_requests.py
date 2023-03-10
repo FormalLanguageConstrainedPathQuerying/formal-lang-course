@@ -34,22 +34,25 @@ def test_request():
     g.add_node(2)
     g.add_node(3)
 
-    g.add_edge(0, 1, label='1')
-    g.add_edge(0, 0, label='0')
-    g.add_edge(1, 2, label='2')
-    g.add_edge(1, 3, label='3')
-    g.add_edge(3, 2, label="1")
+    g.add_edge(0, 1, label='a')
+    g.add_edge(0, 0, label='e')
+    g.add_edge(1, 2, label='b')
+    g.add_edge(2, 3, label='c')
+    g.add_edge(3, 1, label="g")
 
-    res = graph_request(g, [State('0')], [State('2'), State('3')], Regex("0 1 2 3"))
+    def check(str, set):
+        assert graph_request(g, [0], [2, 3], Regex(str)) == set
 
-    s0 = State('0')
-    s1 = State('1')
-    s2 = State('2')
-    s3 = State('3')
-
-    exp = set()
-    exp.add((s0, s3))
-
-    print("res:", res)
-
-    assert True
+    check('a b', {(0, 2)})
+    check('a b c', {(0, 3)})
+    check('a b c*', {(0, 2), (0, 3)})
+    check('a b d*', {(0, 2)})
+    check('a', set())
+    check('a b d', set())
+    check('a b c (g b c)*', {(0, 3)})
+    check('e a b c', {(0, 3)})
+    check('e* a b c', {(0, 3)})
+    check('a (b c g)* b c', {(0, 3)})
+    check('a (b c g)* (b c | b)', {(0, 2), (0, 3)})
+    check('a (b c g) (b c | b)', {(0, 2), (0, 3)})
+    check('a (b c | b)', {(0, 2), (0, 3)})
