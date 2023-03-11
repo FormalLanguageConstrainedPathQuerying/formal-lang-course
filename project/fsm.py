@@ -8,42 +8,48 @@ import networkx as nx
 
 
 def regex_to_dfa(regex: re.Regex) -> fa.DeterministicFiniteAutomaton:
-    nfa = regex.to_epsilon_nfa()
-    return nfa.minimize().to_deterministic()
+    """
+    Build minimal DFA from Regex
+    :param regex:
+    :return: minimal DFA
+    """
+    return regex.to_epsilon_nfa().minimize()
 
 
-# Используя возможности pyformlang реализовать функцию построения недетерминированного конечного автомата по графу,
-# в том числе по любому из графов, которые можно получить, пользуясь функциональностью, реализованной в Задаче 1
-# (загруженный из набора данных по имени граф, сгенерированный синтетический граф). Предусмотреть возможность указывать
-# стартовые и финальные вершины. Если они не указаны, то считать все вершины стартовыми и финальными.
 def graph_to_nfa(
-    graph: nx.MultiGraph, start_states: Set = None, final_states: Set = None
+    graph: nx.Graph, start_states: Set = None, final_states: Set = None
 ) -> fa.NondeterministicFiniteAutomaton:
-    all_nodes = set(graph)
+    """
+    Build Nondeterministic finite automaton from graph
+    If start or final states are not defined, every vertex of graph become start/final
+
+    :param graph: The graph from which NFA will be built
+    :param start_states: Set of start states of NFA
+    :param final_states: Set of final states of NFA
+    :return: Nondeterministic finite automaton from given graph
+    """
+
+    nfa = fa.NondeterministicFiniteAutomaton.from_networkx(graph)
+    states = nfa.states
 
     if start_states is None:
-        start_states = all_nodes
+        start_states = states
 
     if final_states is None:
-        final_states = all_nodes
+        final_states = states
 
-    if not start_states.issubset(all_nodes):
+    if not start_states.issubset(states):
         raise AttributeError(
-            f"Start states are invalid: {start_states.difference(all_nodes)}"
+            f"Start states are invalid: {start_states.difference(states)}"
         )
-    if not final_states.issubset(all_nodes):
+    if not final_states.issubset(states):
         raise AttributeError(
-            f"Final states are invalid: {final_states.difference(all_nodes)}"
+            f"Final states are invalid: {final_states.difference(states)}"
         )
 
-    nfa = fa.NondeterministicFiniteAutomaton(states=all_nodes)
-
-    for st in start_states:
-        nfa.add_start_state(fa.State(st))
-    for st in final_states:
-        nfa.add_final_state(fa.State(st))
-
-    for fr, to, label in graph.edges(data="label"):
-        nfa.add_transition(fa.State(fr), fa.Symbol(label), fa.State(to))
+    for s in start_states:
+        nfa.add_start_state(s)
+    for s in final_states:
+        nfa.add_final_state(s)
 
     return nfa
