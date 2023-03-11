@@ -1,0 +1,161 @@
+from itertools import product
+from typing import NamedTuple, Any
+
+import networkx as nx
+import scipy.sparse as sp
+from networkx import MultiDiGraph
+from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, Symbol
+from scipy.sparse import dok_array, csr_array
+
+from project.finite_automata_converters import FAConverters
+
+
+class TensorNFA:
+    class State(NamedTuple):
+        state_datum: Any
+        is_start: bool
+        is_finish: bool
+
+    def __init__(self, matrix_dict: dict, shape=(0, 0), states_map=None):
+        if states_map is None:
+            states_map = {}
+        self.matrix_dict = matrix_dict
+        self.shape = shape
+        self.states_map = states_map
+
+    def symbols(self):
+        """
+        @return: symbols of TensorNFA
+        """
+        return set(self.matrix_dict.keys())
+
+    def __getitem__(self, symbol) -> sp.csr_matrix:
+        return self.matrix_dict[symbol]
+
+    @staticmethod
+    def from_nfa(nfa: NondeterministicFiniteAutomaton):
+        """
+        Converts NondeterministicFiniteAutomaton to TensorNFA
+        @param nfa: input NondeterministicFiniteAutomaton
+        @return: corresponding TensorNFA
+        """
+        dok_matrix_dict: dict[str, sp.dok_matrix] = {}
+        matrix_dict: dict[str, sp.csr_matrix] = {}
+        shape = (len(nfa.states), len(nfa.states))
+
+        states = set(
+            TensorNFA.State(st.value, st in nfa.start_states, st in nfa.final_states)
+            for st in nfa.states
+        )
+        states = sorted(states, key=lambda st: st.state_datum)
+
+        states_map = {}
+        for i, s in enumerate(states):
+            states_map[i] = s
+
+        d = nfa.to_dict()
+        for u in d:
+            for symbol_value, v_iter in d[u].items():
+                dok = dok_matrix_dict.setdefault(
+                    symbol_value.value, dok_array(shape, dtype=bool)
+                )
+                ui = next(i for i, s in states_map.items() if s.state_datum == u)
+                for v in v_iter if isinstance(v_iter, set) else {v_iter}:
+                    dok[
+                        ui, next(i for i, s in states_map.items() if s.state_datum == v)
+                    ] = True
+
+        for symbol_value in dok_matrix_dict:
+            matrix_dict[symbol_value] = dok_matrix_dict[symbol_value].tocsr()
+        return TensorNFA(matrix_dict, shape, states_map)
+
+    def to_nfa(self) -> NondeterministicFiniteAutomaton:
+        """
+        Converts to NondeterministicFiniteAutomaton
+        @return: corresponding NondeterministicFiniteAutomaton
+        """
+        result = NondeterministicFiniteAutomaton()
+        for state in self.states_map.values():
+            if state.is_start:
+                result.add_start_state(state.state_datum)
+            if state.is_finish:
+                result.add_final_state(state.state_datum)
+
+        for symbol in self.matrix_dict:
+            matrix: sp.dok_matrix = self.matrix_dict[symbol].todok()
+            for (u, v) in matrix.keys():
+                result.add_transition(
+                    self.states_map[u].state_datum,
+                    Symbol(symbol),
+                    self.states_map[v].state_datum,
+                )
+        return result
+
+    def intersect(self, other: "TensorNFA") -> "TensorNFA":
+        """
+        Find intersection of TensorNFA via kronecker product of its sparse matrices.
+        @param other: TensorNFA to intersect
+        @return: result TensorNFA
+        """
+        result_shape = (self.shape[0] * other.shape[0], self.shape[1] * other.shape[1])
+        result_matrix_dict: dict[str, sp.csr_matrix] = {}
+
+        states = [
+            TensorNFA.State(
+                (st1.state_datum, st2.state_datum),
+                st1.is_start and st2.is_start,
+                st1.is_finish and st2.is_finish,
+            )
+            for st1, st2 in product(self.states_map.values(), other.states_map.values())
+        ]
+
+        states_map = {}
+        for i, s in enumerate(states):
+            states_map[i] = s
+
+        for symbol in self.symbols().union(other.symbols()):
+            if symbol in self.symbols() and symbol in other.symbols():
+                result_matrix_dict[symbol] = sp.kron(
+                    self[symbol], other[symbol], format="csr"
+                )
+            else:
+                result_matrix_dict[symbol] = csr_array(result_shape, dtype=bool)
+
+        return TensorNFA(result_matrix_dict, result_shape, states_map)
+
+
+def intersection_of_finite_automata_with_tensor_mult(
+    nfa1: NondeterministicFiniteAutomaton, nfa2: NondeterministicFiniteAutomaton
+) -> NondeterministicFiniteAutomaton:
+    """
+    Find intersection of two NondeterministicFiniteAutomaton via kronecker product of its sparse matrices.
+    @param nfa1: first NondeterministicFiniteAutomaton
+    @param nfa2: second NondeterministicFiniteAutomaton
+    @return: intersection of nfa1 and nfa2
+    """
+    a = TensorNFA.from_nfa(nfa1)
+    b = TensorNFA.from_nfa(nfa2)
+    return a.intersect(b).to_nfa()
+
+
+def query_to_graph(graph: MultiDiGraph, start_nodes, finish_nodes, regex_str: str):
+    """
+    Querying regex to graph with start and finish nodes.
+    Find out pairs of connected nodes.
+    @param graph: graph to query with regex
+    @param start_nodes: nodes in graph marked as start
+    @param finish_nodes: nodes in graph marked as finish
+    @param regex_str: regex string to query to graph
+    @return: pairs of start and finish nodes connected with path in result of querying
+    """
+    regex_min_dfa = FAConverters.regex_to_min_dfa(regex_str)
+    intersect = intersection_of_finite_automata_with_tensor_mult(
+        FAConverters.graph_to_nfa(graph, start_nodes, finish_nodes), regex_min_dfa
+    )
+    answer = set()
+    net = intersect.to_networkx()
+    for s in intersect.start_states:
+        for f in intersect.final_states:
+            if nx.has_path(net, source=s, target=f):
+                answer.add((s.value[0], f.value[0]))
+    return answer

@@ -19,8 +19,8 @@ class FAConverters(object):
         From MultiDiGraph and sets of start and finish nodes builds NondeterministicFiniteAutomaton.
     """
 
-    @classmethod
-    def regex_to_min_dfa(cls, regex_str: str) -> DeterministicFiniteAutomaton:
+    @staticmethod
+    def regex_to_min_dfa(regex_str: str) -> DeterministicFiniteAutomaton:
         """
 
         Convert regex string to minimum DeterministicFiniteAutomaton.
@@ -31,9 +31,9 @@ class FAConverters(object):
         nfa: EpsilonNFA = regex.to_epsilon_nfa()
         return nfa.minimize()
 
-    @classmethod
+    @staticmethod
     def graph_to_nfa(
-        cls, graph: MultiDiGraph, start_nodes: set = None, finish_nodes: set = None
+        graph: MultiDiGraph, start_nodes: set = None, finish_nodes: set = None
     ) -> NondeterministicFiniteAutomaton:
         """
 
