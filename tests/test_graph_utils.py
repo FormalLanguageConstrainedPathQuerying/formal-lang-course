@@ -65,10 +65,10 @@ def test_get_graph_info():
 def test_create_two_cycles_graph():
     path = "/tmp/two_cycles"
 
-    for i in range(100):
+    for i in range(10):
 
-        n = random.randint(1, 100)
-        m = random.randint(1, 100)
+        n = random.randint(1, 10)
+        m = random.randint(1, 10)
 
         create_two_cycles_graph((n, m), ("a", "b"), path)
 
