@@ -176,7 +176,9 @@ def intersection_of_finite_automata_with_tensor_mult(
     return a.intersect(b).to_nfa()
 
 
-def query_to_graph(graph: MultiDiGraph, start_nodes, finish_nodes, regex_str: str):
+def query_to_graph_with_kronecker_mult(
+    graph: MultiDiGraph, start_nodes, finish_nodes, regex_str: str
+):
     """
     Querying regex to graph with start and finish nodes.
     Find out pairs of connected nodes.

@@ -4,7 +4,7 @@ from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, State, 
 import project  # on import will print something from __init__ file
 from project.graph_utils import GraphUtils
 from project.querying import (
-    query_to_graph,
+    query_to_graph_with_kronecker_mult,
     intersection_of_finite_automata_with_tensor_mult,
     find_accessible_nodes,
     query_to_graph_from_any_starts,
@@ -74,10 +74,10 @@ def test_2_intersection_of_finite_automata_with_tensor_mult():
 
 def test_3_query_to_graph():
     graph = GraphUtils.create_two_cycle_labeled_graph(1, 2, ("a", "b"))
-    res = query_to_graph(graph, [0, 1], [1, 2], "a|b")
+    res = query_to_graph_with_kronecker_mult(graph, [0, 1], [1, 2], "a|b")
     assert res == {(0, 1), (0, 2)}
 
-    res = query_to_graph(graph, [0, 1, 2, 3], [0, 1, 2, 3], "a b")
+    res = query_to_graph_with_kronecker_mult(graph, [0, 1, 2, 3], [0, 1, 2, 3], "a b")
     assert res == {(1, 2)}
 
 
@@ -93,10 +93,14 @@ def _get_nfa_for_tests():
 
 def test_4_query_to_graph():
     nfa = _get_nfa_for_tests()
-    res = query_to_graph(nfa.to_networkx(), ["s"], ["f"], "(b a b)|b")
+    res = query_to_graph_with_kronecker_mult(
+        nfa.to_networkx(), ["s"], ["f"], "(b a b)|b"
+    )
     assert res == {("s", "f")}
 
-    res = query_to_graph(nfa.to_networkx(), ["s", "m"], ["f"], "(b a b) | b c*")
+    res = query_to_graph_with_kronecker_mult(
+        nfa.to_networkx(), ["s", "m"], ["f"], "(b a b) | b c*"
+    )
     assert res == {("s", "f"), ("m", "f")}
 
 
