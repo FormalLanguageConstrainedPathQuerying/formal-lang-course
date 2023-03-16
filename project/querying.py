@@ -5,7 +5,7 @@ import networkx as nx
 import scipy.sparse as sp
 from networkx import MultiDiGraph
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, Symbol
-from scipy.sparse import dok_array, csr_array
+from scipy.sparse import dok_array, csr_array, eye, block_diag
 
 from project.finite_automata_converters import FAConverters
 
@@ -16,12 +16,17 @@ class TensorNFA:
         is_start: bool
         is_finish: bool
 
-    def __init__(self, matrix_dict: dict, shape=(0, 0), states_map=None):
+    def __init__(
+        self,
+        matrix_dict: dict,
+        shape=(0, 0),
+        states_map: None | dict[int, State] = None,
+    ):
         if states_map is None:
             states_map = {}
         self.matrix_dict = matrix_dict
         self.shape = shape
-        self.states_map = states_map
+        self.states_map: dict[int, TensorNFA.State] = states_map
 
     def symbols(self):
         """
