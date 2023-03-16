@@ -3,10 +3,13 @@ from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, State, 
 
 import project  # on import will print something from __init__ file
 from project.graph_utils import GraphUtils
-from project.finite_automata_converters import FAConverters
 from project.querying import (
     query_to_graph,
     intersection_of_finite_automata_with_tensor_mult,
+    find_accessible_nodes,
+    query_to_graph_from_any_starts,
+    query_to_graph_from_each_starts,
+    find_accessible_nodes_foreach_start,
 )
 
 
@@ -78,16 +81,70 @@ def test_3_query_to_graph():
     assert res == {(1, 2)}
 
 
-def test_4_query_to_graph():
+def _get_nfa_for_tests():
     nfa = NondeterministicFiniteAutomaton()
     nfa.add_transition(State("s"), Symbol("b"), State("f"))
     nfa.add_transition(State("s"), Symbol("b"), State("m"))
     nfa.add_transition(State("m"), Symbol("c"), State("f"))
     nfa.add_transition(State("m"), Symbol("b"), State("m"))
     nfa.add_transition(State("m"), Symbol("a"), State("s"))
+    return nfa
 
+
+def test_4_query_to_graph():
+    nfa = _get_nfa_for_tests()
     res = query_to_graph(nfa.to_networkx(), ["s"], ["f"], "(b a b)|b")
     assert res == {("s", "f")}
 
     res = query_to_graph(nfa.to_networkx(), ["s", "m"], ["f"], "(b a b) | b c*")
     assert res == {("s", "f"), ("m", "f")}
+
+
+def test_5_find_accessible():
+    graph = GraphUtils.create_two_cycle_labeled_graph(1, 2, ("a", "b"))
+    assert find_accessible_nodes(graph, {0}, "a|b") == {1, 2}
+    assert len(find_accessible_nodes(graph, {0}, "a b")) == 0
+    assert find_accessible_nodes(graph, {0}, "a a b") == {2}
+    assert find_accessible_nodes(graph, {0}, "a a b*") == {0, 2, 3}
+
+
+def test_6_find_accessible_nodes_foreach_start():
+    graph = GraphUtils.create_two_cycle_labeled_graph(1, 2, ("a", "b"))
+    assert find_accessible_nodes_foreach_start(graph, {0, 1, 2}, "a|b") == {
+        0: {1, 2},
+        1: {0},
+        2: {3},
+    }
+    assert find_accessible_nodes_foreach_start(graph, {0, 1}, "a b") == {
+        0: set(),
+        1: {2},
+    }
+    assert find_accessible_nodes_foreach_start(graph, {0, 1}, "a a b") == {
+        0: {2},
+        1: set(),
+    }
+    assert find_accessible_nodes_foreach_start(graph, {0, 1, 2}, "a a* b*") == {
+        0: {0, 1, 2, 3},
+        1: {0, 1, 2, 3},
+        2: set(),
+    }
+
+
+def test_7_query_to_graph_from_any_starts():
+    nfa = _get_nfa_for_tests()
+    res = query_to_graph_from_any_starts(nfa.to_networkx(), ["s"], ["f"], "(b a b)|b")
+    assert res == {"f"}
+    res = query_to_graph_from_any_starts(
+        nfa.to_networkx(), ["s", "m"], ["f"], "(b a b) | b c*"
+    )
+    assert res == {"f"}
+
+
+def test_8_query_to_graph_from_each_starts():
+    nfa = _get_nfa_for_tests()
+    res = query_to_graph_from_each_starts(nfa.to_networkx(), ["s"], ["f"], "(b a b)|b")
+    assert res == {"s": {"f"}}
+    res = query_to_graph_from_each_starts(
+        nfa.to_networkx(), ["s", "m"], ["f"], "(b a b) | b c*"
+    )
+    assert res == {"s": {"f"}, "m": {"f"}}

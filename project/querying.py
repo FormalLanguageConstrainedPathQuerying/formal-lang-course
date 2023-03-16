@@ -197,3 +197,115 @@ def query_to_graph(graph: MultiDiGraph, start_nodes, finish_nodes, regex_str: st
             if nx.has_path(net, source=s, target=f):
                 answer.add((s.value[0], f.value[0]))
     return answer
+
+
+def _find_accessible_nodes(
+    graph_tensor_dfa: TensorNFA, start_nodes, regex_tensor_dfa: TensorNFA
+) -> set:
+    """
+    Solve restricted RPQ with multiplying adjacency matrices to frontier nodes set.
+    @param graph_tensor_dfa: graph to querying to.
+    @param start_nodes: start nodes of graph_tensor_dfa.
+    @param regex_tensor_dfa: regex graph.
+    @return: set of graph_tensor_dfa accessible nodes from start_nodes with regex_tensor_dfa.
+    """
+    start_indexes = set()
+    for i, s in graph_tensor_dfa.states_map.items():
+        if s.state_datum in start_nodes:
+            start_indexes.add(i)
+
+    diagonal_graph = regex_tensor_dfa.block_diag(graph_tensor_dfa)
+
+    rows = regex_tensor_dfa.shape[0]
+    columns = rows + graph_tensor_dfa.shape[0]
+
+    states = eye(rows, columns, dtype=bool, format="dok")
+    for index, start_state in filter(
+        lambda i_s: i_s[1].is_start, regex_tensor_dfa.states_map.items()
+    ):
+        for gs in start_indexes:
+            states[index, rows + gs] = True
+
+    prev_count_nonzero = 0
+    front = states
+    while states.count_nonzero() != prev_count_nonzero:
+        prev_count_nonzero = states.count_nonzero()
+        front = diagonal_graph.evaluate_step(front)
+        states += front
+
+    result = set()
+    for finish_regex_index, finish_regex_state in filter(
+        lambda i_s: i_s[1].is_finish, regex_tensor_dfa.states_map.items()
+    ):
+        for i in range(graph_tensor_dfa.shape[0]):
+            if states[finish_regex_index, rows + i]:
+                result.add(graph_tensor_dfa.states_map[i].state_datum)
+    return result
+
+
+def find_accessible_nodes(graph: MultiDiGraph, start_nodes, regex_str: str) -> set:
+    """
+    Find accessible nodes of graph with start_nodes and regex.
+    @param graph: MultiDiGraph querying to.
+    @param start_nodes: start nodes in graph.
+    @param regex_str: regex for querying with to graph.
+    @return: set of accessible nodes from any of start nodes satisfying regex.
+    """
+    regex_tensor_dfa = TensorNFA.from_nfa(FAConverters.regex_to_min_dfa(regex_str))
+    graph_tensor_dfa = TensorNFA.from_nfa(FAConverters.graph_to_nfa(graph))
+    return _find_accessible_nodes(graph_tensor_dfa, start_nodes, regex_tensor_dfa)
+
+
+def find_accessible_nodes_foreach_start(
+    graph: MultiDiGraph, start_nodes, regex_str: str
+) -> dict:
+    """
+    Find out dict of accessible nodes of graph and regex for each of start_nodes.
+    @param graph: MultiDiGraph querying to.
+    @param start_nodes: start nodes in graph.
+    @param regex_str: regex for querying with to graph.
+    @return: dict of accessible nodes from each of start nodes satisfying regex.
+    """
+    regex_tensor_dfa = TensorNFA.from_nfa(FAConverters.regex_to_min_dfa(regex_str))
+    graph_tensor_dfa = TensorNFA.from_nfa(FAConverters.graph_to_nfa(graph))
+    result_dict = dict()
+    for sn in start_nodes:
+        result_dict[sn] = _find_accessible_nodes(
+            graph_tensor_dfa, {sn}, regex_tensor_dfa
+        )
+    return result_dict
+
+
+def query_to_graph_from_any_starts(
+    graph: MultiDiGraph, start_nodes, finish_nodes, regex_str: str
+) -> set:
+    """
+    Querying regex to graph with start and finish nodes.
+    Find out set of accessible nodes from starts.
+    @param graph: graph to query with regex.
+    @param start_nodes: nodes in graph marked as start.
+    @param finish_nodes: nodes in graph marked as finish.
+    @param regex_str: regex string to query to graph.
+    @return: set of accessible finish nodes.
+    """
+    return find_accessible_nodes(graph, start_nodes, regex_str).intersection(
+        set(finish_nodes)
+    )
+
+
+def query_to_graph_from_each_starts(
+    graph: MultiDiGraph, start_nodes, finish_nodes, regex_str: str
+) -> dict[set]:
+    """
+    Querying regex to graph with start and finish nodes.
+    Find out dict of accessible nodes from each of starts nodes.
+    @param graph: graph to query with regex.
+    @param start_nodes: nodes in graph marked as start.
+    @param finish_nodes: nodes in graph marked as finish.
+    @param regex_str: regex string to query to graph.
+    @return: dict of set of accessible finish nodes for each of starts nodes.
+    """
+    result = find_accessible_nodes_foreach_start(graph, start_nodes, regex_str)
+    for i in result:
+        result[i] = set(filter(lambda node: node in finish_nodes, result[i]))
+    return result
