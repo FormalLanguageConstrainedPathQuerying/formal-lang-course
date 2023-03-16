@@ -128,6 +128,39 @@ class TensorNFA:
 
         return TensorNFA(result_matrix_dict, result_shape, states_map)
 
+    def block_diag(self, other: "TensorNFA") -> "TensorNFA":
+        """
+        Creates new TensorNFA with building a
+        block diagonal sparse matrix from provided matrices.
+        @param other: TensorNFA to diagonalizing append
+        @return: resulted TensorNFA
+        """
+        result_shape = (self.shape[0] + other.shape[0], self.shape[1] + other.shape[1])
+
+        result_states_map = {}
+        for i, s in self.states_map.items():
+            result_states_map[i] = s
+        for i, s in other.states_map.items():
+            result_states_map[i + len(self.states_map)] = s
+
+        result_matrix_dict = {
+            s: block_diag((self[s], other[s]), format="dok")
+            for s in self.symbols().intersection(other.symbols())
+        }
+
+        return TensorNFA(result_matrix_dict, result_shape, result_states_map)
+
+    def evaluate_step(self, front: sp.dok_matrix):
+        rows, columns = front.shape
+        new_front = eye(rows, columns, dtype=bool, format="dok")
+        for matrix in self.matrix_dict.values():
+            mult = front @ matrix
+            nz = mult.nonzero()
+            for i, j in list(zip(nz[0], nz[1])):
+                if j < rows:
+                    new_front[j, rows:] += mult[i, rows:]
+        return new_front
+
 
 def intersection_of_finite_automata_with_tensor_mult(
     nfa1: NondeterministicFiniteAutomaton, nfa2: NondeterministicFiniteAutomaton
