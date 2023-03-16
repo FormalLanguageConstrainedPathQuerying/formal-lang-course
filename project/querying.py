@@ -71,7 +71,7 @@ class TensorNFA:
                     ] = True
 
         for symbol_value in dok_matrix_dict:
-            matrix_dict[symbol_value] = dok_matrix_dict[symbol_value].tocsr()
+            matrix_dict[symbol_value] = dok_matrix_dict[symbol_value].tocsc()
         return TensorNFA(matrix_dict, shape, states_map)
 
     def to_nfa(self) -> NondeterministicFiniteAutomaton:
@@ -144,13 +144,13 @@ class TensorNFA:
             result_states_map[i + len(self.states_map)] = s
 
         result_matrix_dict = {
-            s: block_diag((self[s], other[s]), format="dok")
+            s: block_diag((self[s], other[s]), format="csc")
             for s in self.symbols().intersection(other.symbols())
         }
 
         return TensorNFA(result_matrix_dict, result_shape, result_states_map)
 
-    def evaluate_step(self, front: sp.dok_matrix):
+    def evaluate_step(self, front: sp.csr_matrix) -> sp.csr_matrix:
         rows, columns = front.shape
         new_front = eye(rows, columns, dtype=bool, format="dok")
         for matrix in self.matrix_dict.values():
@@ -159,7 +159,7 @@ class TensorNFA:
             for i, j in list(zip(nz[0], nz[1])):
                 if j < rows:
                     new_front[j, rows:] += mult[i, rows:]
-        return new_front
+        return new_front.tocsr()
 
 
 def intersection_of_finite_automata_with_tensor_mult(
@@ -229,7 +229,7 @@ def _find_accessible_nodes(
             states[index, rows + gs] = True
 
     prev_count_nonzero = 0
-    front = states
+    front = states.tocsr()
     while states.count_nonzero() != prev_count_nonzero:
         prev_count_nonzero = states.count_nonzero()
         front = diagonal_graph.evaluate_step(front)
