@@ -1,8 +1,9 @@
 from project.fa_utils import regex2dfa, graph2nfa
 from pyformlang.finite_automaton import EpsilonNFA
 import networkx as nx
+from networkx.classes.multidigraph import MultiDiGraph
 import numpy as np
-from scipy.sparse import dok_matrix, kron
+from scipy.sparse import dok_matrix, coo_matrix, kron, vstack, block_diag, identity
 
 from pyformlang.finite_automaton import EpsilonNFA
 
@@ -117,3 +118,108 @@ def graph_regular_query(graph, start_states, final_states, regex) -> [Tuple]:
             )
 
     return ans
+
+
+def get_reachable_vertices(
+    regex_fa: EpsilonNFA,
+    graph: MultiDiGraph,
+    start_nodes,
+    for_each: bool = False,
+):
+    (regex_matrices, regex_mapping) = fa2matrix(regex_fa)
+    (graph_matrices, graph_mapping) = fa2matrix(graph)
+
+    common_states = set(regex_matrices.keys()).intersection(set(graph_matrices.keys()))
+
+    diag_transitions = {
+        state: block_diag((regex_matrices[state], graph_matrices[state])).transpose()
+        for state in common_states
+    }
+
+    if for_each:
+        start_nodes_sets = {frozenset({x}) for x in start_nodes}
+    else:
+        start_nodes_sets = {frozenset(start_nodes)}
+
+    result = {}
+    for start_nodes in start_nodes_sets:
+        cur = {
+            (regex_mapping[r], graph_mapping[n])
+            for r in regex_fa.start_states
+            for n in start_nodes
+        }
+
+        used = set()
+        while cur:
+            used |= cur
+
+            front = dok_matrix((len(graph_mapping), len(regex_mapping)), dtype=np.bool_)
+            for (source, dest) in cur:
+                front[dest, source] = True
+            front = vstack(
+                (identity(len(regex_mapping), dtype=np.bool_), front), format="csr"
+            )
+
+            cur = set()
+            for label, matrix in diag_transitions.items():
+                regex_states = [[]] * len(regex_mapping)
+                graph_states = [[]] * len(regex_mapping)
+
+                new_front = coo_matrix(matrix @ front)
+
+                for source, dest, val in zip(
+                    new_front.row, new_front.col, new_front.data
+                ):
+                    if val:
+                        if source < len(regex_mapping):
+                            regex_states[dest].append(source)
+                        else:
+                            graph_states[dest].append(source - len(regex_mapping))
+
+                cur |= {
+                    (source, dest)
+                    for i in range(len(regex_mapping))
+                    for source in regex_states[i]
+                    for dest in graph_states[i]
+                }
+
+            cur -= used
+
+        result[frozenset(start_nodes)] = {
+            j for i, j in used if i in {regex_mapping[i] for i in regex_fa.final_states}
+        }
+
+    graph_states = [
+        j for _, j in sorted([(id, label) for label, id in graph_mapping.items()])
+    ]
+
+    if for_each:
+        return {
+            state: {graph_states[dest] for dest in dests}
+            for (state,), dests in result.items()
+        }
+    else:
+        (ids,) = result.values()
+        return {graph_states[id] for id in ids}
+
+
+def bfs_graph_regular_query(
+    graph: MultiDiGraph,
+    start_states: [int],
+    final_states: [int],
+    regex: str,
+    for_each: bool = False,
+):
+    regex_dfa = regex2dfa(regex)
+    graph_nfa = graph2nfa(graph, [], [])
+
+    result = get_reachable_vertices(regex_dfa, graph_nfa, start_states, for_each)
+
+    if final_states is None or not for_each:
+        return {state for state in result if state in final_states}
+
+    if for_each:
+        return {
+            state: {dest for dest in dests if dest in final_states}
+            for state, dests in result.items()
+        }

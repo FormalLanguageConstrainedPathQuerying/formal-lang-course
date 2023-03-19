@@ -32,7 +32,7 @@ def test_rege2dfa_correct():
     assert test.is_equivalent_to(expect)
 
 
-def test_rege2dfa_minimal():
+def test_regex2dfa_minimal():
     letters = "abcdefghklmnopqrstuvwxyz "
 
     for _ in range(10):
