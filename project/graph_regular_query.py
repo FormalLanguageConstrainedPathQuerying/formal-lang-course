@@ -123,9 +123,22 @@ def graph_regular_query(graph, start_states, final_states, regex) -> [Tuple]:
 def get_reachable_vertices(
     regex_fa: EpsilonNFA,
     graph: MultiDiGraph,
-    start_nodes,
+    start_states: [int],
     for_each: bool = False,
 ):
+    """
+    Finds reachable vertices in a graph
+
+    Args:
+        regex_fa: regex finite automaton
+        graph: graph to search
+        start_states: list of states from which reachability will be searched
+        for_each: a flag indicating whether the result will be displayed for each
+                  start state separately, or together
+
+    Returns:
+        Set or dict of reachable states
+    """
     (regex_matrices, regex_mapping) = fa2matrix(regex_fa)
     (graph_matrices, graph_mapping) = fa2matrix(graph)
 
@@ -137,16 +150,16 @@ def get_reachable_vertices(
     }
 
     if for_each:
-        start_nodes_sets = {frozenset({x}) for x in start_nodes}
+        start_states_sets = {frozenset({x}) for x in start_states}
     else:
-        start_nodes_sets = {frozenset(start_nodes)}
+        start_states_sets = {frozenset(start_states)}
 
     result = {}
-    for start_nodes in start_nodes_sets:
+    for start_states in start_states_sets:
         cur = {
             (regex_mapping[r], graph_mapping[n])
             for r in regex_fa.start_states
-            for n in start_nodes
+            for n in start_states
         }
 
         used = set()
@@ -185,7 +198,7 @@ def get_reachable_vertices(
 
             cur -= used
 
-        result[frozenset(start_nodes)] = {
+        result[frozenset(start_states)] = {
             j for i, j in used if i in {regex_mapping[i] for i in regex_fa.final_states}
         }
 
@@ -210,6 +223,20 @@ def bfs_graph_regular_query(
     regex: str,
     for_each: bool = False,
 ):
+    """
+    Queries graph regular expression
+
+    Args:
+        graph: a graph to query
+        start_states: list of start states
+        final_states: list of final states
+        regex: regular expression string
+        for_each: a flag indicating whether the result will be displayed for each
+                  start state separately, or together
+
+    Returns:
+        Set or dict of states
+    """
     regex_dfa = regex2dfa(regex)
     graph_nfa = graph2nfa(graph, [], [])
 
