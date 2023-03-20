@@ -1,9 +1,11 @@
 import unittest
 
-from project import g_util
+from project import g_util, regex_util
 from project.matrix_util import *
 
-from pyformlang.finite_automaton import (NondeterministicFiniteAutomaton, State, DeterministicFiniteAutomaton)
+from pyformlang.finite_automaton import (NondeterministicFiniteAutomaton, State)
+
+from project.rpq import rpq_to_graph_tc, rpq_to_graph_bfs_all_reachable, rpq_to_graph_bfs
 
 
 class MatrixUtilTest(unittest.TestCase):
@@ -55,28 +57,84 @@ class MatrixUtilTest(unittest.TestCase):
         actual = adjacency_matrix_to_nfa(intersected)
         assert expected.is_equivalent_to(actual)
 
-    def test_rpq(self):
+    def test_rpq_tc(self):
         regex = "AAAAAA | B"
         start_nodes = {0}
         final_nodes = {1, 2, 3, 4, 5}
         graph = g_util.build_two_cycle_labeled_graph(4, 3, ("A", "B"))
 
-        actual = regular_path_query_to_graph(graph, regex, start_nodes, final_nodes)
+        actual = rpq_to_graph_tc(graph, regex, start_nodes, final_nodes)
         expected = {(0, 5)}
         assert expected == actual
 
-    def test_rpq_2(self):
+    def test_rpq_tc_2(self):
         regex = "(A | B)*"
         graph = g_util.build_two_cycle_labeled_graph(1, 2, edge_labels=("A", "B"))
 
         start_nodes = {0, 2}
         final_nodes = {2, 1}
-        actual = regular_path_query_to_graph(graph, regex, start_nodes, final_nodes)
+        actual = rpq_to_graph_tc(graph, regex, start_nodes, final_nodes)
         expected = {(0, 1), (0, 2), (2, 1), (2, 2)}
         assert expected == actual
 
         start_nodes = {1}
         final_nodes = {0}
-        actual = regular_path_query_to_graph(graph, regex, start_nodes, final_nodes)
+        actual = rpq_to_graph_tc(graph, regex, start_nodes, final_nodes)
         expected = {(1, 0)}
+        assert expected == actual
+
+    # seEfficiencyWarning: Changing the sparsity structure of a csr_matrix is expensive. lil_matrix is more efficient.
+    def test_rpq_bfs(self):
+        regex = "AAAAAA | B"
+        start_nodes = {0}
+        final_nodes = {1, 2, 3, 4, 5}
+        graph = g_util.build_two_cycle_labeled_graph(4, 3, ("A", "B"))
+
+        actual = rpq_to_graph_bfs_all_reachable(graph, regex, start_nodes, final_nodes)
+        expected = {0: {5}}
+        assert expected == actual
+
+
+    def test_rpq_bfs_2(self):
+        regex = "(A | B)*"
+        graph = g_util.build_two_cycle_labeled_graph(1, 2, edge_labels=("A", "B"))
+
+        start_nodes = {0, 2}
+        final_nodes = {2, 1}
+        actual = rpq_to_graph_bfs_all_reachable(graph, regex, start_nodes, final_nodes)
+        expected = {0: {1, 2}, 2: {1, 2}}
+        assert expected == actual
+
+        start_nodes = {1}
+        final_nodes = {0}
+        actual = rpq_to_graph_bfs_all_reachable(graph, regex, start_nodes, final_nodes)
+        expected = {1: {0}}
+        assert expected == actual
+
+
+    # seEfficiencyWarning: Changing the sparsity structure of a csr_matrix is expensive. lil_matrix is more efficient.
+    def test_rpq_bfs(self):
+        regex = "AAAAAA | B"
+        start_nodes = {0}
+        final_nodes = {1, 2, 3, 4, 5}
+        graph = g_util.build_two_cycle_labeled_graph(4, 3, ("A", "B"))
+
+        actual = rpq_to_graph_bfs(graph, regex, start_nodes, final_nodes)
+        expected = {5}
+        assert expected == actual
+
+    def test_rpq_bfs_2(self):
+        regex = "(A | B)*"
+        graph = g_util.build_two_cycle_labeled_graph(1, 2, edge_labels=("A", "B"))
+
+        start_nodes = {0, 2}
+        final_nodes = {2, 1}
+        actual = rpq_to_graph_bfs(graph, regex, start_nodes, final_nodes)
+        expected = {1, 2}
+        assert expected == actual
+
+        start_nodes = {1}
+        final_nodes = {0}
+        actual = rpq_to_graph_bfs(graph, regex, start_nodes, final_nodes)
+        expected = {0}
         assert expected == actual

@@ -14,7 +14,7 @@ def regex_to_min_dfa(regex_str: str) -> DeterministicFiniteAutomaton:
     return Regex(regex_str).to_epsilon_nfa().minimize()
 
 
-def graph_to_nfa(graph: nx.MultiDiGraph, start_set: Set = None, final_set: Set = None) -> NondeterministicFiniteAutomaton:
+def graph_to_nfa(graph: nx.Graph, start_set: Set = None, final_set: Set = None) -> NondeterministicFiniteAutomaton:
     """
     Create NFA based on the given graph
     :param graph: NFA will be created based on this graph

@@ -1,9 +1,8 @@
+from typing import Set
+
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, State
 from scipy import sparse
-import networkx as nx
 from scipy.sparse._compressed import _cs_matrix
-
-import project.regex_util as regex_util
 
 
 class AdjacencyMatrix:
@@ -84,6 +83,14 @@ class AdjacencyMatrix:
 
         return result
 
+    def index_by_state(self, state):
+        return self.state_indices[state]
+
+    def state_by_index(self, index):
+        for state, ind in self.state_indices.items():
+            if ind == index:
+                return state
+
 
 def intersect_adjacency_matrices(first: AdjacencyMatrix, second: AdjacencyMatrix) -> AdjacencyMatrix:
     """
@@ -129,26 +136,33 @@ def adjacency_matrix_to_nfa(am: AdjacencyMatrix) -> NondeterministicFiniteAutoma
     return nfa
 
 
-def regular_path_query_to_graph(graph: nx.MultiDiGraph, query: str, start_nodes: set = None, final_nodes: set = None) -> set:
+def _get_front(first_matrix: AdjacencyMatrix, second_matrix: AdjacencyMatrix, start_state_indices) -> _cs_matrix:
     """
-    Calculates Regular Path Querying for graph and regular expression
-    :param graph: Graph to send query to
-    :param query: Regular Expression to query
-    :param start_nodes: Set of start nodes
-    :param final_nodes: Set of final nodes
-    :return: Regular Path Query as set
+    Helper function to get front row matrx
     """
-    nfa = regex_util.graph_to_nfa(graph, start_nodes, final_nodes)
-    dfa = regex_util.regex_to_min_dfa(query)
-    graph_matrix = AdjacencyMatrix(nfa)
-    query_matrix = AdjacencyMatrix(dfa)
-    intersected_matrix = intersect_adjacency_matrices(graph_matrix, query_matrix)
-    transitive_closure = intersected_matrix.get_transitive_closure()
-    start_states = intersected_matrix.start_states
-    final_states = intersected_matrix.final_states
+    front_row_matrix = sparse.dok_matrix((1, first_matrix.get_states_len()), dtype=bool)
 
-    result = set()
-    for state_from, state_to in zip(*transitive_closure.nonzero()):
-        if state_from in start_states and state_to in final_states:
-            result.add((state_from // query_matrix.get_states_len(), state_to // query_matrix.get_states_len()))
-    return result
+    for i in start_state_indices:
+        front_row_matrix[0, i] = True
+    front_row_matrix = front_row_matrix.tocsr()
+
+    front = sparse.csr_matrix((second_matrix.get_states_len(), first_matrix.get_states_len()), dtype=bool)
+    for i in map(lambda state: second_matrix.index_by_state(state), second_matrix.start_states):
+        front[i, :] = front_row_matrix
+    return front
+
+
+def _get_reachable_states(first_matrix: AdjacencyMatrix, second_matrix: AdjacencyMatrix, sub_front_indices, visited) -> Set[State]:
+    """
+    Helper function to get all reachable indices
+    """
+    sub_front_offset = sub_front_indices * second_matrix.get_states_len()
+    reachable = sparse.csr_matrix((1, first_matrix.get_states_len()), dtype=bool)
+    for i in map(lambda state: second_matrix.index_by_state(state), second_matrix.final_states):
+        reachable += visited[sub_front_offset + i, :]
+
+    return set(
+        first_matrix.state_by_index(i)
+        for i in reachable.nonzero()[1]
+        if i in map(lambda state: first_matrix.index_by_state(state), first_matrix.final_states)
+    )
