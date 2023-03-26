@@ -24,7 +24,8 @@ def test_reachable_vertices():
 
     assert {0: {0, 1, 2, 3}} == reachable_vertices(regex_to_dka(Regex(regex)), graph, [0], True)
     assert {0, 1, 2, 3} == reachable_vertices(regex_to_dka(Regex(regex)), graph, [0], False)
-    assert {1: {0, 1, 2, 3}, 2: {0, 1, 2, 3}, 3: {0, 1, 2, 3}} == reachable_vertices(regex_to_dka(Regex(regex)), graph, [1, 2, 3], True)
+    assert {1: {0, 1, 2, 3}, 2: {0, 1, 2, 3}, 3: {0, 1, 2, 3}} == reachable_vertices(regex_to_dka(Regex(regex)), graph,
+                                                                                     [1, 2, 3], True)
     assert {0, 1, 2, 3} == reachable_vertices(regex_to_dka(Regex(regex)), graph, [1, 2, 3], False)
 
 
