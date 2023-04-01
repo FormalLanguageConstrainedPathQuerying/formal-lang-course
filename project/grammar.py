@@ -5,9 +5,9 @@ from pyformlang.cfg import Variable
 def cfg_from_file(file_name, start_symbol: str = "S") -> CFG:
     """
     Reading context-free grammar from file
-    @param file_name:
-    @param start_symbol:
-    @return:
+    @param file_name: name of file to read from
+    @param start_symbol: str with start symbol (default 'S')
+    @return: context-free grammar read from file
     """
     with open(file_name, "r") as file:
         text = file.read()
