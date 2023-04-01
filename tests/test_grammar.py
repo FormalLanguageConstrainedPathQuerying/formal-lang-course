@@ -1,3 +1,4 @@
+import os
 import tempfile
 import pytest
 import project  # on import will print something from __init__ file
@@ -15,7 +16,9 @@ def teardown_module(module):
 
 
 def test_1_cfg_from_file_empty():
-    with tempfile.NamedTemporaryFile(mode="w") as tmp:
+    with tempfile.NamedTemporaryFile(
+        mode="w", dir=os.path.dirname(os.path.realpath(__file__))
+    ) as tmp:
         tmp.writelines([])
         cfg = cfg_from_file(tmp.name)
         assert cfg.is_empty()
@@ -24,7 +27,9 @@ def test_1_cfg_from_file_empty():
 
 
 def test_2_cfg_from_file():
-    with tempfile.NamedTemporaryFile(mode="w") as tmp:
+    with tempfile.NamedTemporaryFile(
+        mode="w", dir=os.path.dirname(os.path.realpath(__file__))
+    ) as tmp:
         tmp.write("\n".join(["S -> A | B a", "A -> a", "B -> b"]))
         tmp.flush()
         cfg = cfg_from_file(tmp.name)
@@ -52,7 +57,9 @@ def test_2_cfg_from_file():
 
 
 def test_3_cfg_to_weak_cnf():
-    with tempfile.NamedTemporaryFile(mode="w") as tmp:
+    with tempfile.NamedTemporaryFile(
+        mode="w", dir=os.path.dirname(os.path.realpath(__file__))
+    ) as tmp:
         tmp.write("\n".join(["S -> $ | A | B a", "A -> a | C", "B -> b", "D -> C"]))
         tmp.flush()
         cfg = cfg_from_file(tmp.name)
@@ -70,7 +77,9 @@ def test_3_cfg_to_weak_cnf():
 
 
 def test_4_cfg_to_weak_cnf_with_start():
-    with tempfile.NamedTemporaryFile(mode="w") as tmp:
+    with tempfile.NamedTemporaryFile(
+        mode="w", dir=os.path.dirname(os.path.realpath(__file__))
+    ) as tmp:
         tmp.write(
             "\n".join(
                 ["F -> A | B a | C", "A -> a | C B | $", "B -> b", "D -> C", "C -> b c"]
