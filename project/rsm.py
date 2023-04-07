@@ -2,6 +2,7 @@ from pyformlang.cfg import Variable
 from pyformlang.finite_automaton import EpsilonNFA
 
 from project.grammar import ECFG
+from project.querying import TensorNFA
 
 
 class RSM:
@@ -20,7 +21,17 @@ class RSM:
         self.nfa_dict = nfa_dict
         self.start = start
 
-    def __getitem__(self, item):
+    def get_tensor_nfa_dict(self) -> dict[Variable, TensorNFA]:
+        """
+        Constructs dictionary of Variable and TensorNFA
+        @return: dictionary of Variable and TensorNFA
+        """
+        dictionary: dict[Variable, TensorNFA] = {}
+        for symbol, nfa in self.nfa_dict.items():
+            dictionary[symbol] = TensorNFA.from_nfa(nfa.to_deterministic())
+        return dictionary
+
+    def __getitem__(self, item) -> EpsilonNFA:
         return self.nfa_dict[item]
 
     def __iter__(self):
