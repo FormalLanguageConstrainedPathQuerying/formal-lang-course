@@ -33,6 +33,10 @@ def cfg_to_weak_cnf(cfg: CFG) -> CFG:
 
 
 class ECFG:
+    """
+    Extended context free grammars
+    """
+
     def __init__(
         self,
         variables: set[Variable],
@@ -40,6 +44,13 @@ class ECFG:
         start: Variable,
         productions: dict[Variable, Regex],
     ):
+        """
+        Initialising Extended context free grammar
+        @param variables: set of Non-terminal sybmols
+        @param terminals: set of terminal symbols
+        @param start: start Variable
+        @param productions: dictionary of rules like: 'A -> Regex(" a | b* S ")'
+        """
         self.variables = variables
         self.terminals = terminals
         self.start = start
@@ -47,6 +58,11 @@ class ECFG:
 
 
 def ecfg_from_cfg(cfg: CFG):
+    """
+    Transform context free grammar to extended context free grammars
+    @param cfg: context free grammar for converts
+    @return: extended context free grammars
+    """
     variables = set(cfg.variables)
     terminals = set(cfg.terminals)
     start_symbol = cfg.start_symbol if cfg.start_symbol else Variable("S")
