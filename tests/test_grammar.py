@@ -3,6 +3,7 @@ import tempfile
 import pytest
 import project  # on import will print something from __init__ file
 from project.grammar import ecfg_from_cfg
+from project.grammar import ECFG
 from project.grammar import cfg_from_file
 from project.grammar import cfg_to_weak_cnf
 import pyformlang.cfg as pfl_cfg
@@ -131,3 +132,24 @@ def test_5_extended_context_free_grammars():
     ecfg.productions[pfl_cfg.Variable("S")].accepts("A")
     ecfg.productions[pfl_cfg.Variable("S")].accepts("B a")
     print("test_5_extended_context_free_grammars asserted")
+
+
+def test_6_ecfg_from_string():
+    ecfg = ECFG.from_string(
+        """
+        S -> A B\n
+        A -> a* C\n
+        B -> b+ C\n
+        C -> b a\n
+        """
+    )
+    assert ecfg.start.value == "S"
+    assert ecfg.terminals == {"a", "b"}
+    assert ecfg.variables == {"S", "A", "B", "C"}
+
+    assert ecfg.productions
+    assert ecfg["S"].accepts("AB")
+    assert ecfg["A"].accepts("aaaC")
+    assert ecfg["C"].accepts("ba")
+    assert not ecfg["C"].accepts("a")
+    print("test_6_ecfg_from_test asserted")
