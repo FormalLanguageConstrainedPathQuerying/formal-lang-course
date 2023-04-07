@@ -47,7 +47,7 @@ class ECFG:
         self.productions = productions
 
 
-def extended_context_free_grammars_from_cfg(cfg: CFG):
+def ecfg_from_cfg(cfg: CFG):
     variables = set(cfg.variables)
     terminals = set(cfg.terminals)
     start_symbol = cfg.start_symbol if cfg.start_symbol else Variable("S")

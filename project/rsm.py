@@ -11,6 +11,14 @@ class RSM:
         self.nfa_dict = nfa_dict
         self.start = start
 
+    def __getitem__(self, item):
+        return self.nfa_dict[item]
+
+    def __iter__(self):
+        for k, v in self.nfa_dict.items():
+            yield v
+        return
+
     def minimize(self) -> "RSM":
         min_nfa_dict: dict[Variable, EpsilonNFA] = {}
         for var, nfa in self.nfa_dict.items():

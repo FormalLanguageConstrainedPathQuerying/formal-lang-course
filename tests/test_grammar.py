@@ -2,7 +2,7 @@ import os
 import tempfile
 import pytest
 import project  # on import will print something from __init__ file
-from project.grammar import extended_context_free_grammars_from_cfg
+from project.grammar import ecfg_from_cfg
 from project.grammar import cfg_from_file
 from project.grammar import cfg_to_weak_cnf
 import pyformlang.cfg as pfl_cfg
@@ -114,7 +114,7 @@ def test_5_extended_context_free_grammars():
         tmp.write("\n".join(["S -> $ | A | B a", "A -> a | C", "B -> b", "D -> C"]))
         filename = tmp.name
     cfg = cfg_from_file(filename)
-    ecfg = extended_context_free_grammars_from_cfg(cfg)
+    ecfg = ecfg_from_cfg(cfg)
 
     assert len(ecfg.productions) == 4
     assert ecfg.start.value == "S"
@@ -130,3 +130,4 @@ def test_5_extended_context_free_grammars():
     ecfg.productions[pfl_cfg.Variable("S")].accepts("$")
     ecfg.productions[pfl_cfg.Variable("S")].accepts("A")
     ecfg.productions[pfl_cfg.Variable("S")].accepts("B a")
+    print("test_5_extended_context_free_grammars asserted")
