@@ -33,7 +33,7 @@ def cfg_to_weak_cnf(cfg: CFG) -> CFG:
     return CFG(start_symbol=cfg.start_symbol, productions=set(productions))
 
 
-class ExtendedContextFreeGrammars:
+class ECFG:
     def __init__(
         self,
         variables: set[Variable],
@@ -46,21 +46,21 @@ class ExtendedContextFreeGrammars:
         self.start = start
         self.productions = productions
 
-    @classmethod
-    def from_cfg(cls, cfg: CFG):
-        variables = set(cfg.variables)
-        terminals = set(cfg.terminals)
-        start_symbol = cfg.start_symbol if cfg.start_symbol else Variable("S")
-        variables.add(start_symbol)
 
-        productions: dict[Variable, Regex] = {}
-        for production in cfg.productions:
-            if len(production.body) > 0:
-                reg = Regex(" ".join(o.value for o in production.body))
-            else:
-                reg = Regex("$")
-            if production.head in productions:
-                productions[production.head] = productions[production.head].union(reg)
-            else:
-                productions[production.head] = reg
-        return cls(variables, terminals, start_symbol, productions)
+def extended_context_free_grammars_from_cfg(cfg: CFG):
+    variables = set(cfg.variables)
+    terminals = set(cfg.terminals)
+    start_symbol = cfg.start_symbol if cfg.start_symbol else Variable("S")
+    variables.add(start_symbol)
+
+    productions: dict[Variable, Regex] = {}
+    for production in cfg.productions:
+        if len(production.body) > 0:
+            reg = Regex(" ".join(o.value for o in production.body))
+        else:
+            reg = Regex("$")
+        if production.head in productions:
+            productions[production.head] = productions[production.head].union(reg)
+        else:
+            productions[production.head] = reg
+    return ECFG(variables, terminals, start_symbol, productions)
