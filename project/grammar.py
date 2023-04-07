@@ -37,6 +37,9 @@ class ECFG:
     Extended context free grammars
     """
 
+    class ECFGException(RuntimeError):
+        pass
+
     def __init__(
         self,
         variables: set[Variable],
@@ -55,6 +58,58 @@ class ECFG:
         self.terminals = terminals
         self.start = start
         self.productions = productions
+
+    def __getitem__(self, item):
+        return self.productions[item]
+
+    @classmethod
+    def from_string(cls, string: str, start: Variable = Variable("S")):
+        """
+        Reads ecfg from string to ECFG
+        :param string: text with ecfg
+        :param start: start Variable
+        :return: ECFG
+        """
+        variables = set()
+        terminals = set()
+        productions_dict = {}
+        for line in string.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            productions = line.split("->")
+            if len(productions) != 2:
+                raise cls.ECFGException(f"Illegal production: {repr(line)}")
+            head_text, body_text = productions
+            head = Variable(head_text.strip())
+            if head in variables:
+                raise cls.ECFGException(f"Variable {head} appears more than once")
+            variables.add(head)
+            regex = Regex(body_text)
+
+            def get_sons(regexable):
+                if len(regexable.sons) > 0:
+                    res = set()
+                    for son in regexable.sons:
+                        res = res.union(get_sons(son))
+                    return res
+                else:
+                    return {regexable.head.value}
+
+            terminals.update(get_sons(regex))
+            productions_dict[head] = regex
+        terminals = set(filter(lambda t: t not in variables, terminals))
+        return ECFG(variables, terminals, start, productions_dict)
+
+    @classmethod
+    def from_file(cls, filename):
+        """
+        Reads ecfg from file
+        @param filename: name of file
+        @return: ECFG
+        """
+        with open(filename) as f:
+            return cls.from_string(f.read())
 
 
 def ecfg_from_cfg(cfg: CFG):
