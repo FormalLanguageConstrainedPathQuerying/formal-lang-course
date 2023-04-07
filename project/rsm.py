@@ -34,8 +34,8 @@ class RSM:
     def __getitem__(self, item) -> EpsilonNFA:
         return self.nfa_dict[item]
 
-    def __iter__(self):
-        for k, v in self.nfa_dict.items():
+    def __iter__(self) -> EpsilonNFA:
+        for v in self.nfa_dict.values():
             yield v
         return
 
@@ -50,7 +50,7 @@ class RSM:
         return RSM(min_nfa_dict, self.start)
 
 
-def rsm_from_ecfg(ecfg: ECFG):
+def rsm_from_ecfg(ecfg: ECFG) -> RSM:
     """
     Transform extended context free grammar to recursive state machine
     @param ecfg: extended context free grammar for converts

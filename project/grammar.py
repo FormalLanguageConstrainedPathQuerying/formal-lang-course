@@ -59,11 +59,11 @@ class ECFG:
         self.start = start
         self.productions = productions
 
-    def __getitem__(self, item):
+    def __getitem__(self, item) -> Regex:
         return self.productions[item]
 
     @classmethod
-    def from_string(cls, string: str, start: Variable = Variable("S")):
+    def from_string(cls, string: str, start: Variable = Variable("S")) -> "ECFG":
         """
         Reads ecfg from string to ECFG
         :param string: text with ecfg
@@ -102,7 +102,7 @@ class ECFG:
         return ECFG(variables, terminals, start, productions_dict)
 
     @classmethod
-    def from_file(cls, filename):
+    def from_file(cls, filename) -> "ECFG":
         """
         Reads ecfg from file
         @param filename: name of file
@@ -112,7 +112,7 @@ class ECFG:
             return cls.from_string(f.read())
 
 
-def ecfg_from_cfg(cfg: CFG):
+def ecfg_from_cfg(cfg: CFG) -> ECFG:
     """
     Transform context free grammar to extended context free grammars
     @param cfg: context free grammar for converts
