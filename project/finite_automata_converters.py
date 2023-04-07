@@ -20,14 +20,15 @@ class FAConverters(object):
     """
 
     @staticmethod
-    def regex_to_min_dfa(regex_str: str) -> DeterministicFiniteAutomaton:
+    def regex_to_min_dfa(regex: str | Regex) -> DeterministicFiniteAutomaton:
         """
 
         Convert regex string to minimum DeterministicFiniteAutomaton.
-        @type regex_str: string with regex.
+        @type regex: regex or string with regex.
         @rtype: DeterministicFiniteAutomaton which is build with regex_str.
         """
-        regex = Regex(regex_str)
+        if not isinstance(regex, Regex):
+            regex = Regex(regex)
         nfa: EpsilonNFA = regex.to_epsilon_nfa()
         return nfa.minimize()
 
