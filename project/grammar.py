@@ -1,4 +1,3 @@
-import pyformlang.cfg
 from pyformlang.cfg import CFG
 from pyformlang.cfg import Variable
 from pyformlang.cfg import Terminal

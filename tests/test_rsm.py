@@ -5,8 +5,6 @@ import project  # on import will print something from __init__ file
 from project.grammar import ecfg_from_cfg
 from project.grammar import cfg_from_file
 from project.grammar import cfg_to_weak_cnf
-import pyformlang.cfg as pfl_cfg
-
 from project.rsm import rsm_from_ecfg
 
 
