@@ -37,3 +37,18 @@ def test_2_rsm_minimize():
     assert rsm["B"].accepts("b")
     assert not rsm["B"].accepts("a")
     print("test_3_rsm_minimize asserted")
+
+
+def test_3_get_tensor_nfa_dict():
+    from project.querying import TensorNFA
+
+    rsm = rsm_from_ecfg(get_ecfg_example_()).minimize()
+    d: dict[Variable, TensorNFA] = rsm.get_tensor_nfa_dict()
+
+    assert len(d) == 3
+    assert d[Variable("S")].State.is_start
+    assert d[Variable("A")].State.is_finish
+    assert d[Variable("A")].State.is_start
+    assert d[Variable("A")].shape == (3, 3)
+    assert d[Variable("A")].matrix_dict["B"].indptr.tolist() == [0, 0, 0, 1]
+    assert d[Variable("B")].shape == (2, 2)
