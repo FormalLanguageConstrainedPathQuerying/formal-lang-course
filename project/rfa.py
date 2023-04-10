@@ -1,3 +1,4 @@
+from pyformlang.cfg import CFG, Variable
 from pyformlang.finite_automaton import EpsilonNFA
 from project.graph_regular_query import fa2matrix
 
