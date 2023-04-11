@@ -2,6 +2,8 @@ import os
 import tempfile
 import pytest
 import project  # on import will print something from __init__ file
+from project.grammar import ecfg_from_cfg
+from project.grammar import ECFG
 from project.grammar import cfg_from_file
 from project.grammar import cfg_to_weak_cnf
 import pyformlang.cfg as pfl_cfg
@@ -104,3 +106,50 @@ def test_4_cfg_to_weak_cnf_with_start():
     assert weak_cnf.contains("bc")
     assert weak_cnf.contains("bcb")
     print("cfg_to_weak_cnf_with_start test asserted")
+
+
+def test_5_extended_context_free_grammars():
+    with tempfile.NamedTemporaryFile(
+        mode="w", dir=os.path.dirname(os.path.realpath(__file__)), delete=False
+    ) as tmp:
+        tmp.write("\n".join(["S -> $ | A | B a", "A -> a | C", "B -> b", "D -> C"]))
+        filename = tmp.name
+    cfg = cfg_from_file(filename)
+    ecfg = ecfg_from_cfg(cfg)
+
+    assert len(ecfg.productions) == 4
+    assert ecfg.start.value == "S"
+    assert ecfg.terminals == {pfl_cfg.Terminal("a"), pfl_cfg.Terminal("b")}
+    assert ecfg.variables == {
+        pfl_cfg.Variable("S"),
+        pfl_cfg.Variable("B"),
+        pfl_cfg.Variable("A"),
+        pfl_cfg.Variable("C"),
+        pfl_cfg.Variable("D"),
+    }
+
+    ecfg.productions[pfl_cfg.Variable("S")].accepts("$")
+    ecfg.productions[pfl_cfg.Variable("S")].accepts("A")
+    ecfg.productions[pfl_cfg.Variable("S")].accepts("B a")
+    print("test_5_extended_context_free_grammars asserted")
+
+
+def test_6_ecfg_from_string():
+    ecfg = ECFG.from_string(
+        """
+        S -> A B\n
+        A -> a* C\n
+        B -> b+ C\n
+        C -> b a\n
+        """
+    )
+    assert ecfg.start.value == "S"
+    assert ecfg.terminals == {"a", "b"}
+    assert ecfg.variables == {"S", "A", "B", "C"}
+
+    assert ecfg.productions
+    assert ecfg["S"].accepts("AB")
+    assert ecfg["A"].accepts("aaaC")
+    assert ecfg["C"].accepts("ba")
+    assert not ecfg["C"].accepts("a")
+    print("test_6_ecfg_from_test asserted")
