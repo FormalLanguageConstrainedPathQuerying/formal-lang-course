@@ -60,7 +60,7 @@ def parse(p: str) -> CFG:
         return CFG.from_text(ct)
 
 
-def to_homsky_form(cfg: CFG) -> CFG:
+def to_weak_homsky_form(cfg: CFG) -> CFG:
     """
     Converts CFG to weak Homsky form
     :param cfg: CFG
