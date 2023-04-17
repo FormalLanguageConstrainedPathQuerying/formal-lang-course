@@ -2,9 +2,14 @@ from pyformlang.cfg import CFG, Variable, Terminal
 from project.rfa import RFA
 from typing import AbstractSet, Dict
 from pyformlang.regular_expression import Regex
+import pathlib
 
 
 class ECFG:
+    """
+    Extended context-free grammar
+    """
+
     def __init__(
         self,
         variables: AbstractSet[Variable] = None,
@@ -17,6 +22,15 @@ class ECFG:
         self.start_symbol = start_symbol
 
     def from_cfg(cfg: CFG):
+        """
+        Converts context-free grammar to extended context-free grammar
+
+        Args:
+            cfg: input context-free grammar
+
+        Returns:
+            Extended context-free grammar generated from the given CFG
+        """
         productions = {}
 
         for prod in cfg.productions:
@@ -38,7 +52,16 @@ class ECFG:
             cfg.start_symbol,
         )
 
-    def from_text(text):
+    def from_text(text: str):
+        """
+        Reads extended context-free grammar from text
+
+        Args:
+            text: input text
+
+        Returns:
+            Extended context-free grammar generated from the given text
+        """
         variables = set()
         terminals = set()
         productions = {}
@@ -58,11 +81,23 @@ class ECFG:
             productions,
         )
 
-    def from_file(file):
+    def from_file(file: pathlib.Path):
+        """
+        Reads extended context-free grammar from file
+
+        Args:
+            file: input file path
+
+        Returns:
+            Extended context-free grammar generated from the given file
+        """
         with open(file) as f:
             return from_text(f.read())
 
     def to_rfa(self):
+        """
+        Converts ECFG to recursive finite automaton
+        """
         return RFA(
             start_symbol=self.start_symbol,
             dfas={
