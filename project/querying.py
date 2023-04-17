@@ -4,10 +4,12 @@ from typing import NamedTuple, Any
 import networkx as nx
 import scipy.sparse as sp
 from networkx import MultiDiGraph
+from pyformlang.cfg import CFG, Variable
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, Symbol
 from scipy.sparse import dok_array, csr_array, eye, block_diag
 
 from project.finite_automata_converters import FAConverters
+from project.hellings import hellings
 
 
 class TensorNFA:
@@ -311,3 +313,27 @@ def query_to_graph_from_each_starts(
     for i in result:
         result[i] = set(filter(lambda node: node in finish_nodes, result[i]))
     return result
+
+
+def query_to_graph_with_hellings(
+    graph: nx.MultiDiGraph,
+    cfg: str | CFG,
+    start_var: str | Variable = Variable("S"),
+    start_nodes: set[object] | None = None,
+    final_nodes: set[object] | None = None,
+) -> set[tuple[object, object]]:
+    if isinstance(start_var, str):
+        start_var = Variable(start_var)
+    if not isinstance(cfg, CFG):
+        cfg = CFG.from_text(cfg, start_symbol=start_var)
+
+    res = set()
+    for start, var, final in hellings(cfg, graph):
+        if (
+            var == start_var
+            and (start_nodes is None or start in start_nodes)
+            and (final_nodes is None or final in final_nodes)
+        ):
+            res.add((start, final))
+
+    return res
