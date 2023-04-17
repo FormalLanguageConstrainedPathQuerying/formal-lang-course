@@ -99,7 +99,7 @@ def test_4_constrained_empty_hellings():
     print("test_4_constrained_empty_hellings test asserted")
 
 
-def test_4_constrained_hellings():
+def test_5_constrained_hellings():
     text = "\n".join(["F -> B A", "A -> a A | b ", "B -> b B | a"])
     graph = GraphUtils.create_two_cycle_labeled_graph(1, 2, ("a", "b"))
     actual = query_to_graph_with_hellings(
