@@ -8,6 +8,12 @@ from project.graph_utils import GraphUtils
 
 
 def hellings(cfg: CFG, graph: MultiDiGraph) -> set[tuple[object, Variable, object]]:
+    """
+    Context free path querying by Hellings algorithm with context free grammar and graph
+    @param cfg: context free grammar
+    @param graph: graph for querying
+    @return: set of (Node, Variable, Node)
+    """
     eps_productions = set()
     terminal_productions: dict[Variable, set] = {}
     non_terminal_productions: dict[Variable, set[tuple]] = {}
@@ -58,24 +64,51 @@ def hellings(cfg: CFG, graph: MultiDiGraph) -> set[tuple[object, Variable, objec
 def hellings_graph_from_file(
     graph_filename: Path, cfg: CFG
 ) -> set[tuple[object, Variable, object]]:
+    """
+    Context free path querying by Hellings algorithm with file of graph
+    @param graph_filename: context free grammar filename
+    @param cfg: graph for querying
+    @return: set of (Node, Variable, Node)
+    """
     return hellings(cfg, GraphUtils.open_graph(graph_filename))
 
 
 def hellings_cfg_from_text(
     graph: MultiDiGraph, cfg_text: str, start_symbol=Variable("S")
 ) -> set[tuple[object, Variable, object]]:
+    """
+    Context free path querying by Hellings algorithm with text view of context free grammar
+    @param graph: graph for querying
+    @param cfg_text: text view of context free grammar
+    @param start_symbol: start symbol of grammar
+    @return: set of (Node, Variable, Node)
+    """
     return hellings(CFG.from_text(cfg_text, start_symbol=start_symbol), graph)
 
 
 def hellings_cfg_from_file(
     graph: MultiDiGraph, cfg_filename: str, start_symbol="S"
 ) -> set[tuple[object, Variable, object]]:
+    """
+    Context free path querying by Hellings algorithm with file of context free grammar
+    @param graph: graph for querying
+    @param cfg_filename: context free grammar filename
+    @param start_symbol: start symbol of grammar
+    @return: set of (Node, Variable, Node)
+    """
     return hellings(cfg_from_file(cfg_filename, start_symbol), graph)
 
 
 def hellings_cfg_and_graph_from_file(
     graph_filename: Path, cfg_filename: str, start_symbol="S"
 ) -> set[tuple[object, Variable, object]]:
+    """
+    Context free path querying by Hellings algorithm with files of graph and context free grammar
+    @param graph_filename: filename of graph for querying
+    @param cfg_filename: context free grammar filename
+    @param start_symbol: start symbol of grammar
+    @return: set of (Node, Variable, Node)
+    """
     return hellings_cfg_from_file(
         GraphUtils.open_graph(graph_filename), cfg_filename, start_symbol
     )

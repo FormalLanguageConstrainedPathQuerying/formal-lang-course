@@ -322,6 +322,15 @@ def query_to_graph_with_hellings(
     start_nodes: set[object] | None = None,
     final_nodes: set[object] | None = None,
 ) -> set[tuple[object, object]]:
+    """
+    Context free path querying by Hellings algorithm with restrictions
+    @param graph: graph for querying
+    @param cfg: context free grammar
+    @param start_var: start Variable of grammar
+    @param start_nodes: start nodes of graph
+    @param final_nodes: finale nodes of graph
+    @return: set of accessible pair of nodes:  {(Node, Node)}
+    """
     if isinstance(start_var, str):
         start_var = Variable(start_var)
     if not isinstance(cfg, CFG):
