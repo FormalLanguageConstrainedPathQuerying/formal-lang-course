@@ -44,7 +44,7 @@ def matrix_algorithm(
 
     # Инициализация матрицы
     for A, B, label in graph.edges.data("label"):
-        for variable in terminal_productions[label]:
+        for variable in terminal_productions.setdefault(label, set()):
             matrix[variable][nodes_indexes[A], nodes_indexes[B]] = True
 
     # Добавление петель для нетерминалов, порождающих пустую строку
@@ -55,14 +55,16 @@ def matrix_algorithm(
     isUpdated = True
     while isUpdated:
         isUpdated = False
-        for C, A, B in non_terminal_productions:
+        for C, AB in non_terminal_productions.items():
             non_zero = matrix[C].count_nonzero()
-            matrix[C] += matrix[A].tocsr().dot(matrix[B].tocsc())
+            for a, b in AB:
+                matrix[C] += matrix[a].tocsr().dot(matrix[b].tocsc())
             isUpdated |= matrix[C].count_nonzero() != non_zero
 
     res = set()
     for variable, matr in matrix.items():
-        for i, j in matr.nonzero():
+        nz = matr.nonzero()
+        for i, j in list(zip(nz[0], nz[1])):
             res.add((nodes_indexes[i], variable, nodes_indexes[j]))
     return res
 
