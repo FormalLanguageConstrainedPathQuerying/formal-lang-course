@@ -21,14 +21,14 @@ def matrix_algorithm(
     wcfg = cfg_to_weak_cnf(cfg)
 
     eps_productions = set()
-    terminal_productions: dict[Variable, set] = {}
+    terminal_productions: dict[object, set[Variable]] = {}
     non_terminal_productions: dict[Variable, set[tuple]] = {}
     for p in wcfg.productions:
         body = p.body
         if len(body) == 0:
             eps_productions.add(p.head)
         elif len(body) == 1:
-            terminal_productions.setdefault(p.head, set()).add(body[0])
+            terminal_productions.setdefault(body[0].value, set()).add(p.head)
         elif len(body) == 2:
             u, v = body
             non_terminal_productions.setdefault(p.head, set()).add((u, v))
