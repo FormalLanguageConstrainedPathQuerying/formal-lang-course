@@ -18,12 +18,12 @@ def matrix_algorithm(
     @param graph: graph for querying
     @return: set of (Node, Variable, Node)
     """
-    wcfg = cfg_to_weak_cnf(cfg)
+    wcnf = cfg_to_weak_cnf(cfg)
 
     eps_productions = set()
     terminal_productions: dict[object, set[Variable]] = {}
     non_terminal_productions: dict[Variable, set[tuple]] = {}
-    for p in wcfg.productions:
+    for p in wcnf.productions:
         body = p.body
         if len(body) == 0:
             eps_productions.add(p.head)
@@ -32,6 +32,8 @@ def matrix_algorithm(
         elif len(body) == 2:
             u, v = body
             non_terminal_productions.setdefault(p.head, set()).add((u, v))
+        else:
+            raise RuntimeError("matrix_algorithm: Mismatch production")
 
     nodes_by_index = {i: n for i, n in enumerate(graph.nodes)}
     nodes_indexes = {n: i for i, n in nodes_by_index.items()}
@@ -39,7 +41,7 @@ def matrix_algorithm(
 
     # матрица n × n, в которой каждый элемент ∅
     matrix: dict[Variable, dok_array] = dict()
-    for variable in wcfg.variables:
+    for variable in wcnf.variables:
         matrix[variable] = dok_array((n, n), dtype=bool)
 
     # Инициализация матрицы
@@ -65,7 +67,7 @@ def matrix_algorithm(
     for variable, matr in matrix.items():
         nz = matr.nonzero()
         for i, j in list(zip(nz[0], nz[1])):
-            res.add((nodes_indexes[i], variable, nodes_indexes[j]))
+            res.add((nodes_by_index[i], variable, nodes_by_index[j]))
     return res
 
 

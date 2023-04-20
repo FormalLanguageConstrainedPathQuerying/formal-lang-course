@@ -106,4 +106,4 @@ def test_5_constrained_matrix_algorithm():
         graph=graph, cfg=text, start_var="F", start_nodes={3}, final_nodes={2}
     )
     assert actual == {(3, 2)}
-    print("test_4_constrained_matrix_algorithm test asserted")
+    print("test_5_constrained_matrix_algorithm test asserted")
