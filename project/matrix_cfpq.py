@@ -1,9 +1,8 @@
 from pathlib import Path
 from networkx import MultiDiGraph
-from numpy import eye
 from pyformlang.cfg import CFG
 from pyformlang.cfg import Variable
-from scipy.sparse import dok_array
+from scipy.sparse import dok_array, eye
 
 from project.grammar import cfg_from_file, cfg_to_weak_cnf
 from project.graph_utils import GraphUtils
