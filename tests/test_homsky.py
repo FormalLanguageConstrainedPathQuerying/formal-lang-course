@@ -24,8 +24,8 @@ def test_from_dataset():
 
 
 def assertion(c1, c2):
-    assert c1.start_symbol == c2.start_symbol
-    assert c1.productions == c2.productions
+    assert c1.s_s == c2.s_s
+    assert c1.ps == c2.ps
 
 
 def test_homsky():
