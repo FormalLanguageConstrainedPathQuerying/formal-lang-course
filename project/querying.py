@@ -9,6 +9,7 @@ from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, Symbol
 from scipy.sparse import dok_array, csr_array, eye, block_diag
 
 from project.finite_automata_converters import FAConverters
+from project.matrix_cfpq import matrix_algorithm
 from project.hellings import hellings
 
 
@@ -313,6 +314,39 @@ def query_to_graph_from_each_starts(
     for i in result:
         result[i] = set(filter(lambda node: node in finish_nodes, result[i]))
     return result
+
+
+def query_to_graph_with_matrix_algorithm(
+    graph: nx.MultiDiGraph,
+    cfg: str | CFG,
+    start_var: str | Variable = Variable("S"),
+    start_nodes: set[object] | None = None,
+    final_nodes: set[object] | None = None,
+) -> set[tuple[object, object]]:
+    """
+    Context free path querying by Matrix algorithm with restrictions
+    @param graph: graph for querying
+    @param cfg: context free grammar
+    @param start_var: start Variable of grammar
+    @param start_nodes: start nodes of graph
+    @param final_nodes: finale nodes of graph
+    @return: set of accessible pair of nodes:  {(Node, Node)}
+    """
+    if isinstance(start_var, str):
+        start_var = Variable(start_var)
+    if not isinstance(cfg, CFG):
+        cfg = CFG.from_text(cfg, start_symbol=start_var)
+
+    res = set()
+    for start, var, final in matrix_algorithm(cfg, graph):
+        if (
+            var == start_var
+            and (start_nodes is None or start in start_nodes)
+            and (final_nodes is None or final in final_nodes)
+        ):
+            res.add((start, final))
+
+    return res
 
 
 def query_to_graph_with_hellings(
