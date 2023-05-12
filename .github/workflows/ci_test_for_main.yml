@@ -37,3 +37,9 @@ jobs:
 
       - name: Run tests with unittest
         run: python -m unittest discover -f tests -v
+
+      - name: Generate parser
+        run: |
+          rm -rf parser
+          mkdir parser
+          antlr4 -o parser MyGQL.g4  -Dlanguage=Python3python

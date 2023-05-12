@@ -344,3 +344,11 @@ _____________________________________
 [Load (p)](b1) => (fa | fa.start = fa.vertices, fa.final = fa.vertices), b1
 
 ```
+
+
+Генерация парсера:
+```shell
+rm -rf parser
+mkdir parser
+antlr4 -o parser MyGQL.g4  -Dlanguage=Python3
+```
