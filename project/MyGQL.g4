@@ -40,7 +40,8 @@ expr : LP expr RP               // скобки указывают приори�
   ;
 
 lambda : args '->' LBRC expr RBRC ;
-args : LP var (COMMA var)* RP;
+args : var
+     | LP args (COMMA args)* RP;
 
 // LEXIS
 
