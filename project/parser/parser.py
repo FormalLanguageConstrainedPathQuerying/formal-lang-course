@@ -21,12 +21,20 @@ if __name__ == "__main__":
 
 
 def get_parser_of_stream(inp: InputStream) -> MyGQLParser:
+    """
+    @param inp: input streams
+    @return: parser of input streams
+    """
     lexer = MyGQLLexer(inp)
-    # lexer.removeErrorListeners()
     return MyGQLParser(antlr4.CommonTokenStream(lexer))
 
 
 def satisfy_lang_inp_stream(inp: InputStream) -> bool:
+    """
+    Check is text from stream is syntax valid program
+    @param inp:  input stream
+    @return: true if syntax of program is valid
+    """
     parser = get_parser_of_stream(inp)
     parser.removeErrorListeners()
     parser.prog()
@@ -34,10 +42,20 @@ def satisfy_lang_inp_stream(inp: InputStream) -> bool:
 
 
 def satisfy_lang_str(text: str):
+    """
+    Check is text is syntax valid program
+    @param text: to check
+    @return: true if syntax of program is valid
+    """
     return satisfy_lang_inp_stream(antlr4.InputStream(text))
 
 
 def satisfy_lang(filename: str | Path):
+    """
+    Check is file contains syntax valid program
+    @param filename: name of file | path to file
+    @return: true if syntax of program is valid
+    """
     if isinstance(filename, Path):
         return satisfy_lang_inp_stream(
             antlr4.InputStream("\n".join(filename.open().readlines()))

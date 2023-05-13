@@ -17,6 +17,12 @@ jobs:
       matrix:
         python-version: [ "3.10" ]
         os: [ ubuntu-latest, windows-latest, macos-latest ]
+
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+
     steps:
       - name: Set up Git repository
         uses: actions/checkout@v3
