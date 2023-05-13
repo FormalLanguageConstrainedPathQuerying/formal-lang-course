@@ -32,14 +32,14 @@ jobs:
           python -m pip install -r requirements.txt
           pip list
 
+      - name: Generate parser
+        working-directory: project/
+        run: |
+          rm -rf parser/MyGQL*
+          antlr4 -o parser MyGQL.g4  -Dlanguage=Python3
+
       - name: Run tests with pytest
         run: python ./scripts/run_tests.py
 
       - name: Run tests with unittest
         run: python -m unittest discover -f tests -v
-
-      - name: Generate parser
-        run: |
-          rm -rf parser
-          mkdir parser
-          antlr4 -o parser MyGQL.g4  -Dlanguage=Python3python
