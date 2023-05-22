@@ -56,7 +56,7 @@ let g = set start of (set finals of g' to (vertices of g')) to {0..100}
 let l1 = "l1" | "l2"
 
 let q1 = ("type" | l1)*
-let q2 = "sub_class_of" l1
+let q2 = "sub_class_of" | l1 | q2
 
 let res1 = g & q1
 let res2 = g & q2
