@@ -15,7 +15,7 @@ lambda = NAME '->' expr
 expr = "(" expr ")"
      | expr "~" 
      | expr ":=" sa_state expr
-     | expr ":+" sa_state expr
+     | expr "+=" sa_state expr
      | expr "??" get_state 
      | lambda "->" expr
      | lambda "?>" expr
