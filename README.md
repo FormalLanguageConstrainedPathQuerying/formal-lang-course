@@ -17,9 +17,9 @@ expr = "(" expr ")"
      | expr ":=" sa_state expr
      | expr "+=" sa_state expr
      | expr "??" get_state 
-     | lambda "->" expr
-     | lambda "?>" expr
-     | "#" STRING
+     | lambda "->>" expr
+     | lambda "?>>" expr
+     | "#" PATH
      | "-" expr
      | expr "+" expr
      | expr "-" expr
@@ -39,12 +39,12 @@ expr = "(" expr ")"
      | expr "%" expr
      | expr "!%" expr
      | NAME
-     | expr
-     | lit
+     | INT
+     | STRING
      
 sa_state = "start" | "final"
 
-get_state = "start" | "final" | "reacheble" | "nodes" | "edges" | "labels"
+get_state = "start" | "final" | "reachable" | "nodes" | "edges" | "labels"
 
 lit = STRING | INT
 ```
