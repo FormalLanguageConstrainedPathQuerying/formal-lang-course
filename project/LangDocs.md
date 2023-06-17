@@ -349,5 +349,5 @@ _____________________________________
 Генерация парсера:
 ```shell
 rm -rf parser/MyGQL*
-antlr4 -o parser MyGQL.g4  -Dlanguage=Python3
+antlr4 -o parser MyGQL.g4  -Dlanguage=Python3 -visitor
 ```
