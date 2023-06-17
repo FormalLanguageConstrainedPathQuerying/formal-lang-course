@@ -4,51 +4,44 @@ prog : (statement ';')* ;
 
 statement : bind | print ;
 
-print : '$' NAME ;
+print : '$' name ;
 
-bind : 'let' NAME '=' expr;
+bind : 'let' name '=' expr;
 
-lambda : NAME '->' expr;
+lambda : name '->' expr;
 
-expr : '(' expr ')'
-     | expr '~'
-     | expr ':=' sa_state expr
-     | expr '+=' sa_state expr
-     | expr '??' get_state
-     | lambda '->>' expr
-     | lambda '?>>' expr
-     | '#' PATH
-     | '-' expr
-     | expr '+' expr
-     | expr '-' expr
-     | expr '*' expr
-     | expr '&' expr
-     | expr '|' expr
-     | expr '*'
-     | expr '==' expr
-     | expr '!=' expr
-     | expr '<' expr
-     | expr '>' expr
-     | expr '<=' expr
-     | expr '=>' expr
-     | expr '&&' expr
-     | expr '||' expr
-     | '!' expr
-     | expr '%' expr
-     | expr '!%' expr
-     | NAME
-     | INT
-     | STRING;
+expr : '(' expr ')'                 #brackets_expr
+     | expr ':=' sa_state expr      #assign_state_expr
+     | expr '+=' sa_state expr      #add_state_expr
+     | expr '??' get_state          #get_state_expr
+     | lambda '->>' expr            #map_expr
+     | lambda '?>>' expr            #filter_expr
+     | '#' PATH                     #load_expr
+     | expr '++' expr               #concat_expr
+     | expr '*' expr                #bistar_expr
+     | expr '&' expr                #intersection_expr
+     | expr '|' expr                #union_expr
+     | expr '*'                     #unistar_expr
+     | expr '==' expr               #equality_expr
+     | expr '!=' expr               #unequality_expr
+     | '<' str '>'                  #one_symbol_expr
+     | name                         #name_expr
+     | int                          #int_expr
+     | STRING                       #string_expr
+     ;
 
+name : LETTER (LETTER | DIGIT)* ;
+
+str: (LETTER | DIGIT)+ ;
+
+int: DIGIT + ;
 
 sa_state : 'start' | 'final' ;
 
 get_state : sa_state | 'reachable' | 'nodes' | 'edges' | 'labels' ;
 
-INT : [0-9]+ ;
 PATH : 'P\'' (.)+? '\'' ;
-NAME : LETTER [0-9A-Za-z]* ;
-STRING : '\'' [0-9A-Za-z]+ '\'' ;
+STRING : '\'' [a-zA-Z0-9] '\'' ;
 DIGIT : [0-9] ;
 LETTER : [A-Za-z] ;
 
