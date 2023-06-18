@@ -36,7 +36,7 @@ jobs:
         working-directory: project/
         run: |
           rm -rf parser/MyGQL*
-          antlr4 -o parser MyGQL.g4  -Dlanguage=Python3
+          antlr4 -o parser MyGQL.g4  -Dlanguage=Python3 -visitor
 
       - name: Run tests with pytest
         run: python ./scripts/run_tests.py
