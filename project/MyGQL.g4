@@ -5,7 +5,7 @@ grammar MyGQL;
 prog : ( stmt ';' )* EOF ;
 
 stmt : bind | print ;
-bind : 'let' ID '=' expr ;
+bind : 'let' var '=' expr ;
 print : 'print' expr ;
 
 val : valBool | valInt | valString | set;
@@ -15,10 +15,10 @@ set : '{' '}'                       # emptySet  // пустое множеств
      | '{' valInt '...' valInt '}'  # setIntRange  // range of INTs [a, b)
      ;
 
-expr : '(' expr ')'             #exprParenses  // скобки указывают приоритет операций
+expr : '(' expr ')'             #exprParentheses  // скобки указывают приоритет операций
   | var                         #exprVar // переменные
   | val                         #exprVal // константы
-  | 'set_start' expr  expr      #exprSetStart // задать множество стартовых состояний
+  | 'set_start' expr 'to' expr  #exprSetStart // задать множество стартовых состояний
   | 'set_final' expr 'to' expr  #exprSetFinal  // задать множество финальных состояний
   | 'add_start' expr 'to' expr  #exprAddStart  // добавить состояния в множество стартовых
   | 'add_final' expr 'to' expr  #exprAddFinal  // добавить состояния в множество финальных
