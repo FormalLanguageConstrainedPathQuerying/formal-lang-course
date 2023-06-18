@@ -2,32 +2,37 @@ grammar Gram;
 
 prog : (statement ';')* ;
 
-statement : bind | print ;
+statement : bind | print | assign ;
 
-print : '$' name ;
+print : '$' expr ;
 
 bind : 'let' name '=' expr;
 
-lambda : name '->' expr;
+assign : name '=' expr;
 
-expr : '(' expr ')'                 #brackets_expr
-     | expr ':=' sa_state expr      #assign_state_expr
-     | expr '+=' sa_state expr      #add_state_expr
-     | expr '??' get_state          #get_state_expr
-     | lambda '->>' expr            #map_expr
-     | lambda '?>>' expr            #filter_expr
-     | '#' PATH                     #load_expr
-     | expr '++' expr               #concat_expr
-     | expr '*' expr                #bistar_expr
-     | expr '&' expr                #intersection_expr
-     | expr '|' expr                #union_expr
-     | expr '*'                     #unistar_expr
-     | expr '==' expr               #equality_expr
-     | expr '!=' expr               #unequality_expr
-     | '<' str '>'                  #one_symbol_expr
-     | name                         #name_expr
-     | int                          #int_expr
-     | STRING                       #string_expr
+lambda : name '->' CODE;
+
+expr : '(' expr ')'                 #bracket
+     | expr ':=' sa_state expr      #set
+     | expr '+=' sa_state expr      #add
+     | expr '??' get_state          #get
+     | lambda '-->' expr            #map
+     | lambda '?->' expr            #filter
+     | '#' PATH                     #load
+     | expr '++' expr               #concat
+     | expr '&' expr                #intersect
+     | expr '|' expr                #union
+     | expr '*'                     #kleene
+     | expr '==' expr               #equals
+     | expr '!=' expr               #unequals
+     | '<' str '>'                  #construct
+     | name                         #nameAssign
+     | int                          #intAssign
+     | STRING                       #stringAssign
+     | '[]'                         #emptyList
+     | '[' expr (',' expr)* ']'     #list
+     | ']' '['                      #emptySet
+     | ']' expr (',' expr)* '['     #bigSet
      ;
 
 name : LETTER (LETTER | DIGIT)* ;
@@ -40,6 +45,7 @@ sa_state : 'start' | 'final' ;
 
 get_state : sa_state | 'reachable' | 'nodes' | 'edges' | 'labels' ;
 
+CODE : '{' .*? '}' ;
 PATH : 'P\'' (.)+? '\'' ;
 STRING : '\'' [a-zA-Z0-9] '\'' ;
 DIGIT : [0-9] ;

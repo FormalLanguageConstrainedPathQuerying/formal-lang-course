@@ -1,53 +1,72 @@
-import sys
 from antlr4 import *
-from pyformlang.finite_automaton import DeterministicFiniteAutomaton as Automata, State
+from pyformlang.finite_automaton import EpsilonNFA as Automata
+from pyformlang.finite_automaton.epsilon import Epsilon
+from pyformlang.regular_expression import Regex
+
+import automata
 
 import networkx as nx
-import cfpq_data
 from gen.GramLexer import GramLexer
 from gen.GramParser import GramParser
 from gen.GramVisitor import GramVisitor
 
 
-def get_username():
-    from pwd import getpwuid
-    from os import getuid
-    return getpwuid(getuid())[0]
+def iterable(obj: object) -> bool:
+    return hasattr(obj, '__iter__')
 
 
-def get_graph(name):
-    return cfpq_data.graph_from_csv(cfpq_data.download(name))
+class MyEx(Exception):
+    def __init__(self, message):
+        self.message = message
 
 
-def build_dfa_from_graph(
-    graph: nx.DiGraph, start: set[State] = None, final: set[State] = None
-) -> Automata:
-    """
-    Builds NDFA from graph representation, start and final nodes
-    :param graph: Graph representation of the resulting NDFA
-    :param start: Start states of the resulting NDFA. If None - all states are considered start states
-    :param final: Final states of the resulting NDFA. If None - all states are considered final states
-    :return: NDFA built from graph representation, start and final nodes
-    """
-    dfa = Automata.from_networkx(graph)
+class BindEx(MyEx):
+    def __init__(self, name):
+        self.name = name
+        self.message = f'Can not bind var \'{name}\' because this var already exists.'
 
-    for s, f, label in graph.edges(data="label"):
-        dfa.add_transition(s, label, f)
 
-    if start is not None:
-        for s in start:
-            dfa.add_start_state(s)
-    else:
-        for s in dfa.states:
-            dfa.add_start_state(s)
-    if final is not None:
-        for s in final:
-            dfa.add_final_state(s)
-    else:
-        for s in dfa.states:
-            dfa.add_final_state(s)
+class AssignEx(MyEx):
+    def __init__(self, name):
+        self.name = name
+        self.message = f'Can not assign var \'{name}\' because this var does not exist.'
 
-    return dfa
+
+class IterableEx(MyEx):
+    def __init__(self, obj):
+        self.obj = obj
+        self.message = f'Object {obj} of type {type(obj)} is not iterable.'
+
+
+class UnionEx(MyEx):
+    def __init__(self, e1, e2):
+        self.message = f'Objects {e1} and {e2} of types {type(e1)} and {type(e2)} can not product union.'
+
+
+class IntersectEx(MyEx):
+    def __init__(self, e1, e2):
+        self.message = f'Objects {e1} and {e2} of types {type(e1)} and {type(e2)} can not product intersection.'
+
+
+class ConcatEx(MyEx):
+    def __init__(self, e1, e2):
+        self.message = f'Objects {e1} and {e2} of types {type(e1)} and {type(e2)} can not product concat.'
+
+
+class DifferentTypesEx(MyEx):
+    def __init__(self, e1, e2):
+        self.message = f'Objects {e1} and {e2} have different types: {type(e1)} and {type(e2)}.'
+
+
+class KleeneEx(MyEx):
+    def __init__(self, obj):
+        self.message = f'Can not make kleene with object {obj}.'
+
+
+class UnexpectedNameEx(MyEx):
+    def __init__(self, name):
+        self.name = name
+        self.message = f'No variable with name \'{name}\'.'
 
 
 class Env:
@@ -69,106 +88,109 @@ class MyVisitor(GramVisitor):
     def __init__(self):
         self.env = Env()
 
-    def visitProg(self, ctx: GramParser.ProgContext):
-        return self.visitChildren(ctx)
-
-    # Visit a parse tree produced by GramParser#statement.
-    def visitStatement(self, ctx: GramParser.StatementContext):
-        return self.visitChildren(ctx)
-
-    # Visit a parse tree produced by GramParser#print.
     def visitPrint(self, ctx: GramParser.PrintContext):
-        name = ctx.name().getText()
-        if name in self.env:
-            value = self.env[name]
-            print(value)
+        expr = self.visit(ctx.expr())
+        if isinstance(expr, Automata):
+            print(nx.nx_pydot.to_pydot(expr.to_networkx()).to_string())
         else:
-            raise 'No such var!'
+            print(expr)
 
-    # Visit a parse tree produced by GramParser#bind.
     def visitBind(self, ctx: GramParser.BindContext):
         name = ctx.name().getText()
-        if name not in self.env:
-            c: GramParser.ExprContext = ctx.expr()
-            value = self.visit(c)
-            self.env[name] = value
-        else:
-            raise 'This var already exists!'
+        if name in self.env:
+            raise BindEx(name)
+        self.env[name] = self.visit(ctx.expr())
 
-    # Visit a parse tree produced by GramParser#lambda.
+    def visitAssign(self, ctx:GramParser.AssignContext):
+        name = ctx.name().getText()
+        if name not in self.env:
+            raise AssignEx(name)
+        self.env[name] = self.visit(ctx.expr())
+
     def visitLambda(self, ctx: GramParser.LambdaContext):
         name = ctx.name().getText()
-        c: GramParser.ExprContext = ctx.expr()
-        code = self.visit(c)
-
-        id = c.accept(self)
+        code = ctx.CODE().getText()[1: -1]
 
         def func(s):
             result = list()
-            for i in s:
+            for j in s:
+                i = j
+                if isinstance(s, Automata) and isinstance(i[1], Epsilon) and isinstance(i[1], Epsilon):
+                    i = (i[0], 'epsilon', i[2])
                 context = dict()
-                exec(f"result = (lambda {id.value}:{code})({i})", self.env.vars, context)
+                exec(f"result = (lambda {name}:{code})({i})", self.env.vars, context)
                 result.append(context["result"])
             return result
 
         return func
 
-    def visitOne_symbol_expr(self, ctx: GramParser.One_symbol_exprContext):
+    def visitMap(self, ctx: GramParser.MapContext):
+        f = self.visitLambda(ctx.lambda_())
+        e = self.visit(ctx.expr())
+
+        if not iterable(e):
+            raise IterableEx(e)
+
+        return f(e)
+
+    def visitFilter(self, ctx: GramParser.FilterContext):
+        f = self.visitLambda(ctx.lambda_())
+        e = self.visit(ctx.expr())
+        r = []
+
+        if not iterable(e):
+            raise IterableEx(e)
+
+        for flag, val in zip(f(e), e):
+            if flag:
+                r.append(val)
+        return r
+
+    def visitConstruct(self, ctx: GramParser.ConstructContext):
         s = ctx.str_().getText()
-        return Automata()
+        return Regex(s).to_epsilon_nfa()
 
-    # Visit a parse tree produced by GramParser#sa_state.
-    def visitSa_state(self, ctx: GramParser.Sa_stateContext):
-        return self.visitChildren(ctx)
-
-    # Visit a parse tree produced by GramParser#get_state.
-    def visitGet_state(self, ctx: GramParser.Get_stateContext):
-        return self.visitChildren(ctx)
-
-    # Visit a parse tree produced by GramParser#int_expr.
-    def visitInt_expr(self, ctx: GramParser.Int_exprContext):
+    def visitIntAssign(self, ctx: GramParser.IntAssignContext):
         return int(ctx.int_().getText())
 
-    # Visit a parse tree produced by GramParser#load_expr.
-    def visitLoad_expr(self, ctx: GramParser.Load_exprContext):
+    def visitLoad(self, ctx: GramParser.LoadContext):
         path = ctx.PATH().getText()
-        return build_dfa_from_graph(get_graph(path))
+        return automata.build_dfa_from_graph(automata.get_graph(path))
 
-    # Visit a parse tree produced by GramParser#add_state_expr.
-    def visitAdd_state_expr(self, ctx: GramParser.Add_state_exprContext):
+    def visitAdd(self, ctx: GramParser.AddContext):
         expr: Automata = self.visit(ctx.expr()[0])
         states = self.visit(ctx.expr()[1])
         is_start = ctx.sa_state().getText() == 'start'
+
         if is_start:
             expr.start_states.update(states)
         else:
             expr.final_states.update(states)
         return expr
 
+    def visitUnion(self, ctx: GramParser.UnionContext):
+        e1 = self.visit(ctx.expr()[0])
+        e2 = self.visit(ctx.expr()[1])
 
-    # Visit a parse tree produced by GramParser#union_expr.
-    def visitUnion_expr(self, ctx: GramParser.Union_exprContext):
-        e1: Automata = self.visit(ctx.expr()[0])
-        e2: Automata = self.visit(ctx.expr()[1])
-        return e1.union(e2)
+        if isinstance(e1, Automata) and isinstance(e2, Automata):
+            return e1.union(e2)
+        elif isinstance(e1, set) and isinstance(e2, set):
+            return e1.union(e2)
+        elif isinstance(e1, list) and isinstance(e2, list):
+            return e1 + e2
+        else:
+            raise UnionEx(e1, e2)
 
-    # Visit a parse tree produced by GramParser#name_expr.
-    def visitName_expr(self, ctx: GramParser.Name_exprContext):
+    def visitNameAssign(self, ctx: GramParser.NameAssignContext):
         name = ctx.name().getText()
         if name not in self.env:
-            raise 'No such var!'
+            raise UnexpectedNameEx(name)
         return self.env[name]
 
-    # Visit a parse tree produced by GramParser#string_expr.
-    def visitString_expr(self, ctx: GramParser.String_exprContext):
+    def visitStringAssign(self, ctx: GramParser.StringAssignContext):
         return ctx.STRING().getText()
 
-    # Visit a parse tree produced by GramParser#filter_expr.
-    def visitFilter_expr(self, ctx: GramParser.Filter_exprContext):
-        return self.visitChildren(ctx)
-
-    # Visit a parse tree produced by GramParser#assign_state_expr.
-    def visitAssign_state_expr(self, ctx: GramParser.Assign_state_exprContext):
+    def visitSet(self, ctx: GramParser.SetContext):
         expr: Automata = self.visit(ctx.expr()[0])
         states = self.visit(ctx.expr()[1])
         is_start = ctx.sa_state().getText() == 'start'
@@ -180,56 +202,64 @@ class MyVisitor(GramVisitor):
             expr.final_states.update(states)
         return expr
 
+    def visitIntersect(self, ctx: GramParser.IntersectContext):
+        e1 = self.visit(ctx.expr()[0])
+        e2 = self.visit(ctx.expr()[1])
 
-    # Visit a parse tree produced by GramParser#intersection_expr.
-    def visitIntersection_expr(self, ctx: GramParser.Intersection_exprContext):
-        e1: Automata = self.visit(ctx.expr()[0])
-        e2: Automata = self.visit(ctx.expr()[1])
-        return e1.get_intersection(e2)
+        if isinstance(e1, Automata) and isinstance(e2, Automata):
+            return e1.get_intersection(e2)
+        elif isinstance(e1, set) and isinstance(e2, set):
+            return e1.intersection(e2)
+        elif isinstance(e1, list) and isinstance(e2, list):
+            return list(set(e1).intersection(set(e2)))
+        else:
+            raise IntersectEx(e1, e2)
 
-    # Visit a parse tree produced by GramParser#brackets_expr.
-    def visitBrackets_expr(self, ctx: GramParser.Brackets_exprContext):
+    def visitBracket(self, ctx: GramParser.BracketContext):
         return self.visit(ctx.expr())
 
-    # Visit a parse tree produced by GramParser#unistar_expr.
-    def visitUnistar_expr(self, ctx: GramParser.Unistar_exprContext):
+    def visitKleene(self, ctx: GramParser.KleeneContext):
         e = self.visit(ctx.expr())
 
         if not isinstance(e, Automata):
-            raise 'Invalid type!'
+            raise KleeneEx(e)
 
         return e.kleene_star()
 
-    # Visit a parse tree produced by GramParser#bistar_expr.
-    def visitBistar_expr(self, ctx: GramParser.Bistar_exprContext):
-        e1: Automata = self.visit(ctx.expr()[0])
-        e2: Automata = self.visit(ctx.expr()[1])
-        return e1.kleene_star().concatenate(e2)
+    def visitUnequals(self, ctx: GramParser.UnequalsContext):
+        e1 = self.visit(ctx.expr()[0])
+        e2 = self.visit(ctx.expr()[1])
+        if isinstance(e1, Automata) and isinstance(e2, Automata):
+            return not e1.is_equivalent_to(e2)
+        elif type(e1) != type(e2):
+            raise DifferentTypesEx(e1, e2)
+        else:
+            return e1 != e2
 
-    # Visit a parse tree produced by GramParser#unequality_expr.
-    def visitUnequality_expr(self, ctx: GramParser.Unequality_exprContext):
-        e1: Automata = self.visit(ctx.expr()[0])
-        e2: Automata = self.visit(ctx.expr()[1])
-        return not e1.is_equivalent_to(e2)
+    def visitEquals(self, ctx: GramParser.EqualsContext):
+        e1 = self.visit(ctx.expr()[0])
+        e2 = self.visit(ctx.expr()[1])
+        if isinstance(e1, Automata) and isinstance(e2, Automata):
+            return e1.is_equivalent_to(e2)
+        elif type(e1) != type(e2):
+            raise DifferentTypesEx(e1, e2)
+        else:
+            return e1 == e2
 
-    # Visit a parse tree produced by GramParser#map_expr.
-    def visitMap_expr(self, ctx: GramParser.Map_exprContext):
-        return self.visitChildren(ctx)
+    def visitConcat(self, ctx: GramParser.ConcatContext):
+        e1 = self.visit(ctx.expr()[0])
+        e2 = self.visit(ctx.expr()[1])
 
-    # Visit a parse tree produced by GramParser#equality_expr.
-    def visitEquality_expr(self, ctx: GramParser.Equality_exprContext):
-        e1: Automata = self.visit(ctx.expr()[0])
-        e2: Automata = self.visit(ctx.expr()[1])
-        return e1.is_equivalent_to(e2)
+        if isinstance(e1, Automata) and isinstance(e2, Automata):
+            return e1.concatenate(e2)
+        elif isinstance(e1, set) and isinstance(e2, set):
+            return e1.union(e2)
+        elif isinstance(e1, list) and isinstance(e2, list):
+            return e1 + e2
+        else:
+            raise ConcatEx(e1, e2)
 
-    # Visit a parse tree produced by GramParser#concat_expr.
-    def visitConcat_expr(self, ctx: GramParser.Concat_exprContext):
-        e1: Automata = self.visit(ctx.expr()[0])
-        e2: Automata = self.visit(ctx.expr()[1])
-        return e1.concatenate(e2)
-
-    # Visit a parse tree produced by GramParser#get_state_expr.
-    def visitGet_state_expr(self, ctx: GramParser.Get_state_exprContext):
+    def visitGet(self, ctx: GramParser.GetContext):
         state_type = ctx.get_state().getText()
         expr: Automata = self.visit(ctx.expr())
         if state_type == 'start':
@@ -237,13 +267,32 @@ class MyVisitor(GramVisitor):
         elif state_type == 'final':
             return expr.final_states
         elif state_type == 'reachable':
-            return expr._get_reachable_states()
+            g: nx.MultiDiGraph = nx.transitive_closure(nx.DiGraph(expr.to_networkx()))
+            return g.edges
         elif state_type == 'nodes':
             return expr.states
         elif state_type == 'edges':
-            return expr._transition_function.get_edges()
+            return set(expr)
         elif state_type == 'labels':
             return expr.symbols
+
+    def visitEmptyList(self, ctx: GramParser.EmptyListContext):
+        return []
+
+    def visitList(self, ctx: GramParser.ListContext):
+        r = []
+        for i in range(ctx.getChildCount() // 2):
+            r.append(self.visit(ctx.expr(i)))
+        return r
+
+    def visitEmptySet(self, ctx: GramParser.EmptySetContext):
+        return set()
+
+    def visitBigSet(self, ctx: GramParser.BigSetContext):
+        r = set()
+        for i in range(ctx.getChildCount() // 2):
+            r.add(self.visit(ctx.expr(i)))
+        return r
 
 
 def main():
@@ -263,7 +312,7 @@ def execute_code(code: str):
     parser = GramParser(stream)
     tree = parser.prog()
     visitor = MyVisitor()
-    output = visitor.visit(tree)
+    _ = visitor.visit(tree)
 
 
 if __name__ == '__main__':

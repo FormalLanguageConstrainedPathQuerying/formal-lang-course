@@ -1,6 +1,5 @@
 from pyformlang.regular_expression import Regex
-from pyformlang.finite_automaton import State
-from project.automata import *
+from project.my_lang.automata import *
 from networkx import MultiDiGraph as Graph
 
 
