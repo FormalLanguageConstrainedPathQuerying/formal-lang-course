@@ -1,9 +1,10 @@
 from antlr4 import *
-from pyformlang.finite_automaton import EpsilonNFA as Automata
+from pyformlang.finite_automaton import EpsilonNFA as Automata, State
 from pyformlang.finite_automaton.epsilon import Epsilon
 from pyformlang.regular_expression import Regex
 
-import automata
+from project.my_lang.automata import build_dfa_from_graph, get_graph
+import sys
 
 import networkx as nx
 from gen.GramLexer import GramLexer
@@ -142,6 +143,8 @@ class MyVisitor(GramVisitor):
             raise IterableEx(e)
 
         for flag, val in zip(f(e), e):
+            if not isinstance(flag, bool):
+                raise MyEx(f"Filter function {f.__name__} is invalid")
             if flag:
                 r.append(val)
         return r
@@ -154,13 +157,21 @@ class MyVisitor(GramVisitor):
         return int(ctx.int_().getText())
 
     def visitLoad(self, ctx: GramParser.LoadContext):
-        path = ctx.PATH().getText()
-        return automata.build_dfa_from_graph(automata.get_graph(path))
+        path = ctx.PATH().getText()[2:-1]
+        return build_dfa_from_graph(get_graph(path))
 
     def visitAdd(self, ctx: GramParser.AddContext):
-        expr: Automata = self.visit(ctx.expr()[0])
+        expr = self.visit(ctx.expr()[0])
         states = self.visit(ctx.expr()[1])
         is_start = ctx.sa_state().getText() == 'start'
+
+        if not isinstance(expr, Automata):
+            raise MyEx('Can not set states of not EpsilonNFA.')
+
+        if iterable(states):
+            states = set(states)
+        else:
+            raise IterableEx(states)
 
         if is_start:
             expr.start_states.update(states)
@@ -191,9 +202,18 @@ class MyVisitor(GramVisitor):
         return ctx.STRING().getText()
 
     def visitSet(self, ctx: GramParser.SetContext):
-        expr: Automata = self.visit(ctx.expr()[0])
+        expr = self.visit(ctx.expr()[0])
         states = self.visit(ctx.expr()[1])
         is_start = ctx.sa_state().getText() == 'start'
+
+        if not isinstance(expr, Automata):
+            raise MyEx('Can not set states of not EpsilonNFA.')
+
+        if iterable(states):
+            states = set(states)
+        else:
+            raise IterableEx(states)
+
         if is_start:
             expr.start_states.clear()
             expr.start_states.update(states)
@@ -261,7 +281,11 @@ class MyVisitor(GramVisitor):
 
     def visitGet(self, ctx: GramParser.GetContext):
         state_type = ctx.get_state().getText()
-        expr: Automata = self.visit(ctx.expr())
+        expr = self.visit(ctx.expr())
+
+        if not isinstance(expr, Automata):
+            raise MyEx('Can not set states of not EpsilonNFA.')
+
         if state_type == 'start':
             return expr.start_states
         elif state_type == 'final':
@@ -295,11 +319,7 @@ class MyVisitor(GramVisitor):
         return r
 
 
-def main():
-    do('my_code.txt')
-
-
-def do(path: str):
+def do(path: str = 'my_code.txt'):
     with open(path, 'r') as infile:
         execute_code(infile.read())
 
@@ -316,4 +336,4 @@ def execute_code(code: str):
 
 
 if __name__ == '__main__':
-    main()
+    do(sys.argv[0])
