@@ -5,7 +5,11 @@ import networkx as nx
 import scipy.sparse as sp
 from networkx import MultiDiGraph
 from pyformlang.cfg import CFG, Variable
-from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, Symbol
+from pyformlang.finite_automaton import (
+    NondeterministicFiniteAutomaton,
+    Symbol,
+    EpsilonNFA,
+)
 from scipy.sparse import dok_array, csr_array, eye, block_diag
 
 from project.finite_automata_converters import FAConverters
@@ -259,6 +263,18 @@ def find_accessible_nodes(graph: MultiDiGraph, start_nodes, regex_str: str) -> s
     regex_tensor_dfa = TensorNFA.from_nfa(FAConverters.regex_to_min_dfa(regex_str))
     graph_tensor_dfa = TensorNFA.from_nfa(FAConverters.graph_to_nfa(graph))
     return _find_accessible_nodes(graph_tensor_dfa, start_nodes, regex_tensor_dfa)
+
+
+def find_accessible_nodes_of_nfa(nfa: EpsilonNFA, regex_str: str) -> set:
+    """
+    Find accessible nodes of graph with start_nodes and regex.
+    @param nfa: EpsilonNFA querying to
+    @param regex_str: regex for querying with to graph.
+    @return: set of accessible nodes from any of start nodes satisfying regex.
+    """
+    regex_tensor_dfa = TensorNFA.from_nfa(FAConverters.regex_to_min_dfa(regex_str))
+    graph_tensor_dfa = TensorNFA.from_nfa(nfa.to_deterministic())
+    return _find_accessible_nodes(graph_tensor_dfa, nfa.start_states, regex_tensor_dfa)
 
 
 def find_accessible_nodes_foreach_start(
