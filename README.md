@@ -7,7 +7,7 @@
 а также материалы курса и другая сопутствующая информация.
 
 Актуальное:
-- [Таблица с текущими результатами](https://docs.google.com/spreadsheets/d/14h6hUWGMfVhwkxCb9KmRc_yt4VgeecyMEIMDC6zg95c/edit?usp=sharing)
+- [Таблица с текущими результатами](https://docs.google.com/spreadsheets/d/1-vx82auNr0PQDQ3SwA7IYewZyOC9iHIaoX1w1qRUZ3I/edit?usp=sharing)
 - [Список задач](https://github.com/FormalLanguageConstrainedPathQuerying/formal-lang-course/tree/main/tasks)
 - [Стиль кода как референс](https://www.python.org/dev/peps/pep-0008/)
 - [Материалы по курсу](https://github.com/FormalLanguageConstrainedPathQuerying/formal-lang-course/blob/main/docs/lecture_notes/Formal_language_course.pdf)
@@ -36,7 +36,7 @@
     ```shell
     pre-commit run --all-files
     ```
-- Ссылка на свой `fork` репозитория размещается в [таблице](https://docs.google.com/spreadsheets/d/14h6hUWGMfVhwkxCb9KmRc_yt4VgeecyMEIMDC6zg95c/edit?usp=sharing) курса с результатами.
+- Ссылка на свой `fork` репозитория размещается в [таблице](https://docs.google.com/spreadsheets/d/1-vx82auNr0PQDQ3SwA7IYewZyOC9iHIaoX1w1qRUZ3I/edit?usp=sharing) курса с результатами.
 - В свой репозиторий необходимо добавить проверяющих с `admin` правами на чтение, редактирование и проверку `pull-request`'ов.
 
 ## Домашние практические работы
