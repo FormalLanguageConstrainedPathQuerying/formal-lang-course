@@ -5,4 +5,5 @@ networkx
 pre-commit
 pydot
 pytest
+pytest-cov
 scipy
