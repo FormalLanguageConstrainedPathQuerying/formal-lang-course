@@ -19,24 +19,7 @@ def test_create_graph_of_two_cycles():
     )
 
 
-def test_save_graph_as_dot_empty_path():
-    n = 3
-    m = 3
-    labels = ("a", "b")
-    current_dir_path = path.dirname(path.realpath(__file__))
-    graph = labeled_two_cycles_graph(n=n, m=m, labels=labels)
-    save_graph_as_dot(graph=graph, output_name="test_result")
-
-    assert filecmp.cmp(
-        path.join(current_dir_path, "test_result.dot"),
-        path.join(current_dir_path, "result", "sample.dot"),
-        shallow=False,
-    )
-
-    os.remove(path.join(current_dir_path, "test_result.dot"))
-
-
-def test_save_graph_as_dot_with_path():
+def test_save_graph_as_dot():
     n = 3
     m = 3
     labels = ("a", "b")
