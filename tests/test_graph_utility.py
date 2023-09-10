@@ -23,28 +23,34 @@ def test_save_graph_as_dot_empty_path():
     n = 3
     m = 3
     labels = ("a", "b")
+    current_dir_path = os.path.dirname(os.path.realpath(__file__))
     graph = labeled_two_cycles_graph(n=n, m=m, labels=labels)
     save_graph_as_dot(graph=graph, output_name="test_result")
 
     assert filecmp.cmp(
-        path.abspath(path.join(".", "test_result.dot")),
-        path.abspath(path.join(".", "result", "sample.dot")),
+        path.join(current_dir_path, "test_result.dot"),
+        path.join(current_dir_path, "result", "sample.dot"),
     )
 
-    os.remove(path.abspath(path.join(".", "test_result.dot")))
+    os.remove(path.join(current_dir_path, "test_result.dot"))
 
 
 def test_save_graph_as_dot_with_path():
     n = 3
     m = 3
     labels = ("a", "b")
+    current_dir_path = os.path.dirname(os.path.realpath(__file__))
     graph = labeled_two_cycles_graph(n=n, m=m, labels=labels)
-    save_graph_as_dot(graph=graph, output_name="test_result", output_path="result")
+    save_graph_as_dot(
+        graph=graph,
+        output_name="test_result",
+        output_path=path.join(current_dir_path, "result"),
+    )
 
     assert filecmp.cmp(
-        path.abspath(path.join(".", "result", "test_result.dot")),
-        path.abspath(path.join(".", "result", "sample.dot")),
+        path.join(current_dir_path, "result", "test_result.dot"),
+        path.join(current_dir_path, "result", "sample.dot"),
         shallow=False,
     )
 
-    os.remove(path.abspath(path.join(".", "result", "test_result.dot")))
+    os.remove(path.join(current_dir_path, "result", "test_result.dot"))
