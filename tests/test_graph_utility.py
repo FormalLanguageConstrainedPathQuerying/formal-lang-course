@@ -28,8 +28,8 @@ def test_save_graph_as_dot_empty_path():
     save_graph_as_dot(graph=graph, output_name="test_result")
 
     assert filecmp.cmp(
-        path.join(current_dir_path, "test_result.dot"),
-        path.join(current_dir_path, "result", "sample.dot"),
+        path.join("test_result.dot"),
+        path.join("result", "sample.dot"),
     )
 
     os.remove(path.join(current_dir_path, "test_result.dot"))
@@ -44,12 +44,12 @@ def test_save_graph_as_dot_with_path():
     save_graph_as_dot(
         graph=graph,
         output_name="test_result",
-        output_path=path.join(current_dir_path, "result"),
+        output_path="result",
     )
 
     assert filecmp.cmp(
-        path.join(current_dir_path, "result", "test_result.dot"),
-        path.join(current_dir_path, "result", "sample.dot"),
+        path.join("result", "test_result.dot"),
+        path.join("result", "sample.dot"),
         shallow=False,
     )
 
