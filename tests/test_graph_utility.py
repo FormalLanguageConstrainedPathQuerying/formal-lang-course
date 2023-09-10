@@ -1,9 +1,6 @@
 import filecmp
 import os
-
-import networkx
 from cfpq_data import labeled_two_cycles_graph
-import networkx.algorithms.isomorphism as iso
 from project.graph_utility.graph_utility import *
 
 
