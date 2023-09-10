@@ -9,7 +9,7 @@ def load_graph(graph_name: str) -> networkx.MultiDiGraph:
     return graph
 
 
-def get_graph_info(graph_name: str) -> [int, int, set[str]]:
+def get_graph_info(graph_name: str) -> tuple[int, int, set[str]]:
     graph = load_graph(graph_name)
     graph_labels = set(label for _, _, label in graph.edges.data(data="label"))
     graph_edges = graph.number_of_edges()
