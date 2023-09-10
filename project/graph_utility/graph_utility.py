@@ -27,5 +27,5 @@ def create_graph_of_two_cycles(
 
 def save_graph_as_dot(graph: networkx.Graph, output_name: str, output_path: str = ""):
     networkx.drawing.nx_pydot.to_pydot(graph).write_raw(
-        path.join(output_path, output_name)
+        path.join(output_path, output_name + ".dot")
     )
