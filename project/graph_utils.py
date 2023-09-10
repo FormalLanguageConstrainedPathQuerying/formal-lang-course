@@ -14,14 +14,14 @@ def get_graph_info(name: str) -> Tuple[int, int, List[Any]]:
     )
 
 
-def generate_two_cycles_graph(
-    first_cycle_nodes: int, second_cycle_nodes: int, labels: Tuple[str, str]
-) -> nx.MultiDiGraph:
-    return cfpq_data.graphs.labeled_two_cycles_graph(
+def save_graph_in_dot(
+    first_cycle_nodes: int,
+    second_cycle_nodes: int,
+    labels: Tuple[str, str],
+    path: Path | str,
+) -> None:
+    graph = cfpq_data.graphs.labeled_two_cycles_graph(
         first_cycle_nodes, second_cycle_nodes, labels=labels
     )
-
-
-def save_graph_in_dot(graph: nx.MultiDiGraph, path: Path | str) -> None:
     dot_graph = nx.drawing.nx_pydot.to_pydot(graph)
     dot_graph.write(path)
