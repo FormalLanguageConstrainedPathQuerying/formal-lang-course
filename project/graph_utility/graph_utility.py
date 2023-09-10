@@ -18,7 +18,7 @@ def get_graph_info(graph_name: str) -> [int, int, set[str]]:
 
 
 def create_graph_of_two_cycles(
-    first_cycle_nodes: int, second_cycle_nodes: int, labels: [str, str]
+    first_cycle_nodes: int, second_cycle_nodes: int, labels: (str, str)
 ) -> networkx.MultiDiGraph:
     return cfpq_data.labeled_two_cycles_graph(
         n=first_cycle_nodes, m=second_cycle_nodes, labels=labels
