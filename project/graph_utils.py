@@ -14,7 +14,7 @@ def get_graph_info(name: str) -> Tuple[int, int, List[Any]]:
     )
 
 
-def save_graph_in_dot(
+def save_two_cycles_graph_in_dot(
     first_cycle_nodes: int,
     second_cycle_nodes: int,
     labels: Tuple[str, str],
