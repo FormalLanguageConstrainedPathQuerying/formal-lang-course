@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import cfpq_data
 import networkx
 
@@ -25,4 +27,4 @@ def create_graph_of_two_cycles(
 
 
 def save_graph_as_dot(graph: networkx.Graph, output_path: str):
-    networkx.drawing.nx_pydot.to_pydot(graph).write_raw(output_path)
+    networkx.drawing.nx_pydot.to_pydot(graph).write_raw(Path(output_path))
