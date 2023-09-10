@@ -23,7 +23,7 @@ def test_save_graph_as_dot_empty_path():
     n = 3
     m = 3
     labels = ("a", "b")
-    current_dir_path = os.path.dirname(os.path.realpath(__file__))
+    current_dir_path = path.dirname(path.realpath(__file__))
     graph = labeled_two_cycles_graph(n=n, m=m, labels=labels)
     save_graph_as_dot(graph=graph, output_name="test_result")
 
@@ -39,7 +39,7 @@ def test_save_graph_as_dot_with_path():
     n = 3
     m = 3
     labels = ("a", "b")
-    current_dir_path = os.path.dirname(os.path.realpath(__file__))
+    current_dir_path = path.dirname(path.realpath(__file__))
     graph = labeled_two_cycles_graph(n=n, m=m, labels=labels)
     save_graph_as_dot(
         graph=graph,
