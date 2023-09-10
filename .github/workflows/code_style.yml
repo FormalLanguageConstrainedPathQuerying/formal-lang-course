@@ -23,17 +23,17 @@ jobs:
       matrix:
 
         # Each option you define in the matrix has a key and value
-        python-version: [ 3.8 ]
+        python-version: [ 3.11 ]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Set up Git repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       # Setup Python with version from matrix
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
