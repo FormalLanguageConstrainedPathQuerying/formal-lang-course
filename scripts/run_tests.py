@@ -4,7 +4,9 @@ import shared
 
 def main():
     shared.configure_python_path()
-    subprocess.check_call(["python", "-m", "pytest", "-vv", "-s", shared.TESTS])
+    subprocess.check_call(
+        [shared.PYTHON_INTERPRETER, "-m", "pytest", "-vv", "-s", shared.TESTS]
+    )
 
 
 if __name__ == "__main__":

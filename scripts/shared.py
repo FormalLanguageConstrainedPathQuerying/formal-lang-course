@@ -1,9 +1,13 @@
 import os
 import pathlib
+import platform
 
 ROOT = pathlib.Path(__file__).parent.parent
 DOCS = ROOT / "docs"
 TESTS = ROOT / "tests"
+PYTHON_INTERPRETER = (
+    "python" if platform.system() != "Windows" else ROOT / "venv/Scripts/python.exe"
+)
 
 
 def configure_python_path():
