@@ -17,7 +17,9 @@ def save_graph(G: MultiDiGraph, path: str) -> None:
 
 
 def get_graph_data(G: MultiDiGraph) -> GraphData:
-    get_label = lambda x: x[2]
+    def get_label(edge):
+        return edge[2]
+
     labels = set(map(get_label, G.edges(data="label")))
     return GraphData(G.number_of_nodes(), G.number_of_edges(), labels)
 

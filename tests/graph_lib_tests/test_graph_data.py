@@ -1,4 +1,5 @@
-from project.graph_lib import *
+from networkx import MultiDiGraph
+from project.graph_lib import get_graph_data, get_graph_data_by_name
 
 
 def test_graph_data_get_1():

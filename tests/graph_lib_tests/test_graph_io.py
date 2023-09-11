@@ -1,4 +1,5 @@
-from project.graph_lib import *
+from networkx import MultiDiGraph
+from project.graph_lib import save_graph
 
 
 def test_save_graph():
