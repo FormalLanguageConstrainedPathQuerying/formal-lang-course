@@ -147,3 +147,4 @@ _minted-presentation/
 
 # Test generated
 tests/generated/*
+!tests/generated/.gitkeep
