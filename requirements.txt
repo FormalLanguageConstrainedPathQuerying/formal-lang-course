@@ -1,7 +1,7 @@
 antlr4-python3-runtime
 black
 cfpq-data
-dataclass
+dataclasses
 pre-commit
 pydot
 pytest
