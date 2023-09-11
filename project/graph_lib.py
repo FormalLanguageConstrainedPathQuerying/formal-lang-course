@@ -13,7 +13,8 @@ def download_graph(name: str) -> MultiDiGraph:
 
 
 def save_graph(G: MultiDiGraph, path: str) -> None:
-    write_dot(G, path)
+    with open(path, "w+") as f:
+        write_dot(G, f)
 
 
 def get_graph_data(G: MultiDiGraph) -> GraphData:
