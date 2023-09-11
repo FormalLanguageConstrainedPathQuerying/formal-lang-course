@@ -4,11 +4,9 @@ from project.graph_lib import *
 def test_graph_data_get_1():
     G = MultiDiGraph()
     G.add_nodes_from([0, 1, 2, 3])
-    G.add_edges_from([
-        (0, 1, {"label": "a"}), 
-        (0, 2, {"label": "a"}), 
-        (3, 3, {"label": "b"})
-    ])
+    G.add_edges_from(
+        [(0, 1, {"label": "a"}), (0, 2, {"label": "a"}), (3, 3, {"label": "b"})]
+    )
     graph_data = get_graph_data(G)
 
     assert graph_data.node_count == 4
