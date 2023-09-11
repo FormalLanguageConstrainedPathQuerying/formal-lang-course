@@ -1,0 +1,11 @@
+digraph  {
+3;
+4;
+1;
+7;
+6;
+9;
+3 -> 4  [key=0, label=abc];
+1 -> 7  [key=0, label=xyz];
+6 -> 9  [key=0, label=lol];
+}
