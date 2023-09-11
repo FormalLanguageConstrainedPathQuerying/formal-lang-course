@@ -1,0 +1,31 @@
+name: Tests
+on: [ push, pull_request ]
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        python-version: [ 3.11 ]
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install requirements and run tests
+        shell: bash
+        run: |
+          python -m venv venv
+          if [ "$RUNNER_OS" == "Windows" ]; then
+              source venv/Scripts/activate
+          else
+              source venv/bin/activate
+          fi
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          python ./scripts/run_tests.py
