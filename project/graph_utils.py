@@ -1,16 +1,16 @@
-from typing import Any, Tuple, List
+from typing import Any, Tuple, Set
 from pathlib import Path
 import cfpq_data
 import networkx as nx
 
 
-def get_graph_info(name: str) -> Tuple[int, int, List[Any]]:
+def get_graph_info(name: str) -> Tuple[int, int, Set[Any]]:
     path = cfpq_data.download(name)
     graph = cfpq_data.graph_from_csv(path)
     return (
         graph.number_of_nodes(),
         graph.number_of_edges(),
-        list(set(cfpq_data.get_sorted_labels(graph))),
+        set(cfpq_data.get_sorted_labels(graph)),
     )
 
 
