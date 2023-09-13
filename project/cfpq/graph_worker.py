@@ -5,19 +5,19 @@ from networkx.drawing.nx_pydot import to_pydot
 
 class GraphWorker:
     def __init__(self):
-        self.__graph_info = {"num_of_nodes": 0,
-                             "num_of_edges": 0,
-                             "set_of_labels": set()
-                             }
+        self.__graph_info = {
+            "num_of_nodes": 0,
+            "num_of_edges": 0,
+            "set_of_labels": set(),
+        }
         self.__graph = Graph()
 
     def __update_graph_info(self) -> None:
         self.__graph_info["num_of_nodes"] = self.__graph.number_of_nodes()
         self.__graph_info["num_of_edges"] = self.__graph.number_of_edges()
-        self.__graph_info["set_of_labels"] = {label
-                                              for _, _, label
-                                              in self.__graph.edges.data("label")
-                                              }
+        self.__graph_info["set_of_labels"] = {
+            label for _, _, label in self.__graph.edges.data("label")
+        }
 
     def load_graph_by_name(self, name: str) -> None:
         self.__graph = graph_from_csv(path=download(name))
@@ -37,5 +37,5 @@ class GraphWorker:
 if __name__ == "__main__":
     gw = GraphWorker()
     gw.load_graph_by_name("bzip")
-    gw.save_as_dot_file('test.dot')
+    gw.save_as_dot_file("test.dot")
     print(gw.get_graph_info())
