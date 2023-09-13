@@ -5,4 +5,4 @@ networkx
 pre-commit
 pydot
 pytest
-scipy2
+scipy
