@@ -12,14 +12,10 @@ def create_and_save_two_cycles_graph(
     first_cycle: tuple[int, str], second_cycle: tuple[int, str], path: str
 ) -> bool:
     gw = GraphWorker()
-    gw.update_graph(
-        create_labeled_two_cycles_graph(
-            first_cycle[0], first_cycle[1], second_cycle[0], second_cycle[1]
-        )
-    )
+    gw.update_graph(create_labeled_two_cycles_graph(*first_cycle, *second_cycle))
     return gw.save_as_dot_file(path=path)
 
 
 if __name__ == "__main__":
-    print(load_graph_info_by_name("travel"))
-    create_and_save_two_cycles_graph((5, "aaa"), (5, "ccc"), "test.dot")
+    print(load_graph_info_by_name("bzip"))
+    create_and_save_two_cycles_graph((5, "a"), (5, "b"), "test.dot")
