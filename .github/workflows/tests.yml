@@ -5,10 +5,11 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
         python-version: [ 3.11 ]
 
     steps:
@@ -26,6 +27,6 @@ jobs:
           python -m pip install -r requirements.txt
           python -m pip list
 
-      - name: Test project
+      - name: Run tests
         run: |
           python ./scripts/run_tests.py
