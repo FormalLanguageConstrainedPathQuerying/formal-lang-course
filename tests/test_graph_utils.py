@@ -24,10 +24,10 @@ def test_get_graph_info():
 
 def test_save_two_cycles_graph_in_dot():
     graph_utils.save_two_cycles_graph_in_dot(
-        10, 20, ("first", "second"), "./resources/actual.dot"
+        10, 20, ("first", "second"), "../tests/resources/actual.dot"
     )
     graph_actual: nx.MultiDiGraph = nx.nx_pydot.read_dot("./resources/actual.dot")
-    os.remove(".//resources/actual.dot")
+    os.remove("./resources/actual.dot")
     graph_expected: nx.MultiDiGraph = nx.nx_pydot.read_dot("./resources/expected.dot")
 
     assert graph_actual.nodes == graph_expected.nodes
