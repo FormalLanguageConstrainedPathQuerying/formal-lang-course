@@ -144,3 +144,4 @@ _minted-presentation/
 *.fdb_latexmk
 *.fls
 *.gz
+/tests/graph.dot

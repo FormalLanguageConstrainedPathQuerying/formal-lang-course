@@ -1,5 +1,6 @@
 import pytest
 from project.graph_utils import get_graph_stats
+from project.graph_utils import generate_two_cycles_graph
 
 
 def test_correct_name_1():
@@ -72,3 +73,8 @@ def test_correct_name_2():
 def test_incorrect_name():
     with pytest.raises(Exception):
         get_graph_stats("this graph doesn't exist")
+
+
+def test_generate_graph():
+    generate_two_cycles_graph(10, 15, "a", "b", "graph.dot", "example_graph")
+    assert [row for row in open("graph.dot")] == [row for row in open("graph_test.dot")]
