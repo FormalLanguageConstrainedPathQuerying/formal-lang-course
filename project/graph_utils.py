@@ -4,7 +4,7 @@ import cfpq_data
 import networkx as nx
 
 
-def get_graph_info(name: str) -> Tuple[int, int, Set[Any]]:
+def get_graph_info(name: str) -> Tuple[int, int, Set[str]]:
     path = cfpq_data.download(name)
     graph = cfpq_data.graph_from_csv(path)
     return (
