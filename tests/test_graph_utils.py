@@ -77,4 +77,6 @@ def test_incorrect_name():
 
 def test_generate_graph():
     generate_two_cycles_graph(10, 15, "a", "b", "tests/graph.dot", "example_graph")
-    assert [row for row in open("tests/graph.dot")] == [row for row in open("tests/graph_test.dot")]
+    assert [row for row in open("tests/graph.dot")] == [
+        row for row in open("tests/graph_test.dot")
+    ]
