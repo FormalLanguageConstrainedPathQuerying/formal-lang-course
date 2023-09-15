@@ -30,4 +30,4 @@ def test_save_two_cycles_graph_in_dot():
 
     graph_utils.save_two_cycles_graph_in_dot(10, 20, ("first", "second"), actual_path)
 
-    assert filecmp.cmp(expected_path, actual_path)
+    assert filecmp.cmp(expected_path, actual_path, shallow=False)
