@@ -144,5 +144,3 @@ _minted-presentation/
 *.fdb_latexmk
 *.fls
 *.gz
-/project/homework 1 | graphs/developer_test.py
-/project/graph_utility/developer_test.py
