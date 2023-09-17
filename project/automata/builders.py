@@ -1,3 +1,6 @@
+import typing
+from typing import Hashable
+
 from pyformlang.regular_expression import *
 from pyformlang.finite_automaton import *
 from networkx import MultiDiGraph
@@ -23,7 +26,9 @@ def build_minimal_dfa(regex: Regex) -> DeterministicFiniteAutomaton:
 
 
 def build_nfa(
-    graph: MultiDiGraph, start_states: set[int] = None, final_states: set[int] = None
+    graph: MultiDiGraph,
+    start_states: set[Hashable] = None,
+    final_states: set[Hashable] = None,
 ) -> NondeterministicFiniteAutomaton:
     """Import a networkx.MultiDiGraph into a finite state automaton. \
     The imported graph requires to have the "label" marks on edges \
@@ -48,16 +53,16 @@ def build_nfa(
     received_graph = graph.copy()
     if start_states is None and final_states is None:
         for node in graph.nodes(data=False):
-            graph.nodes[node]["is_start"] = True
-            graph.nodes[node]["is_final"] = True
+            received_graph.nodes[node]["is_start"] = True
+            received_graph.nodes[node]["is_final"] = True
 
     if start_states is not None:
         for node in start_states:
-            graph.nodes[node]["is_start"] = True
+            received_graph.nodes[node]["is_start"] = True
 
     if final_states is not None:
         for node in final_states:
-            graph.nodes[node]["is_final"] = True
+            received_graph.nodes[node]["is_final"] = True
 
     enfa = NondeterministicFiniteAutomaton.from_networkx(received_graph)
     return enfa
