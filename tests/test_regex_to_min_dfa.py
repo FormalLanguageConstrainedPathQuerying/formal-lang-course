@@ -1,4 +1,4 @@
-from typing import List, Tuple, Iterable
+from typing import List, Tuple
 from pyformlang.regular_expression import Regex
 from pyformlang.finite_automaton import Symbol, DeterministicFiniteAutomaton
 from project.finite_automata_construct import regex_to_min_dfa
@@ -8,8 +8,8 @@ def construct_regex_and_dfa(regex: str) -> Tuple[Regex, DeterministicFiniteAutom
     return Regex(regex), regex_to_min_dfa(regex)
 
 
-def strs_to_automata_input(string: List[str]) -> Iterable[Symbol]:
-    return map(lambda x: Symbol(x), string)
+def strs_to_word(strs: List[str]) -> List[Symbol]:
+    return [Symbol(s) for s in strs]
 
 
 def test_concat_regex():
@@ -22,9 +22,7 @@ def test_concat_regex():
         ["a", "b"],
         ["a", "b"],
     ]:
-        assert regex.accepts(test_case) == dfa.accepts(
-            strs_to_automata_input(test_case)
-        )
+        assert regex.accepts(test_case) == dfa.accepts(strs_to_word(test_case))
 
 
 def test_union_regex():
@@ -37,9 +35,7 @@ def test_union_regex():
         ["d"],
         ["ef"],
     ]:
-        assert regex.accepts(test_case) == dfa.accepts(
-            strs_to_automata_input(test_case)
-        )
+        assert regex.accepts(test_case) == dfa.accepts(strs_to_word(test_case))
 
 
 def test_star_regex():
@@ -55,18 +51,14 @@ def test_star_regex():
         ["abc", "a"],
         ["abca"],
     ]:
-        assert regex.accepts(test_case) == dfa.accepts(
-            strs_to_automata_input(test_case)
-        )
+        assert regex.accepts(test_case) == dfa.accepts(strs_to_word(test_case))
 
 
 def test_epsilon_regex():
     regex, dfa = construct_regex_and_dfa("a$b$c")
 
     for test_case in [["abc"], ["a", "b", "c"], ["a", "", "b", "", "c"]]:
-        assert regex.accepts(test_case) == dfa.accepts(
-            strs_to_automata_input(test_case)
-        )
+        assert regex.accepts(test_case) == dfa.accepts(strs_to_word(test_case))
 
 
 def test_complex_regex():
@@ -81,6 +73,4 @@ def test_complex_regex():
         ["a", "c", "d"],
         ["cc", "e"],
     ]:
-        assert regex.accepts(test_case) == dfa.accepts(
-            strs_to_automata_input(test_case)
-        )
+        assert regex.accepts(test_case) == dfa.accepts(strs_to_word(test_case))
