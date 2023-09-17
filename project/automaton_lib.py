@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton
 from pyformlang.finite_automaton import DeterministicFiniteAutomaton
@@ -22,8 +22,8 @@ def dfa_of_regex(regex: Regex) -> DeterministicFiniteAutomaton:
 
 def nfa_of_graph(
     graph: MultiDiGraph,
-    starting_nodes: List[int] | None = None,
-    final_nodes: List[int] | None = None,
+    starting_nodes: Optional[List[int]] = None,
+    final_nodes: Optional[List[int]] = None,
 ) -> NondeterministicFiniteAutomaton:
     """
     Creates nondeterministic finite automaton from networkx MultiDiGraph
