@@ -1,5 +1,6 @@
 from pyformlang.regular_expression import *
 from pyformlang.finite_automaton import *
+from networkx import MultiDiGraph
 
 
 def build_minimal_dfa(regex: Regex) -> DeterministicFiniteAutomaton:
@@ -7,16 +8,56 @@ def build_minimal_dfa(regex: Regex) -> DeterministicFiniteAutomaton:
 
     Parameters
     ----------
-    regex : :class:`~pyformlang.regular_expression.Regex`
+    regex : pyformlang.regular_expression.Regex
         The regular expression
 
     Returns
     ----------
-    dfa :  :class:`~pyformlang.deterministic_finite_automaton\
-    .DeterministicFiniteAutomaton`
+    dfa : pyformlang.deterministic_finite_automaton.DeterministicFiniteAutomaton
         The minimal DFA
 
     """
-    eps_nfa = regex.to_epsilon_nfa()
-    dfa = eps_nfa.to_deterministic().minimize()
+    enfa = regex.to_epsilon_nfa()
+    dfa = enfa.to_deterministic().minimize()
     return dfa
+
+
+def build_nfa_from_graph(
+    graph: MultiDiGraph, start_states: set[int] = None, final_states: set[int] = None
+) -> NondeterministicFiniteAutomaton:
+    """Import a networkx.MultiDiGraph into an finite state automaton. \
+    The imported graph requires to have the "label" marks on edges \
+    that indicate the transition symbol; OPTIONAL "is_start": bool indicate \
+    start states; OPTIONAL "is_final": bool indicate final states.
+
+    Parameters
+    ----------
+    graph : networkx.MultiDiGraph
+        The graph representation of the automaton
+    start_states: set[int], optional
+        A finite set of start states - number of graph nodes
+    final_states: set[int], optional
+        A finite set of final states - number of graph nodes
+
+    Returns
+    -------
+    enfa :
+        A epsilon nondeterministic finite automaton read from the graph
+
+    """
+    received_graph = graph.copy()
+    if start_states is None and final_states is None:
+        for node in graph.nodes(data=False):
+            graph.nodes[node]["is_start"] = True
+            graph.nodes[node]["is_final"] = True
+
+    if start_states is not None:
+        for node in start_states:
+            graph.nodes[node]["is_start"] = True
+
+    if final_states is not None:
+        for node in final_states:
+            graph.nodes[node]["is_final"] = True
+
+    enfa = NondeterministicFiniteAutomaton.from_networkx(received_graph)
+    return enfa
