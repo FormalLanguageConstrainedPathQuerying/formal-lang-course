@@ -1,5 +1,6 @@
+from pathlib import Path
+
 import networkx
-import pytest
 
 from project.automata.builders import *
 
@@ -36,3 +37,27 @@ class TestsForDfa:
         dfa = build_minimal_dfa(regex)
 
         assert regex.accepts([]) and dfa.accepts("")
+
+
+class TestsForNfa:
+    def test_nfa_from_graph1(self):
+        graph = networkx.nx_pydot.read_dot(Path("./resources/dfa1.dot"))
+        # dfa that accepts string with "ba" suffix
+        enfa = build_nfa(graph, start_states={"0"}, final_states={"2"})
+
+        regex = Regex("((a|b|c)*).(b.a)")
+        # regex that accepts string with "ba" suffix
+        dfa = build_minimal_dfa(regex)
+
+        assert enfa.is_equivalent_to(dfa)
+
+    def test_nfa_from_graph2(self):
+        graph = networkx.nx_pydot.read_dot(Path("./resources/dfa2.dot"))
+        # dfa that accepts string with "abc" prefix
+        enfa = build_nfa(graph, start_states={"0"}, final_states={"3"})
+
+        regex = Regex("(a.b.c).(a|b|c)*")
+        # regex that accepts string with "abc" prefix
+        dfa = build_minimal_dfa(regex)
+
+        assert enfa.is_equivalent_to(dfa)
