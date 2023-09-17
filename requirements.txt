@@ -4,5 +4,6 @@ cfpq-data
 dataclasses
 pre-commit
 pydot
+pyformlang
 pytest
 scipy
