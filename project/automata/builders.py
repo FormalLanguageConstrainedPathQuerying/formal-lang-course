@@ -25,7 +25,7 @@ def build_minimal_dfa(regex: Regex) -> DeterministicFiniteAutomaton:
 def build_nfa_from_graph(
     graph: MultiDiGraph, start_states: set[int] = None, final_states: set[int] = None
 ) -> NondeterministicFiniteAutomaton:
-    """Import a networkx.MultiDiGraph into an finite state automaton. \
+    """Import a networkx.MultiDiGraph into a finite state automaton. \
     The imported graph requires to have the "label" marks on edges \
     that indicate the transition symbol; OPTIONAL "is_start": bool indicate \
     start states; OPTIONAL "is_final": bool indicate final states.
