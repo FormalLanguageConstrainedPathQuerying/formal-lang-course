@@ -38,10 +38,10 @@ def build_nfa(
     ----------
     graph : networkx.MultiDiGraph
         The graph representation of the automaton
-    start_states: set[int], optional
-        A finite set of start states - number of graph nodes
-    final_states: set[int], optional
-        A finite set of final states - number of graph nodes
+    start_states: set[Hashable], optional
+        A finite set of start states - graph nodes
+    final_states: set[Hashable], optional
+        A finite set of final states - graph nodes
 
     Returns
     -------
