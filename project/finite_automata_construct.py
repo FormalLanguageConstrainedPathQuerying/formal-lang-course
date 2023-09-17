@@ -18,13 +18,13 @@ def regex_to_min_dfa(regex: str) -> DeterministicFiniteAutomaton:
 
 
 def graph_to_nfa(
-    graph: nx.MultiDiGraph, start_nodes: List[int], final_nodes: List[int]
+    graph: nx.MultiDiGraph, start_nodes: List[int] = None, final_nodes: List[int] = None
 ) -> NondeterministicFiniteAutomaton:
     nfa = NondeterministicFiniteAutomaton()
 
-    if not start_nodes:
+    if start_nodes is None:
         start_nodes = graph.nodes()
-    if not final_nodes:
+    if final_nodes is None:
         final_nodes = graph.nodes()
     for node in start_nodes:
         nfa.add_start_state(State(node))
