@@ -1,4 +1,3 @@
-import typing
 from typing import Hashable
 
 from pyformlang.regular_expression import *
