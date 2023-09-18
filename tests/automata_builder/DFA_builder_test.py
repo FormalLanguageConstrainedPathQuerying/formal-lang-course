@@ -1,8 +1,5 @@
-from pytest import raises
 from project.automata_builder.DFA_builder import build_mdfa
-from pyformlang.regular_expression import Regex
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton
-from pyformlang.finite_automaton import DeterministicFiniteAutomaton
 
 
 def test_build_mdfa():
