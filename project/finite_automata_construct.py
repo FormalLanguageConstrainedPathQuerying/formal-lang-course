@@ -12,8 +12,7 @@ import networkx as nx
 def regex_to_min_dfa(regex: str) -> DeterministicFiniteAutomaton:
     regex_obj = Regex(regex)
     enfa = regex_obj.to_epsilon_nfa()
-    dfa = enfa.to_deterministic()
-    min_dfa = dfa.minimize()
+    min_dfa = enfa.minimize()
     return min_dfa
 
 
