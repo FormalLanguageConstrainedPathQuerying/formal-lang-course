@@ -1,10 +1,10 @@
 import os
 import filecmp
-from project.graph_utils import get_graph_info, save_labeled_two_cycles_graph
+from project.graph_utils import get_graph_info_by_name, save_labeled_two_cycles_graph
 
 
 def test_get_graph_info():
-    graph_info = get_graph_info("atom")
+    graph_info = get_graph_info_by_name("atom")
     # Based on https://formallanguageconstrainedpathquerying.github.io/CFPQ_Data/graphs/data/atom.html#atom
     assert graph_info.number_of_nodes == 291
     assert graph_info.number_of_edges == 425
