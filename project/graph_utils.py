@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Union, Tuple, Any
 from collections.abc import Iterable
 from networkx.drawing.nx_pydot import to_pydot
+from networkx import MultiDiGraph
 import cfpq_data
 
 
@@ -12,13 +13,21 @@ class GraphInfo:
     labels_set: set
 
 
-def get_graph_info(graph_name: str) -> GraphInfo:
-    graph = cfpq_data.graph_from_csv(cfpq_data.download(graph_name))
+def get_graph_by_name(graph_name: str) -> MultiDiGraph:
+    return cfpq_data.graph_from_csv(cfpq_data.download(graph_name))
+
+
+def get_graph_info(graph: MultiDiGraph) -> GraphInfo:
     return GraphInfo(
         graph.number_of_nodes(),
         graph.number_of_edges(),
         set(cfpq_data.get_sorted_labels(graph)),
     )
+
+
+def get_graph_info_by_name(graph_name: str) -> GraphInfo:
+    graph = get_graph_by_name(graph_name)
+    return get_graph_info(graph)
 
 
 def save_labeled_two_cycles_graph(
