@@ -17,7 +17,7 @@ def dfa_of_regex(regex: Regex) -> DeterministicFiniteAutomaton:
     Returns:
         Minimal deterministic finite automaton
     """
-    return regex.to_epsilon_nfa().to_deterministic().minimize()
+    return regex.to_epsilon_nfa().minimize()
 
 
 def nfa_of_graph(
@@ -52,12 +52,17 @@ def nfa_of_graph(
         set_node_attributes(
             graph, {i: i in starting_nodes for i in graph.nodes}, name="is_start"
         )
+    else:
+        set_node_attributes(graph, {i: True for i in graph.nodes}, name="is_start")
 
     if final_nodes is not None:
         set_node_attributes(
             graph, {i: i in final_nodes for i in graph.nodes}, name="is_final"
         )
+    else:
+        set_node_attributes(graph, {i: True for i in graph.nodes}, name="is_final")
 
     automaton = NondeterministicFiniteAutomaton.from_networkx(graph)
+    automaton = automaton.remove_epsilon_transitions()
 
     return automaton

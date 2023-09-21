@@ -9,10 +9,10 @@ def test_nfa_of_empty_graph():
     assert nfa.is_empty()
 
 
-def test_nfa_of_graph():
+def test_nfa_of_graph_rewrite_start_and_final():
     path = "tests/test_graphs/nfa_graph.dot"
     graph = read_dot(path)
-    nfa = nfa_of_graph(graph)
+    nfa = nfa_of_graph(graph, starting_nodes=["0"], final_nodes=["0"])
 
     assert nfa.accepts("")
     assert nfa.accepts("abc")
@@ -25,10 +25,10 @@ def test_nfa_of_graph():
     assert not nfa.accepts("c")
 
 
-def test_nfa_of_graph_rewrite_final():
+def test_nfa_of_graph_rewrite_start():
     path = "tests/test_graphs/nfa_graph.dot"
     graph = read_dot(path)
-    nfa = nfa_of_graph(graph, final_nodes=["0", "1", "2"])
+    nfa = nfa_of_graph(graph, starting_nodes=["0"])
 
     assert nfa.accepts("")
     assert nfa.accepts("abc")
@@ -42,10 +42,10 @@ def test_nfa_of_graph_rewrite_final():
     assert not nfa.accepts("c")
 
 
-def test_nfa_of_graph_rewrite_starting():
+def test_nfa_of_graph():
     path = "tests/test_graphs/nfa_graph.dot"
     graph = read_dot(path)
-    nfa = nfa_of_graph(graph, starting_nodes=["0", "1", "2"])
+    nfa = nfa_of_graph(graph)
 
     assert nfa.accepts("")
     assert nfa.accepts("bcabc")
@@ -54,6 +54,6 @@ def test_nfa_of_graph_rewrite_starting():
     assert nfa.accepts("c")
 
     assert not nfa.accepts("bab")
-    assert not nfa.accepts("bca")
+    assert not nfa.accepts("bcac")
     assert not nfa.accepts("aba")
     assert not nfa.accepts("cd")
