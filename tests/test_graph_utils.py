@@ -1,11 +1,10 @@
 import pytest
-from project.graph_utils import get_graph_stats
-from project.graph_utils import generate_two_cycles_graph
+from project.graph_utils import *
 
 
 def test_correct_name_1():
     result = get_graph_stats("skos")
-    expected_result = (
+    expected_result = GraphInfo(
         144,
         252,
         [
@@ -33,12 +32,16 @@ def test_correct_name_1():
         ],
     )
 
-    assert result == expected_result
+    assert [result.nodes, result.edges, result.labels] == [
+        expected_result.nodes,
+        expected_result.edges,
+        expected_result.labels,
+    ]
 
 
 def test_correct_name_2():
     result = get_graph_stats("travel")
-    expected_result = (
+    expected_result = GraphInfo(
         131,
         277,
         [
@@ -67,7 +70,49 @@ def test_correct_name_2():
         ],
     )
 
-    assert result == expected_result
+    assert [result.nodes, result.edges, result.labels] == [
+        expected_result.nodes,
+        expected_result.edges,
+        expected_result.labels,
+    ]
+
+
+def test_incorrect_info():
+    result = get_graph_stats("travel")
+    expected_result = GraphInfo(
+        131,
+        287,
+        [
+            "type",
+            "subClassOf",
+            "first",
+            "rest",
+            "disjointWith",
+            "onProperty",
+            "domain",
+            "range",
+            "someValuesFrom",
+            "comment",
+            "equivalentClass",
+            "intersectionOf",
+            "differentFrom",
+            "hasValue",
+            "hasPart",
+            "inverseOf",
+            "minCardinality",
+            "oneOf",
+            "complementOf",
+            "hasAccommodation",
+            "unionOf",
+            "versionInfo",
+        ],
+    )
+
+    assert [result.nodes, result.edges, result.labels] != [
+        expected_result.nodes,
+        expected_result.edges,
+        expected_result.labels,
+    ]
 
 
 def test_incorrect_name():
