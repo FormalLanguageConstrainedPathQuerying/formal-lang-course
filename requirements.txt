@@ -5,5 +5,7 @@ cfpq-data
 networkx~=2.6.2
 pre-commit
 pydot
+
+pyformlang~=1.0.1
 pytest~=7.4.2
 scipy

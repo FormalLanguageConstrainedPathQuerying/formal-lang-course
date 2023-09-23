@@ -64,7 +64,7 @@ def save_graph_as_dot(graph: nx.MultiDiGraph, path: str) -> bool:
         operation.
     """
     fixed_path = Path(path)
-    return nx.drawing.nx_pydot.write_dot(graph, path)
+    return nx.drawing.nx_pydot.write_dot(graph, fixed_path)
 
 
 def save_labeled_two_cycles_graph_as_dot(
