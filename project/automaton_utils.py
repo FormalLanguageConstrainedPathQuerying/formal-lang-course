@@ -125,8 +125,8 @@ def reachability_problem(
             state2 = transitive_closure_states[j]
             if (
                 len(collect_labels_set(transitive_closure, state1, state2)) == 0
-                and state1 in intersection.start_states
-                and state2 in intersection.final_states
+                and state1[1] in regex_automaton.start_states
+                and state2[1] in regex_automaton.final_states
             ):
                 graph_automaton.add_transition(
                     State(state1[0]), nonterminal, State(state2[0])
