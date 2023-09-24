@@ -98,6 +98,15 @@ def automaton_transitive_closure(automaton: FiniteAutomaton) -> nx.Graph:
     return nx.transitive_closure(automaton.to_networkx(), None)
 
 
+def new_path_exists(graph, start_state, end_state):
+    # It is assumed that `start_state` key exists in `graph` and `end_state` key exists in graph[start_state]
+    labels_dict = graph[start_state][end_state]
+    for key in labels_dict:
+        if len(labels_dict[key]) == 0:
+            return True
+    return False
+
+
 def reachability_problem(
     graph: nx.MultiDiGraph,
     regex: str,
@@ -124,7 +133,7 @@ def reachability_problem(
             state1 = transitive_closure_states[i]
             state2 = transitive_closure_states[j]
             if (
-                len(collect_labels_set(transitive_closure, state1, state2)) == 0
+                new_path_exists(transitive_closure, state1, state2)
                 and state1[1] in regex_automaton.start_states
                 and state2[1] in regex_automaton.final_states
             ):
