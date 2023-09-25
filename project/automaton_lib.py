@@ -165,9 +165,10 @@ def binary_matrix_of_automaton(
             x, y = states.index(state_from.value), states.index(state_to.value)
         matrix[x, y] = True
 
-    return AutomatonBinaryMatrix(
-        matrix, automaton.start_states, automaton.final_states, states, label
-    )
+    start_states = set(filter(lambda x: x != "\\n", automaton.start_states))
+    final_states = set(filter(lambda x: x != "\\n", automaton.final_states))
+
+    return AutomatonBinaryMatrix(matrix, start_states, final_states, states, label)
 
 
 def binary_matrices_of_automaton(
@@ -185,7 +186,7 @@ def binary_matrices_of_automaton(
 
     matrices = list()
     labels = get_graph_data(automaton.to_networkx()).labels
-    labels = filter(lambda x: x is not None, labels)
+    labels = filter(lambda x: x is not None and x != "\\n", labels)
 
     for label in labels:
         matrices.append(binary_matrix_of_automaton(automaton, label))
