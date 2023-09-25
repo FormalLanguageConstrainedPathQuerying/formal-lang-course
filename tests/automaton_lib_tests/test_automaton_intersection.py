@@ -18,4 +18,13 @@ def test_automaton_intersection():
 
     result = intersect_automatons(first_automaton, second_automaton)
 
-    assert False
+    test = lambda i: result.accepts(i) == (
+        first_automaton.accepts(i) and second_automaton.accepts(i)
+    )
+    assert test("0010010")
+    assert test("3")
+    assert test("")
+    assert test("1")
+    assert test("001")
+    assert test("0")
+    assert test("0000000")

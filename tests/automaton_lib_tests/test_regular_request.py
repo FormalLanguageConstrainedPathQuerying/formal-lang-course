@@ -15,6 +15,16 @@ def test_regular_request():
     regex = Regex("0 0 (1|0)*")
     graph = read_dot(path)
 
-    regular_request(graph, ["0"], ["1"], regex)
+    result = regular_request(graph, ["0"], ["1"], regex)
 
-    assert False
+    assert result == {("0", "1")}
+
+
+def test_regular_request_harder():
+    path = "tests/test_graphs/au2_graph.dot"
+    regex = Regex("1* 0*")
+    graph = read_dot(path)
+
+    result = regular_request(graph, ["0", "3"], ["2", "3"], regex)
+
+    assert result == {("3", "3")}
