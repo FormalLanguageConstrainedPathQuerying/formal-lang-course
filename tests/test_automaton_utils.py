@@ -55,19 +55,8 @@ def test_collect_labels_set_empty():
     automaton.add_transition(State(0), Symbol("u"), State(1))
     automaton.add_transition(State(0), Symbol("v"), State(1))
     automaton.add_transition(State(3), Symbol("t"), State(0))
-    graph = automaton_transitive_closure(automaton)
+    graph = nx.transitive_closure(automaton.to_networkx(), None)
     assert len(collect_labels_set(graph, 0, 2)) == 0
-
-
-def test_automaton_transitive_closure():
-    automaton = NondeterministicFiniteAutomaton()
-    automaton.add_transition(State(0), Symbol("a"), State(1))
-    automaton.add_transition(State(1), Symbol("b"), State(2))
-    automaton.add_transition(State(2), Symbol("c"), State(0))
-    automaton.add_transition(State(2), Symbol("d"), State(3))
-    automaton.add_transition(State(3), Symbol("f"), State(2))
-    adjacency_matrix = nx.adjacency_matrix(automaton_transitive_closure(automaton))
-    assert adjacency_matrix.count_nonzero() == 12
 
 
 def test_automata_intersection():

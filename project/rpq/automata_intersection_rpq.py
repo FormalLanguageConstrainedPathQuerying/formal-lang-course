@@ -66,10 +66,6 @@ def automata_intersection(
     return intersection
 
 
-def automaton_transitive_closure(automaton: FiniteAutomaton) -> nx.Graph:
-    return nx.transitive_closure(automaton.to_networkx(), None)
-
-
 def new_path_exists(graph, start_state, end_state):
     # It is assumed that `start_state` key exists in `graph` and `end_state` key exists in graph[start_state]
     labels_dict = graph[start_state][end_state]
@@ -94,7 +90,7 @@ def automata_intersection_rpq(
     while adjacency_matrix.count_nonzero() != previous_count_nonzero:
         previous_count_nonzero = adjacency_matrix.count_nonzero()
         intersection = automata_intersection(graph_automaton, regex_automaton)
-        transitive_closure = automaton_transitive_closure(intersection)
+        transitive_closure = nx.transitive_closure(intersection.to_networkx(), None)
         transitive_closure_states = list(transitive_closure.adj.keys())
         intersection_adjacency_matrix = nx.adjacency_matrix(transitive_closure).tocoo()
         for i, j in zip(
