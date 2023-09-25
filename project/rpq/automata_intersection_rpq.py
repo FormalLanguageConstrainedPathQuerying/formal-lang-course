@@ -57,16 +57,12 @@ def automata_intersection(
                     Symbol(label),
                     State((end_state1, end_state2)),
                 )
-    start_states = [
-        State((i, j)) for j in automaton2.start_states for i in automaton1.start_states
-    ]
-    final_states = [
-        State((i, j)) for j in automaton2.final_states for i in automaton1.final_states
-    ]
-    for start_state in start_states:
-        intersection.add_start_state(start_state)
-    for final_state in final_states:
-        intersection.add_final_state(final_state)
+    for i in automaton1.start_states:
+        for j in automaton2.start_states:
+            intersection.add_start_state(State((i, j)))
+    for i in automaton1.final_states:
+        for j in automaton2.final_states:
+            intersection.add_final_state(State((i, j)))
     return intersection
 
 
