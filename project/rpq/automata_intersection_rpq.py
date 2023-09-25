@@ -28,12 +28,12 @@ def automata_intersection(
     ignore_indexes1 = [
         i
         for i in range(len(graph_states1))
-        if str(graph_states1[i]).endswith("_starting")
+        if graph_states1[i] not in automaton1.states
     ]
     ignore_indexes2 = [
         i
         for i in range(len(graph_states2))
-        if str(graph_states2[i]).endswith("_starting")
+        if graph_states2[i] not in automaton2.states
     ]
     adjacency_matrix1, adjacency_matrix2 = (
         nx.adjacency_matrix(graph1).tocoo(),
@@ -112,7 +112,7 @@ def automata_intersection_rpq(
     ignore_indexes = [
         i
         for i in range(len(graph_states))
-        if str(graph_states[i]).endswith("_starting")
+        if graph_states[i] not in graph_automaton.states
     ]
     result = set()
     for i, j in zip(adjacency_matrix.row, adjacency_matrix.col):
