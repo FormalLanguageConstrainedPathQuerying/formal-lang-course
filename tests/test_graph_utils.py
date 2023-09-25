@@ -1,7 +1,6 @@
 import os
 import filecmp
-import networkx as nx
-from project import graph_utils
+from project.utils import graph_utils
 
 
 def test_get_graph_info():
