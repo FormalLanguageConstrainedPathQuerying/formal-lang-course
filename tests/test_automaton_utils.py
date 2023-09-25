@@ -1,4 +1,5 @@
 from project.automaton_utils import *
+from project.rpq.automaton_intersection_rpq import *
 from pyformlang.finite_automaton import Symbol, State, NondeterministicFiniteAutomaton
 from project.graph_utils import get_graph_by_name
 import networkx as nx
