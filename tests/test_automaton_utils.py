@@ -1,5 +1,5 @@
 from project.automaton_utils import *
-from project.rpq.automaton_intersection_rpq import *
+from project.rpq.automata_intersection_rpq import *
 from pyformlang.finite_automaton import Symbol, State, NondeterministicFiniteAutomaton
 from project.graph_utils import get_graph_by_name
 import networkx as nx
@@ -89,7 +89,7 @@ def test_reachability_problem1():
     automaton.add_transition(State(0), Symbol("a"), State(3))
     automaton.add_transition(State(3), Symbol("c"), State(4))
     graph = automaton.to_networkx()
-    assert reachability_problem(graph, "(a|f).(b|d)", {0}, {2, 4}) == {(0, 2)}
+    assert automata_intersection_rpq(graph, "(a|f).(b|d)", {0}, {2, 4}) == {(0, 2)}
 
 
 def test_reachability_problem2():
@@ -101,7 +101,7 @@ def test_reachability_problem2():
     automaton.add_transition(State(3), Symbol("c"), State(4))
     automaton.add_transition(State(0), Symbol("c"), State(5))
     graph = automaton.to_networkx()
-    assert reachability_problem(graph, "(c*|d).(c*)", {0}) == {
+    assert automata_intersection_rpq(graph, "(c*|d).(c*)", {0}) == {
         (0, 1),
         (0, 2),
         (0, 4),
@@ -122,7 +122,7 @@ def test_reachability_problem3():
     automaton.add_transition(State(5), Symbol("e"), State(6))
     automaton.add_transition(State(7), Symbol("e"), State(6))
     graph = automaton.to_networkx()
-    assert reachability_problem(graph, "(a*).(b*).(c*).(e*)", {0, 4}) == {
+    assert automata_intersection_rpq(graph, "(a*).(b*).(c*).(e*)", {0, 4}) == {
         (0, 1),
         (0, 2),
         (0, 3),

@@ -87,7 +87,7 @@ def new_path_exists(graph, start_state, end_state):
     return False
 
 
-def reachability_problem(
+def automata_intersection_rpq(
     graph: nx.MultiDiGraph,
     regex: str,
     start_nodes: set = set(),
