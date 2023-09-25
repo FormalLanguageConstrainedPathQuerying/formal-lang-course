@@ -41,14 +41,10 @@ def automata_intersection(
     )
     states = [State((state1, state2)) for state2 in states2 for state1 in states1]
     intersection = NondeterministicFiniteAutomaton(states)
-    for start1, end1, _ in zip(
-        adjacency_matrix1.row, adjacency_matrix1.col, adjacency_matrix1.data
-    ):
+    for start1, end1 in zip(adjacency_matrix1.row, adjacency_matrix1.col):
         if start1 in ignore_indexes1 or end1 in ignore_indexes1:
             continue
-        for start2, end2, _ in zip(
-            adjacency_matrix2.row, adjacency_matrix2.col, adjacency_matrix2.data
-        ):
+        for start2, end2 in zip(adjacency_matrix2.row, adjacency_matrix2.col):
             if start2 in ignore_indexes2 or end2 in ignore_indexes2:
                 continue
             start_state1, start_state2 = graph_states1[start1], graph_states2[start2]
@@ -105,10 +101,8 @@ def automata_intersection_rpq(
         transitive_closure = automaton_transitive_closure(intersection)
         transitive_closure_states = list(transitive_closure.adj.keys())
         intersection_adjacency_matrix = nx.adjacency_matrix(transitive_closure).tocoo()
-        for i, j, _ in zip(
-            intersection_adjacency_matrix.row,
-            intersection_adjacency_matrix.col,
-            intersection_adjacency_matrix.data,
+        for i, j in zip(
+            intersection_adjacency_matrix.row, intersection_adjacency_matrix.col
         ):
             state1 = transitive_closure_states[i]
             state2 = transitive_closure_states[j]
@@ -129,9 +123,7 @@ def automata_intersection_rpq(
         if str(graph_states[i]).endswith("_starting")
     ]
     result = set()
-    for i, j, _ in zip(
-        adjacency_matrix.row, adjacency_matrix.col, adjacency_matrix.data
-    ):
+    for i, j in zip(adjacency_matrix.row, adjacency_matrix.col):
         if i in ignore_indexes or j in ignore_indexes:
             continue
         state1, state2 = graph_states[i], graph_states[j]
