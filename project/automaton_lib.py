@@ -291,6 +291,19 @@ def intersect_automatons(
 def regular_request(
     graph: nx.MultiDiGraph, start_nodes: List[str], final_nodes: List[str], regex: Regex
 ) -> set:
+    """
+    Get pairs of starting and final nodes of the graph
+    which have path between them which is accepted by regular expression
+
+    Args:
+        graph: graph to find paths in
+        start_nodes: start nodes of the graph
+        final_nodes: final nodes of the graph
+        regex: regular expression to check path with
+
+    Returns:
+        Set of pair of nodes that connected by path accepted by regex
+    """
     nfa = nfa_of_graph(graph, start_nodes, final_nodes)
     dfa = dfa_of_regex(regex)
 
