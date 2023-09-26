@@ -1,7 +1,7 @@
 from typing import Set, Tuple
 from networkx import MultiDiGraph
-from utils.bool_decomposition import BoolDecompositionOfFA
-from finite_automata_construct import *
+from project.utils.bool_decomposition import BoolDecompositionOfFA
+from project.utils.finite_automata_construct import *
 
 
 def regular_path_query(

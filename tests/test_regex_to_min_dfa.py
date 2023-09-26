@@ -1,7 +1,7 @@
 from typing import List, Tuple
 from pyformlang.regular_expression import Regex
 from pyformlang.finite_automaton import Symbol, DeterministicFiniteAutomaton
-from project.finite_automata_construct import regex_to_min_dfa
+from project.utils.finite_automata_construct import regex_to_min_dfa
 
 
 def construct_regex_and_dfa(regex: str) -> Tuple[Regex, DeterministicFiniteAutomaton]:
