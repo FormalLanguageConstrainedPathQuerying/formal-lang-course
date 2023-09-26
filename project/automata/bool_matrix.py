@@ -34,7 +34,7 @@ class BoolMatrix:
 
         for symbol in self.matrices.keys() & other.matrices.keys():
             result.matrices[symbol] = sparse.kron(
-                self.matrices[symbol], other.matrices[symbol], format='csr'
+                self.matrices[symbol], other.matrices[symbol], format="csr"
             )
 
         for self_state, self_index in self.states.items():
@@ -42,10 +42,16 @@ class BoolMatrix:
                 result_state = self_state * len(other.states) + other_index
                 result.states[result_state] = result_state
 
-                if self_state in self.start_states and other_state in other.start_states:
+                if (
+                    self_state in self.start_states
+                    and other_state in other.start_states
+                ):
                     result.start_states.add(result_state)
 
-                if self_state in self.final_states and other_state in other.final_states:
+                if (
+                    self_state in self.final_states
+                    and other_state in other.final_states
+                ):
                     result.final_states.add(result_state)
 
         return result
