@@ -1,4 +1,4 @@
-from typing import Hashable
+from typing import Hashable, Set
 
 from pyformlang.regular_expression import *
 from pyformlang.finite_automaton import *
@@ -27,7 +27,7 @@ def build_minimal_dfa(regex: Regex) -> DeterministicFiniteAutomaton:
 def build_nfa(
     graph: MultiDiGraph,
     start_states: set[Hashable] = None,
-    final_states: set[Hashable] = None,
+    final_states: Set[Hashable] = None,
 ) -> NondeterministicFiniteAutomaton:
     """Import a networkx.MultiDiGraph into a finite state automaton. \
     The imported graph requires to have the "label" marks on edges \
