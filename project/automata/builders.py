@@ -26,7 +26,7 @@ def build_minimal_dfa(regex: Regex) -> DeterministicFiniteAutomaton:
 
 def build_nfa(
     graph: MultiDiGraph,
-    start_states: set[Hashable] = None,
+    start_states: Set[Hashable] = None,
     final_states: Set[Hashable] = None,
 ) -> NondeterministicFiniteAutomaton:
     """Import a networkx.MultiDiGraph into a finite state automaton. \
