@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 from typing import Set, Dict
-from scipy.sparse import dok_matrix
+from scipy.sparse import dok_matrix, kron
 from pyformlang.finite_automaton import (
     FiniteAutomaton,
     NondeterministicFiniteAutomaton,
     State,
     Symbol,
 )
+import networkx as nx
 
 
 class BoolDecompositionOfFA:
@@ -51,3 +52,37 @@ class BoolDecompositionOfFA:
                 nfa.add_transition(State(source), Symbol(symbol), State(target))
 
         return nfa
+
+    @staticmethod
+    def intersection(
+        left_bool_fa: BoolDecompositionOfFA, right_bool_fa: BoolDecompositionOfFA
+    ) -> NondeterministicFiniteAutomaton:
+        intersection = BoolDecompositionOfFA(
+            matrices={}, start_states=set(), final_states=set()
+        )
+
+        shared_symbols = left_bool_fa.matrices.keys() & right_bool_fa.matrices.keys()
+        for symbol in shared_symbols:
+            intersection.matrices[symbol] = kron(
+                left_bool_fa.matrices[symbol],
+                right_bool_fa.matrices[symbol],
+                format="dok",
+            )
+
+        intersection.start_states = set(
+            left_state * len(left_bool_fa.start_states) * right_state
+            for left_state in left_bool_fa.start_states
+            for right_state in right_bool_fa.start_states
+        )
+        intersection.final_states = set(
+            left_state * len(left_bool_fa.final_states) * right_state
+            for left_state in left_bool_fa.final_states
+            for right_state in right_bool_fa.final_states
+        )
+
+        return intersection.to_nfa()
+
+    @staticmethod
+    def transitive_closure(nfa: NondeterministicFiniteAutomaton) -> nx.MultiDiGraph:
+        graph = nfa.to_networkx()
+        return nx.transitive_closure(graph)
