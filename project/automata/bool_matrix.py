@@ -42,10 +42,10 @@ class BoolMatrix:
                 self.matrices[symbol], other.matrices[symbol], format="csr"
             )
 
-        for _, self_index in self.states.items():
-            for _, other_index in other.states.items():
+        for self_state, self_index in self.states.items():
+            for other_state, other_index in other.states.items():
                 result_state = self_index * len(other.states) + other_index
-                result.states[result_state] = result_state
+                result.states[(self_state, other_state)] = result_state
 
                 if (
                     self_index in self.start_states
