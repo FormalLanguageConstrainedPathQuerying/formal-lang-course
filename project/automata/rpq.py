@@ -10,20 +10,26 @@ from project.automata.builders import *
 def rpq(
     regex: Regex,
     graph: MultiDiGraph,
-    start_nodes: Set[Hashable] = None,
-    final_nodes: Set[Hashable] = None,
+    start_nodes: set[Hashable] = None,
+    final_nodes: set[Hashable] = None,
 ) -> set[tuple[Hashable, Hashable]]:
     nfa = build_nfa(graph, start_nodes, final_nodes)
     dfa = build_minimal_dfa(regex)
 
-    intersected_automatas = BoolMatrix(nfa).intersect(BoolMatrix(dfa))
+    nfa_bm = BoolMatrix(nfa)
+    dfa_bm = BoolMatrix(dfa)
+
+    intersected_automatas = nfa_bm.intersect(dfa_bm)
     start_states = intersected_automatas.start_states
     final_states = intersected_automatas.final_states
 
     closure = intersected_automatas.transitive_closure()
 
+    index_to_states = {i: name for name, i in intersected_automatas.states.items()}
+
     return {
-        (start_state, finish_state)
+        (index_to_states[start_state][0], index_to_states[finish_state][0])
         for start_state, finish_state in zip(*closure.nonzero())
-        if start_state in start_states and finish_state in final_states
+        if index_to_states[start_state][0] in nfa.start_states
+        and index_to_states[finish_state][0] in nfa.final_states
     }
