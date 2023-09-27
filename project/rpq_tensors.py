@@ -1,7 +1,8 @@
-from typing import Set, Tuple
+from typing import Set, Tuple, List
 from networkx import MultiDiGraph
+from pyformlang.finite_automaton import State
 from project.utils.bool_decomposition import BoolDecompositionOfFA
-from project.utils.finite_automata_construct import *
+from project.utils.finite_automata_construct import graph_to_nfa, regex_to_min_dfa
 
 
 def regular_path_query(
@@ -18,11 +19,18 @@ def regular_path_query(
     intersection = BoolDecompositionOfFA.intersection(bool_graph, bool_regex)
     transitive_closure = BoolDecompositionOfFA.transitive_closure(intersection)
 
-    regex_automata_states_count = len(regex_automaton.states)
+    regex_automaton_states_count = len(regex_automaton.states)
     result = set()
-    for start, final, label in transitive_closure.edges(data="label"):
-        result.add(
-            (start // regex_automata_states_count, final // regex_automata_states_count)
-        )
+    for start, final in transitive_closure:
+        if (
+            State(start) in intersection.start_states
+            and State(final) in intersection.final_states
+        ):
+            result.add(
+                (
+                    start // regex_automaton_states_count,
+                    final // regex_automaton_states_count,
+                )
+            )
 
     return result
