@@ -19,13 +19,6 @@ class BoolMatrix:
 
         num_of_states = len(self.states)
 
-        if nfa.accepts([]):
-            self.matrices[""] = sparse.csr_matrix(
-                (num_of_states, num_of_states), dtype=bool
-            )
-            for state in nfa.start_states & nfa.final_states:
-                self.matrices[""][self.states[state], self.states[state]] = True
-
         for start_state, transitions in nfa.to_dict().items():
             for symbol, finish_states in transitions.items():
                 if isinstance(finish_states, State):
