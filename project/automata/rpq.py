@@ -1,8 +1,3 @@
-from typing import Set, Hashable, Tuple
-
-from networkx import MultiDiGraph
-from pyformlang.regular_expression import Regex
-
 from project.automata.bool_matrix import BoolMatrix
 from project.automata.builders import *
 
@@ -13,6 +8,32 @@ def rpq(
     start_nodes: set[Hashable] = None,
     final_nodes: set[Hashable] = None,
 ) -> set[tuple[Hashable, Hashable]]:
+    """
+    Returns those pairs of vertices from the given starting and final
+    nodes in a graph with the given starting and final nodes and
+    regular expression that are connected by path that forms a word
+    from regular expression
+
+    Parameters
+    ----------
+    regex : pyformlang.regular_expression.Regex
+        The regular expression
+
+    graph : networkx.MultiDiGraph
+        The graph representation of the automaton
+
+    start_nodes : set[Hashable], optional
+        A finite set of start states - graph nodes
+
+    final_nodes : set[Hashable], optional
+        A finite set of final states - graph nodes
+
+    Returns
+    -------
+    result : set[tuple[Hashable, Hashable]]
+        A finite set of tuples with nodes
+
+    """
     nfa = build_nfa(graph, start_nodes, final_nodes)
     dfa = build_minimal_dfa(regex)
 
@@ -20,8 +41,6 @@ def rpq(
     dfa_bm = BoolMatrix(dfa)
 
     intersected_automatas = nfa_bm.intersect(dfa_bm)
-    start_states = intersected_automatas.start_states
-    final_states = intersected_automatas.final_states
 
     closure = intersected_automatas.transitive_closure()
 

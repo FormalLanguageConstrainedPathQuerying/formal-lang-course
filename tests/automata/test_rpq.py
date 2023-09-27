@@ -3,7 +3,6 @@ from pathlib import Path
 import networkx
 from pyformlang.regular_expression import Regex
 
-from project.automata.builders import build_nfa
 from project.automata.rpq import rpq
 
 
