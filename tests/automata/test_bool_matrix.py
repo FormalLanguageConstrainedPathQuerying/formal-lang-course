@@ -6,6 +6,23 @@ from project.automata.builders import build_minimal_dfa
 
 class TestsForBoolMatrix:
     def test_init(self):
+        dfa = build_minimal_dfa(Regex("a.b.c.d|b.c|(d.e)*"))
+        bm = BoolMatrix(dfa)
+
+        assert len(bm.states) == len(dfa.states)
+        assert bm.states.keys() == dfa.states
+        assert bm.matrices.keys() == dfa.symbols
+
+        assert all(
+            bm.states[start_state] in bm.start_states
+            for start_state in dfa.start_states
+        )
+        assert all(
+            bm.states[final_state] in bm.final_states
+            for final_state in dfa.final_states
+        )
+
+    def test_to_nfa(self):
         dfa = build_minimal_dfa(Regex("a.b|c|(d.e)*"))
         bm = BoolMatrix(dfa)
 
