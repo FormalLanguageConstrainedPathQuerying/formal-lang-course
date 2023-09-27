@@ -4,16 +4,21 @@ from scipy import sparse
 
 class BoolMatrix:
     def __init__(self, nfa: NondeterministicFiniteAutomaton = None):
+        self.start_states, self.final_states = set(), set()
+        self.states, self.matrices = dict(), dict()
+
         if nfa is None:
-            self.start_states, self.final_states = set(), set()
-            self.num_of_states = 0
-            self.states, self.matrices = dict(), dict()
             return
 
-        self.start_states = nfa.start_states
-        self.final_states = nfa.final_states
-        self.states = {state: i for i, state in enumerate(nfa.states)}
-        self.matrices = dict()
+        for i, state in enumerate(nfa.states):
+            self.states[state] = i
+        for state in nfa.start_states:
+            self.start_states.add(self.states[state])
+        for state in nfa.final_states:
+            self.final_states.add(self.states[state])
+
+        num_of_states = len(self.states)
+
         for start_state, transitions in nfa.to_dict().items():
             for symbol, finish_states in transitions.items():
                 if isinstance(finish_states, State):
@@ -22,7 +27,7 @@ class BoolMatrix:
                 for finish_state in finish_states:
                     if symbol not in self.matrices:
                         self.matrices[symbol] = sparse.csr_matrix(
-                            (self.num_of_states, self.num_of_states), dtype=bool
+                            (num_of_states, num_of_states), dtype=bool
                         )
 
                     self.matrices[symbol][
