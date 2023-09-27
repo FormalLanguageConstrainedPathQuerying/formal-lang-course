@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import networkx
-from numpy import ndarray, array
 from pyformlang.regular_expression import Regex
 
 from project.automata.bool_matrix import BoolMatrix
