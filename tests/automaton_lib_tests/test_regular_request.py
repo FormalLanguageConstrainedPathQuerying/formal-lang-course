@@ -15,7 +15,7 @@ def test_regular_path_query():
     regex = Regex("0 0 (1|0)*")
     graph = read_dot(path)
 
-    result = regular_path_query(graph, ["0"], ["1"], regex)
+    result = regular_path_query(graph, {"0"}, {"1"}, regex)
 
     assert result == {("0", "1")}
 
@@ -25,6 +25,6 @@ def test_regular_path_query_harder():
     regex = Regex("1* 0*")
     graph = read_dot(path)
 
-    result = regular_path_query(graph, ["0", "3"], ["2", "3"], regex)
+    result = regular_path_query(graph, {"0", "3"}, {"2", "3"}, regex)
 
     assert result == {("3", "3")}

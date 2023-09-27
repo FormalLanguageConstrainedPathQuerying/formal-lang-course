@@ -27,8 +27,8 @@ def dfa_of_regex(regex: Regex) -> DeterministicFiniteAutomaton:
 
 def nfa_of_graph(
     graph: nx.MultiDiGraph,
-    starting_nodes: Optional[List[int]] = None,
-    final_nodes: Optional[List[int]] = None,
+    starting_nodes: Optional[Set[int]] = None,
+    final_nodes: Optional[Set[int]] = None,
 ) -> NondeterministicFiniteAutomaton:
     """
     Creates nondeterministic finite automaton from networkx MultiDiGraph
@@ -41,10 +41,10 @@ def nfa_of_graph(
         Starting and final nodes will be overriden if starting_nodes or
         final_nodes will be supplied respectively
 
-        starting_nodes: List of starting nodes
+        starting_nodes: Set of starting nodes
         Overrides is_start from the graph given
 
-        final_nodes: List of final nodes
+        final_nodes: Set of final nodes
         Overrides is_final from the graph given
 
     Returns:
