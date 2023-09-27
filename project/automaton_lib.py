@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Set
 
 import numpy as np
 import networkx as nx
@@ -288,8 +288,11 @@ def intersect_automatons(
     return intersection
 
 
-def regular_request(
-    graph: nx.MultiDiGraph, start_nodes: List[str], final_nodes: List[str], regex: Regex
+def regular_path_query(
+    graph: nx.MultiDiGraph,
+    start_nodes: Optional[Set[str]],
+    final_nodes: Optional[Set[str]],
+    regex: Regex,
 ) -> set:
     """
     Get pairs of starting and final nodes of the graph
@@ -297,8 +300,8 @@ def regular_request(
 
     Args:
         graph: graph to find paths in
-        start_nodes: start nodes of the graph
-        final_nodes: final nodes of the graph
+        start_nodes: start nodes of the graph, if None was givel, defaults to all nodes
+        final_nodes: final nodes of the graph, if None was givel, defaults to all nodes
         regex: regular expression to check path with
 
     Returns:
