@@ -65,7 +65,12 @@ class BoolMatrix:
         if len(self.matrices) == 0:
             return sparse.csr_matrix((0, 0), dtype=bool)
 
-        result = sum(self.matrices.values())
+        num_of_states = len(self.states)
+        result = sum(
+            self.matrices.values(),
+            start=sparse.csr_array((num_of_states, num_of_states), dtype=bool),
+        )
+
         prev_nnz = 0
         while result.nnz != prev_nnz:
             prev_nnz = result.nnz
