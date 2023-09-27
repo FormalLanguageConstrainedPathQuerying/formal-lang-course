@@ -72,3 +72,17 @@ class BoolMatrix:
             result += result @ result
 
         return result
+
+    def to_nfa(self):
+        nfa = NondeterministicFiniteAutomaton()
+        for symbol, matrix in self.matrices.items():
+            for start_state, finish_state in zip(*matrix.nonzero()):
+                nfa.add_transition(start_state, symbol, finish_state)
+
+        for state in self.start_states:
+            nfa.add_start_state(state)
+
+        for state in self.final_states:
+            nfa.add_final_state(state)
+
+        return nfa
