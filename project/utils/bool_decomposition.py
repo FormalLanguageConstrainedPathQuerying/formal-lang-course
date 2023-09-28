@@ -108,7 +108,7 @@ class BoolDecompositionOfFA:
         prev_nnz = sum_matrix.nnz
         curr_nnz = 0
         while prev_nnz != curr_nnz:
-            sum_matrix @= sum_matrix
+            sum_matrix += sum_matrix @ sum_matrix
             prev_nnz, curr_nnz = curr_nnz, sum_matrix.nnz
 
         return {(row, col) for row, col in zip(*sum_matrix.nonzero())}
