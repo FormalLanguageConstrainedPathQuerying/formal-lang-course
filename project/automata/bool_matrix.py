@@ -61,18 +61,18 @@ class BoolMatrix:
                         self.states[start_state], self.states[finish_state]
                     ] = True
 
-    def intersect(self, another: "BoolMatrix"):
+    def intersect(self, another: "BoolMatrix") -> "BoolMatrix":
         """Intersects a bool matrix with another bool matrix using the tensor product
 
         Parameters
         ----------
         another : BoolMatrix
-            Other bool matrix to intersect
+            Another bool matrix to intersect
 
         Returns
         ----------
         result : BoolMatrix
-            Matrix equal to tensor product of self and other matrix
+            Matrix equal to tensor product of self and another matrix
 
         """
         result = BoolMatrix()
@@ -101,13 +101,13 @@ class BoolMatrix:
 
         return result
 
-    def transitive_closure(self):
+    def transitive_closure(self) -> sparse.csr_matrix:
         """
         Returns the transitive closure of the given bool matrix
 
         Returns
         ----------
-        result : BoolMatrix
+        result : sparse.csr_matrix
             Transitive closure of bool matrix
 
         """
@@ -127,7 +127,7 @@ class BoolMatrix:
 
         return result
 
-    def to_nfa(self):
+    def to_nfa(self) -> NondeterministicFiniteAutomaton:
         """Transforms bool matrix into NFA
 
         Returns

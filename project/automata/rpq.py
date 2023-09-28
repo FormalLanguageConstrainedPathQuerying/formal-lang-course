@@ -9,10 +9,9 @@ def rpq(
     final_nodes: set[Hashable] = None,
 ) -> set[tuple[Hashable, Hashable]]:
     """
-    Returns those pairs of vertices from the given starting and final
-    nodes in a graph with the given starting and final nodes and
-    regular expression that are connected by path that forms a word
-    from regular expression
+    Returns those pairs of nodes from the given graph with the given
+    starting and final nodes and regular expression that are connected
+    by path that forms a word from regular expression
 
     Parameters
     ----------
@@ -31,7 +30,7 @@ def rpq(
     Returns
     -------
     result : set[tuple[Hashable, Hashable]]
-        A finite set of tuples with nodes
+        A finite set of tuples with start and final nodes
 
     """
     nfa = build_nfa(graph, start_nodes, final_nodes)
