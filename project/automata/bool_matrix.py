@@ -11,7 +11,7 @@ class BoolMatrix:
 
     Parameters
     ----------
-    nfa : NondeterministicFiniteAutomaton, optimal
+    nfa : NondeterministicFiniteAutomaton, optional
         NFA to initialize bool matrix
 
     **Attributes:**
@@ -27,7 +27,7 @@ class BoolMatrix:
 
         Parameters
         ----------
-        nfa : NondeterministicFiniteAutomaton, optimal
+        nfa : NondeterministicFiniteAutomaton, optional
             NFA to initialize bool matrix
 
         """
