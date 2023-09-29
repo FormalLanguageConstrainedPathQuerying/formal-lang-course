@@ -1,4 +1,4 @@
-from typing import Hashable
+from typing import Hashable, Set
 
 from pyformlang.regular_expression import *
 from pyformlang.finite_automaton import *
