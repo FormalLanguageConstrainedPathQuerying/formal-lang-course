@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from typing import Set, Dict, Tuple
-from scipy.sparse import dok_matrix, kron
+from typing import Set, Dict, Tuple, Union
+from scipy.sparse import dok_matrix, lil_matrix, csr_matrix, vstack, kron
 from pyformlang.finite_automaton import (
     FiniteAutomaton,
     NondeterministicFiniteAutomaton,
@@ -112,3 +112,73 @@ class BoolDecompositionOfFA:
             prev_nnz, curr_nnz = curr_nnz, sum_matrix.nnz
 
         return {(row, col) for row, col in zip(*sum_matrix.nonzero())}
+
+    def reachable_states_bfs(
+        self, query: BoolDecompositionOfFA, group_by_start: bool = False
+    ) -> Union[Dict[int, Set[int]], Set[int]]:
+        if not self.start_states:
+            return dict() if group_by_start else set()
+
+        query_start_indices = {
+            query.state_to_index[state] for state in query.start_states
+        }
+        graph_start_indices = {
+            self.state_to_index[state] for state in self.start_states
+        }
+        query_final_indices = {
+            query.state_to_index[state] for state in query.final_states
+        }
+        graph_final_indices = {
+            self.state_to_index[state] for state in self.final_states
+        }
+        query_states_count = list(query.matrices.values())[0].shape[0]
+        graph_states_count = list(self.matrices.values())[0].shape[0]
+
+        def create_front(graph_start_indices):
+            front_row = lil_matrix((1, graph_states_count), dtype=bool)
+            front_matrix = lil_matrix(
+                (query_states_count, graph_states_count), dtype=bool
+            )
+            for graph_state in graph_start_indices:
+                front_row[0, graph_state] = 1
+            for query_state in query_start_indices:
+                front_matrix[query_state] = front_row
+            return front_matrix
+
+        front = (
+            vstack(
+                [create_front({state}) for state in graph_start_indices],
+                format="csr",
+            )
+            if group_by_start
+            else create_front(graph_start_indices).tocsr()
+        )
+        visited = front
+
+        while front.nnz != 0:
+            new_front = csr_matrix(front.shape, dtype=bool)
+            for label in self.matrices.keys() & query.matrices.keys():
+                reachable = front @ self.matrices[label]
+                for i, j in zip(*query.matrices[label].nonzero()):
+                    for offset in range(0, front.shape[0], query_states_count):
+                        new_front[j + offset] += reachable[i + offset]
+            front = new_front > visited
+            visited += front
+
+        def get_reachable(offset):
+            reachable = sum(visited[final + offset] for final in query_final_indices)
+            return {
+                self.index_to_state[index].value
+                for index in set(reachable.nonzero()[1]) & graph_final_indices
+            }
+
+        return (
+            {
+                state.value: get_reachable(offset)
+                for state, offset in zip(
+                    self.start_states, range(0, front.shape[0], query_states_count)
+                )
+            }
+            if group_by_start
+            else get_reachable(0)
+        )

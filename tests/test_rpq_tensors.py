@@ -1,8 +1,10 @@
+import pytest
 from networkx import MultiDiGraph
-from project.rpq_tensors import regular_path_query
+from project.rpq import rpq_tensors, rpq_bfs
 
 
-def test_regular_path_query():
+@pytest.fixture()
+def graph() -> MultiDiGraph:
     graph = MultiDiGraph()
     graph.add_nodes_from([0, 1, 2])
     graph.add_edges_from(
@@ -17,9 +19,17 @@ def test_regular_path_query():
             (6, 1, {"label": "K"}),
         ]
     )
-    regex = "(K|k)a.b(a+$)n*"
 
-    reachable_pairs = regular_path_query(graph, [0, 6], [0, 1, 2, 3, 4, 5, 7], regex)
+    return graph
+
+
+@pytest.fixture()
+def regex() -> str:
+    return "(K|k)a.b(a+$)n*"
+
+
+def test_rpq_pairs(graph, regex):
+    reachable_pairs = rpq_tensors(graph, [0, 6], [0, 1, 2, 3, 4, 5, 7], regex)
 
     assert reachable_pairs == {
         (0, 3),
@@ -31,3 +41,17 @@ def test_regular_path_query():
         (6, 5),
         (6, 7),
     }
+
+
+def test_rpq_all_reachable(graph, regex):
+    reachable = rpq_bfs(graph, [0, 6], [0, 1, 2, 3, 4, 5, 7], regex)
+
+    assert reachable == {3, 4, 5, 7}
+
+
+def test_rpq_grouped_reachable(graph, regex):
+    reachable = rpq_bfs(
+        graph, [0, 6], [0, 1, 2, 3, 4, 5, 7], regex, group_by_start=True
+    )
+
+    assert reachable == {0: {3, 4, 5, 7}, 6: {3, 4, 5, 7}}

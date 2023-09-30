@@ -1,11 +1,11 @@
-from typing import Set, Tuple, List
+from typing import Set, Tuple, List, Dict, Union
 from networkx import MultiDiGraph
 from pyformlang.finite_automaton import State
 from project.utils.bool_decomposition import BoolDecompositionOfFA
 from project.utils.finite_automata_construct import graph_to_nfa, regex_to_min_dfa
 
 
-def regular_path_query(
+def rpq_tensors(
     graph: MultiDiGraph,
     start_states: List[int],
     final_states: List[int],
@@ -34,3 +34,18 @@ def regular_path_query(
             )
 
     return result
+
+
+def rpq_bfs(
+    graph: MultiDiGraph,
+    start_states: List[int],
+    final_states: List[int],
+    regex_query: str,
+    group_by_start: bool = False,
+) -> Union[Dict[int, Set[int]], Set[int]]:
+    graph_automaton = graph_to_nfa(graph, start_states, final_states)
+    regex_automaton = regex_to_min_dfa(regex_query)
+    bool_graph = BoolDecompositionOfFA.from_fa(graph_automaton)
+    bool_regex = BoolDecompositionOfFA.from_fa(regex_automaton)
+
+    return bool_graph.reachable_states_bfs(bool_regex, group_by_start)
