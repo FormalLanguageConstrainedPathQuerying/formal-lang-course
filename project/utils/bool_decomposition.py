@@ -135,8 +135,8 @@ class BoolDecompositionOfFA:
         graph_states_count = list(self.matrices.values())[0].shape[0]
 
         def create_front(graph_start_indices):
-            front_row = lil_matrix((1, graph_states_count), dtype=bool)
-            front_matrix = lil_matrix(
+            front_row = csr_matrix((1, graph_states_count), dtype=bool)
+            front_matrix = csr_matrix(
                 (query_states_count, graph_states_count), dtype=bool
             )
             for graph_state in graph_start_indices:
@@ -151,7 +151,7 @@ class BoolDecompositionOfFA:
                 format="csr",
             )
             if group_by_start
-            else create_front(graph_start_indices).tocsr()
+            else create_front(graph_start_indices)
         )
         visited = front
 
