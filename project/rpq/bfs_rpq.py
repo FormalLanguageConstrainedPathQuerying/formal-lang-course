@@ -2,7 +2,7 @@ from pyformlang.finite_automaton import FiniteAutomaton
 import networkx as nx
 import numpy as np
 from scipy.sparse import csr_matrix, coo_matrix, coo_array
-from typing import Any
+from typing import Union
 from project.rpq.utils import boolean_decomposition
 from project.automaton_utils import regex_to_dfa
 
@@ -65,7 +65,7 @@ def bfs_graph_reg_automaton(
     start_nodes: set,
     final_nodes: set = set(),
     task_type: int = 1,
-) -> set[tuple] | dict[Any, set]:
+) -> Union[set[tuple], dict[set]]:
     """
     Type 1: For the specified set of starting nodes, find the set of reachable ones.
     Type 2: For each node from the specified set, find the set of reachable ones.
@@ -145,7 +145,7 @@ def bfs_rpq(
     start_nodes: set,
     final_nodes: set = set(),
     task_type: int = 1,
-) -> set[tuple] | dict[Any, set]:
+) -> Union[set[tuple], dict[set]]:
     return bfs_graph_reg_automaton(
         graph, regex_to_dfa(regex), start_nodes, final_nodes, task_type
     )
