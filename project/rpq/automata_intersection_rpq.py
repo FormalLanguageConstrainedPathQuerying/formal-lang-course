@@ -7,7 +7,7 @@ from pyformlang.finite_automaton import (
 import networkx as nx
 from project.automaton_utils import *
 from scipy.sparse import kron
-from project.rpq.utils import boolean_decomposition
+from project.rpq.graph_operations import boolean_decomposition
 
 
 def automata_intersection(
