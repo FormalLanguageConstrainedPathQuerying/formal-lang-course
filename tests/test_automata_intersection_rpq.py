@@ -49,18 +49,18 @@ def test_rpq1():
 
 def test_rpq2():
     automaton = NondeterministicFiniteAutomaton()
-    automaton.add_transition(State(0), Symbol("d"), State(1))
-    automaton.add_transition(State(1), Symbol("c"), State(2))
-    automaton.add_transition(State(2), Symbol("c"), State(4))
-    automaton.add_transition(State(1), Symbol("a"), State(3))
+    automaton.add_transition(State(2), Symbol("d"), State(3))
     automaton.add_transition(State(3), Symbol("c"), State(4))
-    automaton.add_transition(State(0), Symbol("c"), State(5))
+    automaton.add_transition(State(4), Symbol("c"), State(6))
+    automaton.add_transition(State(3), Symbol("a"), State(5))
+    automaton.add_transition(State(5), Symbol("c"), State(6))
+    automaton.add_transition(State(2), Symbol("c"), State(7))
     graph = automaton.to_networkx()
-    assert automata_intersection_rpq(graph, "(c*|d).(c*)", {0}) == {
-        (0, 1),
-        (0, 2),
-        (0, 4),
-        (0, 5),
+    assert automata_intersection_rpq(graph, "(c*|d).(c*)", {2}) == {
+        (2, 3),
+        (2, 4),
+        (2, 6),
+        (2, 7),
     }
 
 
