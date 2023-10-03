@@ -65,7 +65,7 @@ def bfs_graph_reg_automaton(
     start_nodes: set,
     final_nodes: set = set(),
     task_type: int = 1,
-) -> set[tuple] | dict[set]:
+) -> set[tuple] | dict[Any, set]:
     """
     Type 1: For the specified set of starting nodes, find the set of reachable ones.
     Type 2: For each node from the specified set, find the set of reachable ones.
