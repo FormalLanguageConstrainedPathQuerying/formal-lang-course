@@ -144,3 +144,7 @@ _minted-presentation/
 *.fdb_latexmk
 *.fls
 *.gz
+
+# Test generated
+tests/generated/*
+!tests/generated/.gitkeep
