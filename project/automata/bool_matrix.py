@@ -251,7 +251,7 @@ class BoolMatrix:
                 if right.nnz > 0:
                     shift = i // bound * bound
                     validated[shift + j, j] = 1
-                    validated[[shift + j], bound] += right
+                    validated[[shift + j], bound:] += right
 
         return validated.tocsr()
 

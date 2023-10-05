@@ -1,7 +1,9 @@
 from pathlib import Path
 
 import networkx
+import numpy
 from pyformlang.regular_expression import Regex
+from scipy import sparse
 
 from project.automata.bool_matrix import BoolMatrix
 from project.automata.builders import build_minimal_dfa, build_nfa
@@ -60,4 +62,53 @@ class TestsForBoolMatrix:
             trc[bm.states[start_state]][bm.states[final_state]] == result
             for start_state, row in expected.items()
             for final_state, result in row.items()
+        )
+
+    def test_direct_sum(self):
+        bm1 = BoolMatrix(build_minimal_dfa(Regex("a.b|c*")))
+        bm2 = BoolMatrix(build_minimal_dfa(Regex("(b)*")))
+
+        summed_bm = bm1.direct_sum(bm2)
+
+        assert len(summed_bm.states) == len(bm1.states) + len(bm2.states)
+        assert (
+            summed_bm.matrices["b"].toarray().tolist()
+            == sparse.bmat(
+                [
+                    [bm1.matrices["b"], None],
+                    [None, bm2.matrices["b"]],
+                ]
+            )
+            .toarray()
+            .tolist()
+        )
+
+    def test_build_front(self):
+        graph = networkx.nx_pydot.read_dot(Path("./resources/dfa4.dot"))
+        bm1 = BoolMatrix(
+            build_nfa(graph, start_states={"2", "0"}, final_states={"0", "1", "2"})
+        )
+        dfa = build_minimal_dfa(Regex("a.b|a.c"))
+        bm2 = BoolMatrix(dfa)
+
+        actual = bm1.build_front_matrix(bm2, True).toarray()
+        for i in range(len(actual)):
+            for j in range(len(actual[i])):
+                if j >= len(bm2.states):
+                    assert actual[i, j] == (j - len(bm2.states) in bm1.start_states)
+                else:
+                    assert actual[i, j] == (i % len(bm2.states) == j)
+
+    def test_validate_front(self):
+        graph = networkx.nx_pydot.read_dot(Path("./resources/dfa2.dot"))
+        bm1 = BoolMatrix(
+            build_nfa(graph, start_states={"0"}, final_states={"0", "1", "2"})
+        )
+        dfa = build_minimal_dfa(Regex("a|c|b*|d"))
+        bm2 = BoolMatrix(dfa)
+
+        front = bm1.build_front_matrix(bm2, False)
+        assert (
+            front.toarray().tolist()
+            == BoolMatrix.validate_front(front, len(bm2.states)).toarray().tolist()
         )
