@@ -148,7 +148,7 @@ class BoolMatrix:
 
         return nfa
 
-    def direct_sum(self, other: "BoolMatrix"):
+    def direct_sum(self, other: "BoolMatrix") -> "BoolMatrix":
         """Returns a direct sum of bool matrices
 
         Parameters
@@ -185,3 +185,37 @@ class BoolMatrix:
             ptr += 1
 
         return result
+
+    def build_front_matrix(self, other: "BoolMatrix", separate_flag: bool) -> sparse.csr_matrix:
+        """Make front csr matrix for bfs
+
+        Parameters
+        ----------
+        other : BoolMatrix
+            Another bool matrix to make front
+
+        separate_flag : bool
+            Flag for separated/not separated with start states result
+
+        Returns
+        -------
+        result : sparse.csr_matrix
+            Front csr matrix
+
+        """
+        size = (len(other.states), len(self.states) + len(other.states))
+        special = sparse.lil_matrix(size)
+        self_start_indicators = sparse.lil_array(
+            [[i in self.start_states for _, i in self.states.items()]]
+        )
+
+        for _, i in other.states.items():
+            special[i, i] = True
+            special[i, len(other.states) :] = self_start_indicators
+
+        if not self.start_states:
+            return sparse.csr_matrix(size)
+        if not separate_flag:
+            return special.tocsr()
+
+        return sparse.csr_matrix(sparse.vstack([special] * len(self.start_states)))
