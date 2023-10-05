@@ -1,3 +1,5 @@
+from typing import Hashable
+
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, State
 from scipy import sparse
 
@@ -253,7 +255,26 @@ class BoolMatrix:
 
         return validated.tocsr()
 
-    def bfs(self, other: "BoolMatrix", separate_flag: bool = False):
+    def bfs(self, other: "BoolMatrix", separate_flag: bool = False) -> set[Hashable]:
+        """Returns reachable nodes in self with travelling other
+        in two modes: separated (for every start state),
+        not separated (for all start state)
+
+        Parameters
+        ----------
+        other : BoolMatrix
+            Another Bool Matrix
+
+        separate_flag : bool
+            Separated / not separated mode flag
+
+        Returns
+        -------
+        result : set[Hashable]
+            set[nodes] for not separated mode
+            set[(start_node, final_node)] for separated mode
+
+        """
         matrices = self.direct_sum(other).matrices
         symbols = self.matrices.keys() & other.matrices.keys()
         other_states_len = len(other.states)
