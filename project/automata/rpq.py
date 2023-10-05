@@ -103,7 +103,4 @@ def bfs_rpq(
             for start_state, finish_state in result
         }
     else:
-        return {
-            index_to_states[state]
-            for state in result
-        }
+        return {index_to_states[state] for state in result}
