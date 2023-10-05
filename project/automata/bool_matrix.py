@@ -186,7 +186,9 @@ class BoolMatrix:
 
         return result
 
-    def build_front_matrix(self, other: "BoolMatrix", separate_flag: bool) -> sparse.csr_matrix:
+    def build_front_matrix(
+        self, other: "BoolMatrix", separate_flag: bool
+    ) -> sparse.csr_matrix:
         """Make front csr matrix for bfs
 
         Parameters
@@ -219,3 +221,34 @@ class BoolMatrix:
             return special.tocsr()
 
         return sparse.csr_matrix(sparse.vstack([special] * len(self.start_states)))
+
+    @staticmethod
+    def validate_front(front: sparse.csr_matrix, bound: int) -> sparse.csr_matrix:
+        """Validate front matrix for bfs
+
+        Parameters
+        ----------
+        front : sparse.csr_matrix
+            Original front matrix
+
+        bound : int
+            Number of states in bool matrix with transitions in bfs
+
+        Returns
+        -------
+        validated : sparse.csr_matrix
+            Validated front matrix
+
+        """
+        validated = sparse.lil_array(front.shape)
+
+        for i, j in zip(*front.nonzero()):
+            if j < bound:
+                right = front.getrow(i).tolil()[[0], bound:]
+
+                if right.nnz > 0:
+                    shift = i // bound * bound
+                    validated[shift + j, j] = 1
+                    validated[[shift + j], bound] += right
+
+        return validated.tocsr()
