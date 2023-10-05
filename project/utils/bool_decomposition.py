@@ -103,6 +103,9 @@ class BoolDecompositionOfFA:
         return intersection
 
     def transitive_closure(self) -> Set[Tuple[int, int]]:
+        if self.matrices == {}:
+            return set()
+
         sum_matrix = sum(self.matrices.values())
 
         prev_nnz = sum_matrix.nnz
@@ -116,9 +119,6 @@ class BoolDecompositionOfFA:
     def reachable_states_bfs(
         self, query: BoolDecompositionOfFA, group_by_start: bool = False
     ) -> Union[Dict[int, Set[int]], Set[int]]:
-        if not self.start_states:
-            return dict() if group_by_start else set()
-
         query_start_indices = {
             query.state_to_index[state] for state in query.start_states
         }
@@ -131,8 +131,24 @@ class BoolDecompositionOfFA:
         graph_final_indices = {
             self.state_to_index[state] for state in self.final_states
         }
-        query_states_count = list(query.matrices.values())[0].shape[0]
-        graph_states_count = list(self.matrices.values())[0].shape[0]
+        query_states_count = (
+            0 if query.matrices == {} else list(query.matrices.values())[0].shape[0]
+        )
+        graph_states_count = (
+            0 if self.matrices == {} else list(self.matrices.values())[0].shape[0]
+        )
+
+        if not all(
+            [
+                query_start_indices,
+                graph_start_indices,
+                query_final_indices,
+                graph_final_indices,
+                query_states_count,
+                graph_states_count,
+            ]
+        ):
+            return dict() if group_by_start else set()
 
         def create_front(graph_start_indices):
             front_row = csr_matrix((1, graph_states_count), dtype=bool)
