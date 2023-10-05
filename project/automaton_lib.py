@@ -535,3 +535,42 @@ def get_reachable_nodes_constrained(
             result.add(graph_nodes[state_index])
 
     return result
+
+
+def get_reachable_final_nodes_constrained(
+    graph: nx.MultiDiGraph,
+    regex: Regex,
+    start_nodes: Optional[List[str]],
+    final_nodes: Optional[Set[str]],
+    separate: bool = False,
+) -> set:
+    """
+    Find nodes reachable in graph from list of start nodes so that path is accepted by regex
+
+    Args:
+        graph: graph to find nodes in
+        regex: regex to constraing the paths
+        start_nodes: list of starting nodes, if None was given, all graph nodes
+        final_nodes: set of nodes to mark as final
+        separate: separate nodes for starting or not
+
+    Returns:
+        dectionary of sets where nodes are keys if separate is true
+        set of nodes if separate is false
+    """
+
+    if start_nodes is None:
+        start_nodes = list(graph.states)
+
+    if final_nodes is None:
+        final_nodes = graph.states
+
+    result = get_reachable_nodes_constrained(graph, regex, start_nodes, separate)
+
+    if separate:
+        for key in result.keys():
+            result[key] = set(filter(lambda x: x in final_nodes, result[key]))
+    else:
+        result = set(filter(lambda x: x in final_nodes, result))
+
+    return result
