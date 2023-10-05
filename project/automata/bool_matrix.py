@@ -252,3 +252,35 @@ class BoolMatrix:
                     validated[[shift + j], bound] += right
 
         return validated.tocsr()
+
+    def bfs(self, other: "BoolMatrix", separate_flag: bool = False):
+        matrices = self.direct_sum(other).matrices
+        symbols = self.matrices.keys() & other.matrices.keys()
+        other_states_len = len(other.states)
+        self_states_len = len(self.states)
+
+        visited = self.build_front_matrix(other, separate_flag)
+        prev = -1
+        while visited.nnz != prev:
+            prev = visited.nnz
+
+            for symbol in symbols:
+                special = visited @ matrices[symbol]
+                visited += BoolMatrix.validate_front(special, other_states_len)
+
+        self_start_list = list(self.start_states)
+        result = set()
+        for i, j in zip(*visited.nonzero()):
+            if j >= other_states_len and (i % other_states_len) in other.final_states:
+                if (j - other_states_len) in self.final_states:
+                    if separate_flag:
+                        result.add(
+                            (
+                                self_start_list[i // self_states_len],
+                                j - other_states_len,
+                            )
+                        )
+                    else:
+                        result.add(j - other_states_len)
+
+        return result
