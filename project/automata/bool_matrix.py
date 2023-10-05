@@ -61,12 +61,12 @@ class BoolMatrix:
                         self.states[start_state], self.states[finish_state]
                     ] = True
 
-    def intersect(self, another: "BoolMatrix") -> "BoolMatrix":
+    def intersect(self, other: "BoolMatrix") -> "BoolMatrix":
         """Intersects a bool matrix with another bool matrix using the tensor product
 
         Parameters
         ----------
-        another : BoolMatrix
+        other : BoolMatrix
             Another bool matrix to intersect
 
         Returns
@@ -77,33 +77,32 @@ class BoolMatrix:
         """
         result = BoolMatrix()
 
-        for symbol in self.matrices.keys() & another.matrices.keys():
+        for symbol in self.matrices.keys() & other.matrices.keys():
             result.matrices[symbol] = sparse.kron(
-                self.matrices[symbol], another.matrices[symbol], format="csr"
+                self.matrices[symbol], other.matrices[symbol], format="csr"
             )
 
         for self_state, self_index in self.states.items():
-            for other_state, other_index in another.states.items():
-                result_state = self_index * len(another.states) + other_index
+            for other_state, other_index in other.states.items():
+                result_state = self_index * len(other.states) + other_index
                 result.states[(self_state, other_state)] = result_state
 
                 if (
                     self_index in self.start_states
-                    and other_index in another.start_states
+                    and other_index in other.start_states
                 ):
                     result.start_states.add(result_state)
 
                 if (
                     self_index in self.final_states
-                    and other_index in another.final_states
+                    and other_index in other.final_states
                 ):
                     result.final_states.add(result_state)
 
         return result
 
     def transitive_closure(self) -> sparse.csr_matrix:
-        """
-        Returns the transitive closure of the given bool matrix
+        """Returns the transitive closure of the given bool matrix
 
         Returns
         ----------
@@ -148,3 +147,41 @@ class BoolMatrix:
             nfa.add_final_state(state)
 
         return nfa
+
+    def direct_sum(self, other: "BoolMatrix"):
+        """Returns a direct sum of bool matrices
+
+        Parameters
+        ----------
+        other : BoolMatrix
+            Another bool matrix to summation
+
+        Returns
+        -------
+        result : BoolMatrix
+            Direct sum of inputted matrices
+
+        """
+        result = BoolMatrix()
+
+        for symbol in self.matrices.keys() & other.matrices.keys():
+            result.matrices[symbol] = sparse.bmat(
+                [
+                    [self.matrices[symbol], None],
+                    [None, other.matrices[symbol]],
+                ]
+            )
+
+        ptr = 0
+        for state, i in self.states.items():
+            result.states[(state, State(0))] = ptr
+            if i in self.start_states:
+                result.start_states.add(ptr)
+            ptr += 1
+        for state, i in other.states.items():
+            result.states[(state, State(1))] = ptr
+            if i in other.start_states:
+                result.start_states.add(ptr)
+            ptr += 1
+
+        return result
