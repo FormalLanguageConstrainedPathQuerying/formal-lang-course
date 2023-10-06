@@ -211,8 +211,7 @@ class BoolMatrix:
         special = sparse.lil_matrix(size)
 
         for _, i in other.states.items():
-            if i in other.start_states:
-                special[i, i] = True
+            special[i, i] = True
             for j in range(size[0], size[1]):
                 special[i, j] = (j - size[0]) in self.start_states
 
