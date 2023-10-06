@@ -297,7 +297,7 @@ class BoolMatrix:
                         result.add(
                             (
                                 index_to_states[start_states[i // other_states_len]],
-                                index_to_states[j - other_states_len]
+                                index_to_states[j - other_states_len],
                             )
                         )
                     else:
