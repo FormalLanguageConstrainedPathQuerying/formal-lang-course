@@ -19,7 +19,7 @@ class TestsForRpq:
         )
 
     def test_bfs_rpq(self):
-        graph = networkx.nx_pydot.read_dot(Path("./resources/dfa4.dot"))
+        graph = networkx.nx_pydot.read_dot(Path("./resources/dfa3.dot"))
         # dfa that accepts regex "a.b|a.c|(c.d)*"
         regex = Regex("(c.d)*")
 
