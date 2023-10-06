@@ -209,13 +209,11 @@ class BoolMatrix:
         """
         size = (len(other.states), len(self.states) + len(other.states))
         special = sparse.lil_matrix(size)
-        self_start_indicators = sparse.lil_array(
-            [[i in self.start_states for _, i in self.states.items()]]
-        )
 
         for _, i in other.states.items():
             special[i, i] = True
-            special[i, len(other.states) :] = self_start_indicators
+            for j in range(size[0], size[1]):
+                special[i, j] = (j - size[0]) in self.start_states
 
         if not self.start_states:
             return sparse.csr_matrix(size)
@@ -289,7 +287,8 @@ class BoolMatrix:
                 special = visited @ matrices[symbol]
                 visited += BoolMatrix.validate_front(special, other_states_len)
 
-        self_start_list = list(self.start_states)
+        index_to_states = {i: name for name, i in self.states.items()}
+        start_states = list(self.start_states)
         result = set()
         for i, j in zip(*visited.nonzero()):
             if j >= other_states_len and (i % other_states_len) in other.final_states:
@@ -297,11 +296,11 @@ class BoolMatrix:
                     if separate_flag:
                         result.add(
                             (
-                                self_start_list[i // self_states_len],
-                                j - other_states_len,
+                                index_to_states[start_states[i // other_states_len]],
+                                index_to_states[j - other_states_len]
                             )
                         )
                     else:
-                        result.add(j - other_states_len)
+                        result.add(index_to_states[j - other_states_len])
 
         return result

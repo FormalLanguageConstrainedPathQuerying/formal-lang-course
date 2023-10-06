@@ -59,7 +59,7 @@ def bfs_rpq(
     start_nodes: set[Hashable] = None,
     final_nodes: set[Hashable] = None,
     separate_flag: bool = False,
-) -> set[tuple[Hashable, Hashable]]:
+) -> set[Hashable]:
     """Responds to range path query with the specified mode:
     separated (for every start state), not separated (for all start state)
 
@@ -94,13 +94,4 @@ def bfs_rpq(
     dfa_bm = BoolMatrix(dfa)
 
     result = nfa_bm.bfs(dfa_bm, separate_flag)
-
-    index_to_states = {i: name for name, i in nfa_bm.states.items()}
-
-    if separate_flag:
-        return {
-            (index_to_states[start_state], index_to_states[finish_state])
-            for start_state, finish_state in result
-        }
-    else:
-        return {index_to_states[state] for state in result}
+    return result

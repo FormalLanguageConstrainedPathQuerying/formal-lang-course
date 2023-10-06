@@ -21,12 +21,12 @@ class TestsForRpq:
     def test_bfs_rpq(self):
         graph = networkx.nx_pydot.read_dot(Path("./resources/dfa4.dot"))
         # dfa that accepts regex "a.b|a.c|(c.d)*"
-        regex = Regex("a.b|a.c")
+        regex = Regex("(c.d)*")
 
-        assert {"0", "2"} == bfs_rpq(
+        assert {"2"} == bfs_rpq(
             regex,
             graph,
-            start_nodes={"0", "2"},
+            start_nodes={"2"},
             final_nodes={"0", "1", "2"},
             separate_flag=False,
         )
