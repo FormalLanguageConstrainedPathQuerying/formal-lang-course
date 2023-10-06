@@ -211,16 +211,19 @@ class BoolMatrix:
         special = sparse.lil_matrix(size)
 
         for _, i in other.states.items():
-            special[i, i] = True
+            if i in other.start_states:
+                special[i, i] = True
             for j in range(size[0], size[1]):
                 special[i, j] = (j - size[0]) in self.start_states
 
-        if not self.start_states:
-            return sparse.csr_matrix(size)
         if not separate_flag:
             return special.tocsr()
+        if not self.start_states:
+            return sparse.csr_matrix(size)
 
-        return sparse.csr_matrix(sparse.vstack([special] * len(self.start_states)))
+        return sparse.csr_matrix(
+            sparse.vstack([special.tocsr() for _ in range(len(self.start_states))])
+        )
 
     @staticmethod
     def validate_front(front: sparse.csr_matrix, bound: int) -> sparse.csr_matrix:
@@ -276,7 +279,6 @@ class BoolMatrix:
         matrices = self.direct_sum(other).matrices
         symbols = self.matrices.keys() & other.matrices.keys()
         other_states_len = len(other.states)
-        self_states_len = len(self.states)
 
         visited = self.build_front_matrix(other, separate_flag)
         prev = -1
@@ -291,16 +293,18 @@ class BoolMatrix:
         start_states = list(self.start_states)
         result = set()
         for i, j in zip(*visited.nonzero()):
-            if j >= other_states_len and (i % other_states_len) in other.final_states:
-                if (j - other_states_len) in self.final_states:
-                    if separate_flag:
-                        result.add(
-                            (
-                                index_to_states[start_states[i // other_states_len]],
-                                index_to_states[j - other_states_len],
-                            )
+            if (
+                j - other_states_len in self.final_states
+                and (i % other_states_len) in other.final_states
+            ):
+                if separate_flag:
+                    result.add(
+                        (
+                            index_to_states[start_states[i // other_states_len]],
+                            index_to_states[j - other_states_len],
                         )
-                    else:
-                        result.add(index_to_states[j - other_states_len])
+                    )
+                else:
+                    result.add(index_to_states[j - other_states_len])
 
         return result
