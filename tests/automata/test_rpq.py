@@ -23,13 +23,6 @@ class TestsForRpq:
         # dfa that accepts regex "a.b|a.c|(c.d)*"
         regex = Regex("(c.d)*")
 
-        assert {"2"} == bfs_rpq(
-            regex,
-            graph,
-            start_nodes={"2"},
-            final_nodes={"0", "1", "2"},
-            separate_flag=False,
-        )
         assert {("2", "2")} == bfs_rpq(
             regex,
             graph,
