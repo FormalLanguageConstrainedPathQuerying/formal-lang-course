@@ -208,21 +208,19 @@ class BoolMatrix:
 
         """
         size = (len(other.states), len(self.states) + len(other.states))
-        special = sparse.lil_matrix(size)
-
-        for _, i in other.states.items():
-            special[i, i] = True
-            for j in range(size[0], size[1]):
-                special[i, j] = (j - size[0]) in self.start_states
-
-        if not separate_flag:
-            return special.tocsr()
         if not self.start_states:
             return sparse.csr_matrix(size)
 
-        return sparse.csr_matrix(
-            sparse.vstack([special.tocsr() for _ in range(len(self.start_states))])
-        )
+        specials = [sparse.lil_matrix(size) for _ in range(len(self.start_states))]
+        for _, i in other.states.items():
+            for index, state in enumerate(self.start_states):
+                specials[index][i, i] = True
+                specials[index][i, state + size[0]] = True
+
+        if not separate_flag:
+            return sum(specials, start=sparse.lil_matrix(size)).tocsr()
+
+        return sparse.csr_matrix(sparse.vstack([matrix.tocsr() for matrix in specials]))
 
     @staticmethod
     def validate_front(front: sparse.csr_matrix, bound: int) -> sparse.csr_matrix:
@@ -275,7 +273,7 @@ class BoolMatrix:
             set[(start_node, final_node)] for separated mode
 
         """
-        matrices = self.direct_sum(other).matrices
+        matrices = other.direct_sum(self).matrices
         symbols = self.matrices.keys() & other.matrices.keys()
         other_states_len = len(other.states)
 

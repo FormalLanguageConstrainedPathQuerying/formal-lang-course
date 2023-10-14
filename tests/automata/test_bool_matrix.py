@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import networkx
-import numpy
 from pyformlang.regular_expression import Regex
 from scipy import sparse
 
@@ -91,13 +90,13 @@ class TestsForBoolMatrix:
         dfa = build_minimal_dfa(Regex("a.b|a.c"))
         bm2 = BoolMatrix(dfa)
 
-        actual = bm1.build_front_matrix(bm2, True).toarray()
+        actual = bm1.build_front_matrix(bm2, False).toarray()
         for i in range(len(actual)):
             for j in range(len(actual[i])):
                 if j >= len(bm2.states):
-                    assert actual[i, j] == (j - len(bm2.states) in bm1.start_states)
+                    assert bool(actual[i, j]) == (j - len(bm2.states) in bm1.start_states)
                 else:
-                    assert actual[i, j] == (i % len(bm2.states) == j)
+                    assert bool(actual[i, j]) == (i % len(bm2.states) == j)
 
     def test_validate_front(self):
         graph = networkx.nx_pydot.read_dot(Path("./resources/dfa2.dot"))
