@@ -94,7 +94,9 @@ class TestsForBoolMatrix:
         for i in range(len(actual)):
             for j in range(len(actual[i])):
                 if j >= len(bm2.states):
-                    assert bool(actual[i, j]) == (j - len(bm2.states) in bm1.start_states)
+                    assert bool(actual[i, j]) == (
+                        j - len(bm2.states) in bm1.start_states
+                    )
                 else:
                     assert bool(actual[i, j]) == (i % len(bm2.states) == j)
 
