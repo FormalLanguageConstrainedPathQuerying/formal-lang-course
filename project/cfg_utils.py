@@ -38,7 +38,7 @@ def is_wcnf(cfg: CFG) -> bool:
     return True
 
 
-def check_epsilon_equivalence(cfg_new: CFG, cfg_old: CFG):
+def check_epsilon_equivalence(cfg_new: CFG, cfg_old: CFG) -> bool:
     productions_old_with_epsilon = set(
         filter(
             lambda production: production.head in cfg_new.variables
