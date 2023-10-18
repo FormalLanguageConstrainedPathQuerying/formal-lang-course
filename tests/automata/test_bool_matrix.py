@@ -96,6 +96,7 @@ class TestsForBoolMatrix:
                 if j >= len(bm2.states):
                     assert bool(actual[i, j]) == (
                         j - len(bm2.states) in bm1.start_states
+                        and i in bm2.start_states
                     )
                 else:
                     assert bool(actual[i, j]) == (i % len(bm2.states) == j)
@@ -109,7 +110,4 @@ class TestsForBoolMatrix:
         bm2 = BoolMatrix(dfa)
 
         front = bm1.build_front_matrix(bm2, False)
-        assert (
-            front.toarray().tolist()
-            == BoolMatrix.validate_front(front, len(bm2.states)).toarray().tolist()
-        )
+        assert BoolMatrix.validate_front(front, len(bm2.states)).nnz == 2

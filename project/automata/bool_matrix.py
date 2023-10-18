@@ -215,7 +215,8 @@ class BoolMatrix:
         for _, i in other.states.items():
             for index, state in enumerate(self.start_states):
                 specials[index][i, i] = True
-                specials[index][i, state + size[0]] = True
+                if i in other.start_states:
+                    specials[index][i, state + size[0]] = True
 
         if not separate_flag:
             return sum(specials, start=sparse.lil_matrix(size)).tocsr()
