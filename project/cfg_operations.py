@@ -1,5 +1,5 @@
-import os
 from pyformlang.cfg import CFG
+from project.path_handlers import check_path
 
 
 def cfg_to_wcnf(cfg: CFG) -> CFG:
@@ -10,17 +10,10 @@ def cfg_to_wcnf(cfg: CFG) -> CFG:
 
 
 def cfg_from_file(file_path: str, start_symbol: str = "S") -> CFG:
-    _check_path(file_path)
+    check_path(file_path)
     with open(file_path, "r") as file:
         cfg_str = file.read()
     return CFG.from_text(cfg_str, start_symbol)
-
-
-def _check_path(path: str) -> None:
-    if not os.path.exists(path):
-        raise OSError("Error: specified file does not exist.")
-    if os.path.getsize(path) == 0:
-        raise OSError("Error: specified file is empty.")
 
 
 def is_wcnf(cfg: CFG) -> bool:

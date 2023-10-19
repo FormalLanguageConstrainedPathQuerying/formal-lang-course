@@ -1,6 +1,6 @@
 import pytest
 from pyformlang.cfg import Production, Variable, Terminal, Epsilon
-from project.cfg_utils import *
+from project.cfg_operations import *
 
 
 def test_wrong_file_path():
