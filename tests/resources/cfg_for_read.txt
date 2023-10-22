@@ -1,0 +1,9 @@
+A -> a A | b
+A -> B C D
+A -> $
+B -> E
+E -> F
+C -> F c
+D -> A | $
+F -> t
+N -> A
