@@ -6,8 +6,15 @@ import networkx as nx
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton
 from pyformlang.finite_automaton import DeterministicFiniteAutomaton
 from pyformlang.regular_expression import Regex
-from scipy.sparse import csr_array
-from scipy.sparse import kron
+from scipy.sparse import (
+    csr_array,
+    kron,
+    lil_matrix,
+    lil_array,
+    vstack,
+    block_diag,
+    csr_matrix,
+)
 from project.matrix.automaton_binary_matrix import AutomatonBinaryMatrix
 from project.graph_lib import get_graph_data
 
@@ -333,5 +340,237 @@ def regular_path_query(
                 and nfa_final_node in final_nodes
             ):
                 result.add((nfa_start_node, nfa_final_node))
+
+    return result
+
+
+def create_front(
+    width: int,
+    height: int,
+    start_nodes: Set[str],
+    nodes: List[str],
+    regex_nodes: List[str],
+    regex_start_states: List[str],
+):
+    """
+    Create front for BFS algorithm
+
+    Args:
+        width: width of front, node count of graph
+        height: height of front, node count of regex
+        start_nodes: nodes to start search from
+        nodes: all nodes of graph
+        regex_nodes: all nodes of regex
+    """
+    result = lil_matrix((height, width + height))
+    right_part = lil_array([[state in start_nodes for state in nodes]])
+
+    for i, node in enumerate(regex_nodes):
+        result[i, i] = True
+        if node in regex_start_states:
+            result[i, height:] = right_part
+
+    return result.tocsr()
+
+
+def transform_front(
+    front_size: int,
+    front: csr_matrix,
+    separate: bool,
+) -> csr_matrix:
+    """
+    Transforms front so that identity matrix remains as the left side and summ of correct node in the right side
+
+    Args:
+        front_size: size of single front (number of nodes in regex)
+        front: front to transform
+        separate: separate nodes or not
+
+    Returns:
+        transformed front
+    """
+    result = csr_matrix(front.shape, dtype=int)
+
+    for row, col in zip(*front.nonzero()):
+        if col >= front_size:
+            continue
+
+        graph_part = front[row, front_size:]
+        if graph_part.nnz == 0:
+            continue
+
+        if not separate:
+            result[col, col] = True
+            result[col, front_size:] += graph_part
+        else:
+            node_number = row // front_size
+            result[node_number * front_size + col, col] = True
+            result[
+                node_number * front_size + col,
+                front_size:,
+            ] += graph_part
+
+    return result.tocsr()
+
+
+def get_reachable_nodes_constrained(
+    graph: nx.MultiDiGraph,
+    regex: Regex,
+    start_nodes: List[str],
+    separate: bool = False,
+) -> set:
+    """
+    Find nodes reachable in graph from list of start nodes so that path is accepted by regex
+
+    Args:
+        graph: graph to find nodes in
+        regex: regex to constraing the paths
+        start_nodes: list of starting nodes
+        separate: separate nodes for starting or not
+
+    Return:
+        dectionary of sets where nodes are keys if separate is true
+        set of nodes if separate is false
+    """
+    graph_nfa = nfa_of_graph(graph)
+    regex_dfa = dfa_of_regex(regex)
+
+    graph_matrices = binary_matrices_of_automaton(graph_nfa)
+    regex_matrices = binary_matrices_of_automaton(regex_dfa)
+
+    if len(graph_matrices) == 0:
+        return set()
+
+    if len(regex_matrices) == 0:
+        if separate:
+            return {el: el for el in start_nodes}
+        else:
+            return set(start_nodes)
+
+    direct_sum = {}
+
+    graph_labels = set(map(lambda x: x.label, graph_matrices))
+    regex_labels = set(map(lambda x: x.label, regex_matrices))
+    common_labels = graph_labels & regex_labels
+
+    for label in common_labels:
+        fst = list(filter(lambda x: x.label == label, regex_matrices))[0]
+        snd = list(filter(lambda x: x.label == label, graph_matrices))[0]
+        direct_sum[label] = block_diag((fst.matrix, snd.matrix), dtype=int)
+
+    front = None
+
+    front_width = len(graph_nfa.states)
+    front_height = len(regex_dfa.states)
+    regex_nodes = regex_matrices[0].nodes
+    graph_nodes = graph_matrices[0].nodes
+
+    if separate:
+        fronts = []
+
+        for start_node in start_nodes:
+            new_front = create_front(
+                front_width,
+                front_height,
+                {start_node},
+                graph_nodes,
+                regex_nodes,
+                regex_dfa.start_states,
+            )
+            fronts.append(new_front)
+
+        front = vstack(fronts)
+
+    else:
+        front = create_front(
+            front_width,
+            front_height,
+            start_nodes,
+            graph_nodes,
+            regex_nodes,
+            regex_dfa.start_states,
+        )
+
+    while True:
+        old_nnz = front.nnz
+
+        matrices = []
+
+        for m in direct_sum.keys():
+            new_front = front @ direct_sum[m]
+            matrices.append(transform_front(front_height, new_front, separate) + front)
+
+        res_mat = csr_matrix(front.shape)
+
+        for m in matrices:
+            res_mat += m
+
+        front = res_mat
+
+        if front.nnz == old_nnz:
+            break
+
+    result = dict() if separate else set()
+
+    for row, col in zip(*front.nonzero()):
+        if col < len(regex_nodes):
+            continue
+
+        if regex_nodes[row % len(regex_nodes)] not in regex_dfa.final_states:
+            continue
+
+        state_index = col - len(regex_nodes)
+
+        if graph_nodes[state_index] not in graph_nfa.final_states:
+            continue
+
+        if separate:
+            s_node = start_nodes[row // len(regex_nodes)]
+            g_node = graph_nodes[state_index]
+            if s_node in result.keys():
+                result[s_node].add(g_node)
+            else:
+                result[s_node] = {g_node}
+        else:
+            result.add(graph_nodes[state_index])
+
+    return result
+
+
+def get_reachable_final_nodes_constrained(
+    graph: nx.MultiDiGraph,
+    regex: Regex,
+    start_nodes: Optional[List[str]],
+    final_nodes: Optional[Set[str]],
+    separate: bool = False,
+) -> set:
+    """
+    Find nodes reachable in graph from list of start nodes so that path is accepted by regex
+
+    Args:
+        graph: graph to find nodes in
+        regex: regex to constraing the paths
+        start_nodes: list of starting nodes, if None was given, all graph nodes
+        final_nodes: set of nodes to mark as final
+        separate: separate nodes for starting or not
+
+    Returns:
+        dectionary of sets where nodes are keys if separate is true
+        set of nodes if separate is false
+    """
+
+    if start_nodes is None:
+        start_nodes = list(graph.states)
+
+    if final_nodes is None:
+        final_nodes = graph.states
+
+    result = get_reachable_nodes_constrained(graph, regex, start_nodes, separate)
+
+    if separate:
+        for key in result.keys():
+            result[key] = set(filter(lambda x: x in final_nodes, result[key]))
+    else:
+        result = set(filter(lambda x: x in final_nodes, result))
 
     return result
