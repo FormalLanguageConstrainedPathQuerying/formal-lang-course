@@ -10,14 +10,14 @@ def wcnf_of_cfg(cfg: CFG) -> CFG:
     2. `S0 -> t`
     3. `S0 -> eps`
     Where `S0, S1, S2` are arbitrary non-terminals
-          `t` is a terminal symbol 
+          `t` is a terminal symbol
           `eps` is an empty sequence
 
     Args:
         cfg: context-free grammar to be converted
 
     Returns:
-        weakened cholmsky normal form of cfg given 
+        weakened cholmsky normal form of cfg given
 
     """
     cfg = cfg.eliminate_unit_productions()
@@ -41,5 +41,5 @@ def cfg_of_path(path: str, starting_symbol: str = "S") -> CFG:
     """
     with open(path) as file:
         source = file.read()
-    
+
     return CFG.from_text(source, Variable(starting_symbol))
