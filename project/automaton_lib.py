@@ -132,7 +132,7 @@ def transitive_closure(matrix: csr_array) -> csr_array:
 
 
 def binary_matrix_of_automaton(
-    automaton: NondeterministicFiniteAutomaton, label: str
+    automaton: NondeterministicFiniteAutomaton, label: str, use_matrix=csr_array
 ) -> AutomatonBinaryMatrix:
     """
     Creates binary matrix representation of automaton for the label given
@@ -146,7 +146,7 @@ def binary_matrix_of_automaton(
     """
 
     states = list(map(lambda x: x.value, automaton.states))
-    matrix = csr_array((len(states), len(states)), dtype=np.bool_)
+    matrix = use_matrix((len(states), len(states)), dtype=np.bool_)
     automaton_dict = automaton.to_dict()
     transitions = []
 
@@ -179,7 +179,7 @@ def binary_matrix_of_automaton(
 
 
 def binary_matrices_of_automaton(
-    automaton: NondeterministicFiniteAutomaton,
+    automaton: NondeterministicFiniteAutomaton, use_matrix=csr_array
 ) -> List[AutomatonBinaryMatrix]:
     """
     Creates set of binary matrix representations of automaton for all labels
@@ -196,7 +196,7 @@ def binary_matrices_of_automaton(
     labels = filter(lambda x: x is not None and x != "\\n", labels)
 
     for label in labels:
-        matrices.append(binary_matrix_of_automaton(automaton, label))
+        matrices.append(binary_matrix_of_automaton(automaton, label, use_matrix))
 
     return matrices
 
@@ -219,8 +219,10 @@ def automaton_of_binary_matrices(
 
 
 def intersect_automatons(
-    first: NondeterministicFiniteAutomaton, second: NondeterministicFiniteAutomaton
-) -> NondeterministicFiniteAutomaton:
+    first: NondeterministicFiniteAutomaton,
+    second: NondeterministicFiniteAutomaton,
+    use_matrix=csr_array,
+) -> List[AutomatonBinaryMatrix]:
     """
     Creates an automaton from intersecting two others using binary matrices
 
@@ -231,8 +233,8 @@ def intersect_automatons(
     Returns:
         intersection of first and second automaton
     """
-    first_matrices = binary_matrices_of_automaton(first)
-    second_matrices = binary_matrices_of_automaton(second)
+    first_matrices = binary_matrices_of_automaton(first, use_matrix)
+    second_matrices = binary_matrices_of_automaton(second, use_matrix)
 
     first_size = len(first_matrices[0].nodes)
     second_size = len(second_matrices[0].nodes)
@@ -249,21 +251,21 @@ def intersect_automatons(
     for label in labels:
         first_matrix = list(filter(lambda x: x.label == label, first_matrices))
         first_matrix = (
-            first_matrix[0]
+            first_matrix[0].matrix
             if len(first_matrix)
             else csr_array((first_size, first_size))
         )
         second_matrix = list(filter(lambda x: x.label == label, second_matrices))
         second_matrix = (
-            second_matrix[0]
+            second_matrix[0].matrix
             if len(second_matrix)
             else csr_array((second_size, second_size))
         )
-        result_matrices[label] = kron(first_matrix.matrix, second_matrix.matrix)
+        result_matrices[label] = kron(first_matrix, second_matrix)
 
     for first_node in first_matrices[0].nodes:
         for second_node in second_matrices[0].nodes:
-            new_node = "(" + first_node + ", " + second_node + ")"
+            new_node = f"({first_node}, {second_node})"
             result_nodes.append(new_node)
 
             if (
@@ -291,8 +293,7 @@ def intersect_automatons(
             )
         )
 
-    intersection = automaton_of_binary_matrices(result_binary_matrices)
-    return intersection
+    return result_binary_matrices
 
 
 def regular_path_query(
@@ -300,6 +301,7 @@ def regular_path_query(
     start_nodes: Optional[Set[str]],
     final_nodes: Optional[Set[str]],
     regex: Regex,
+    use_matrix=csr_array,
 ) -> set:
     """
     Get pairs of starting and final nodes of the graph
@@ -317,7 +319,7 @@ def regular_path_query(
     nfa = nfa_of_graph(graph, start_nodes, final_nodes)
     dfa = dfa_of_regex(regex)
 
-    intersection_matrices = binary_matrices_of_automaton(intersect_automatons(nfa, dfa))
+    intersection_matrices = intersect_automatons(nfa, dfa, use_matrix=use_matrix)
     intersection_matrix = sum(map(lambda x: x.matrix, intersection_matrices))
 
     transitive_closure_res = transitive_closure(intersection_matrix)
@@ -325,21 +327,16 @@ def regular_path_query(
     nodes = intersection_matrices[0].nodes
 
     result = set()
+    dfa_states_len = len(nfa.states)
 
-    for start_node in nodes:
-        for final_node in nodes:
-            final_index = nodes.index(final_node)
-            start_index = nodes.index(start_node)
+    for first_state, second_state in zip(*transitive_closure_res.nonzero()):
+        nfa_start_node = nodes[first_state].split(",")[0].replace("(", "")
+        nfa_final_node = nodes[second_state].split(",")[0].replace("(", "")
 
-            nfa_start_node = start_node.split(",")[0].replace("(", "")
-            nfa_final_node = final_node.split(",")[0].replace("(", "")
-
-            if (
-                transitive_closure_res.getrow(start_index)[0, final_index]
-                and nfa_start_node in start_nodes
-                and nfa_final_node in final_nodes
-            ):
-                result.add((nfa_start_node, nfa_final_node))
+        if (start_nodes is None or nfa_start_node in start_nodes) and (
+            final_nodes is None or nfa_final_node in final_nodes
+        ):
+            result.add((nfa_start_node, nfa_final_node))
 
     return result
 
@@ -374,9 +371,7 @@ def create_front(
 
 
 def transform_front(
-    front_size: int,
-    front: csr_matrix,
-    separate: bool,
+    front_size: int, front: csr_matrix, separate: bool, use_matrix=csr_matrix
 ) -> csr_matrix:
     """
     Transforms front so that identity matrix remains as the left side and summ of correct node in the right side
@@ -389,7 +384,7 @@ def transform_front(
     Returns:
         transformed front
     """
-    result = csr_matrix(front.shape, dtype=int)
+    result = use_matrix(front.shape, dtype=int)
 
     for row, col in zip(*front.nonzero()):
         if col >= front_size:
@@ -418,6 +413,7 @@ def get_reachable_nodes_constrained(
     regex: Regex,
     start_nodes: List[str],
     separate: bool = False,
+    use_matrix=csr_array,
 ) -> set:
     """
     Find nodes reachable in graph from list of start nodes so that path is accepted by regex
@@ -435,8 +431,8 @@ def get_reachable_nodes_constrained(
     graph_nfa = nfa_of_graph(graph)
     regex_dfa = dfa_of_regex(regex)
 
-    graph_matrices = binary_matrices_of_automaton(graph_nfa)
-    regex_matrices = binary_matrices_of_automaton(regex_dfa)
+    graph_matrices = binary_matrices_of_automaton(graph_nfa, use_matrix=use_matrix)
+    regex_matrices = binary_matrices_of_automaton(regex_dfa, use_matrix=use_matrix)
 
     if len(graph_matrices) == 0:
         return set()
@@ -543,6 +539,7 @@ def get_reachable_final_nodes_constrained(
     start_nodes: Optional[List[str]],
     final_nodes: Optional[Set[str]],
     separate: bool = False,
+    use_matrix=csr_matrix,
 ) -> set:
     """
     Find nodes reachable in graph from list of start nodes so that path is accepted by regex
@@ -560,12 +557,14 @@ def get_reachable_final_nodes_constrained(
     """
 
     if start_nodes is None:
-        start_nodes = list(graph.states)
+        start_nodes = list(graph.nodes)
 
     if final_nodes is None:
-        final_nodes = graph.states
+        final_nodes = set(graph.nodes)
 
-    result = get_reachable_nodes_constrained(graph, regex, start_nodes, separate)
+    result = get_reachable_nodes_constrained(
+        graph, regex, start_nodes, separate, use_matrix=use_matrix
+    )
 
     if separate:
         for key in result.keys():

@@ -1,5 +1,5 @@
 from pyformlang.regular_expression import Regex
-from project.automaton_lib import intersect_automatons
+from project.automaton_lib import intersect_automatons, automaton_of_binary_matrices
 from project.automaton_lib import nfa_of_graph
 from networkx.drawing.nx_pydot import read_dot
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton
@@ -17,8 +17,9 @@ def test_automaton_intersection():
     second_automaton = automaton_from_path(second_path)
 
     result = intersect_automatons(first_automaton, second_automaton)
+    result_automaton = automaton_of_binary_matrices(result)
 
-    test = lambda i: result.accepts(i) == (
+    test = lambda i: result_automaton.accepts(i) == (
         first_automaton.accepts(i) and second_automaton.accepts(i)
     )
     assert test("0010010")

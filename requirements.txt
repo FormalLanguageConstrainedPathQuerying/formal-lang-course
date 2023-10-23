@@ -7,3 +7,4 @@ pydot
 pyformlang
 pytest
 scipy
+matplotlib
