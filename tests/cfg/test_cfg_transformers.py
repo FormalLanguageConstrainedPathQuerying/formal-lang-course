@@ -1,5 +1,5 @@
 from pathlib import Path
-from project.cfg.io import from_file
+from project.cfg.io import read_from_file
 from project.cfg.transformers import *
 
 
@@ -8,7 +8,7 @@ class TestsForWcnfTransformer:
         str_path = "./resources/cfg1"
         path = Path(str_path)
 
-        original_cfg = from_file(path)
+        original_cfg = read_from_file(path)
         wcnf_cfg = transform_to_wcnf(original_cfg)
 
         # wcnf test

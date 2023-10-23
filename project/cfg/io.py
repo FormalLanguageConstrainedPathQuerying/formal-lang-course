@@ -3,7 +3,7 @@ from pathlib import Path
 from pyformlang.cfg import CFG, Variable
 
 
-def from_file(path: Path, start_non_terminal: str = None) -> CFG:
+def read_from_file(path: Path, start_non_terminal: str = None) -> CFG:
     if start_non_terminal is None:
         start_non_terminal = "S"
     with open(path, "r") as file:

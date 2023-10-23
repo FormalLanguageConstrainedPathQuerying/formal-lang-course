@@ -9,7 +9,7 @@ class TestsReadFromFile:
         str_path = "./resources/cfg1"
         path = Path(str_path)
 
-        cfg = from_file(path)
+        cfg = read_from_file(path)
 
         expected_terminals = ["a", "b"]
         expected_variables = ["S"]
@@ -32,4 +32,4 @@ class TestsReadFromFile:
     def test_file_not_found(self):
         not_exists_path = "./resources/not_exists"
         with pytest.raises(FileNotFoundError):
-            from_file(Path(not_exists_path))
+            read_from_file(Path(not_exists_path))
