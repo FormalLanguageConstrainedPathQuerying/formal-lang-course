@@ -1,0 +1,7 @@
+NP -> Det CN | mark
+Det -> the
+CN -> CN Wh S/NP | boy
+Wh -> whom
+S/NP -> NP VP/NP
+VP/NP -> VTrans NP
+VTrans -> hates
