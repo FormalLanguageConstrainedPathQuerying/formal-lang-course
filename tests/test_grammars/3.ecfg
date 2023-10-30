@@ -2,4 +2,3 @@ S -> A | B | C | S S | epsilon
 A -> a S b
 B -> c S d
 C -> e S f
-
