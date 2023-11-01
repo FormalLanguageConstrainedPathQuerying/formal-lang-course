@@ -7,8 +7,12 @@ from pyformlang.regular_expression import Regex
 import networkx as nx
 
 
-def regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton:
-    return Regex(regex).to_epsilon_nfa().remove_epsilon_transitions().minimize()
+def regex_to_dfa(regex: Regex) -> DeterministicFiniteAutomaton:
+    return regex.to_epsilon_nfa().remove_epsilon_transitions().minimize()
+
+
+def str_regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton:
+    return regex_to_dfa(Regex(regex))
 
 
 def graph_to_nfa(
