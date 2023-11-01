@@ -1,5 +1,8 @@
 from pyformlang.cfg import CFG
+from pyformlang.regular_expression import Regex
+
 from project.path_handlers import check_path
+from project.ecfg import ECFG, ECFGProduction
 
 
 def cfg_to_wcnf(cfg: CFG) -> CFG:
@@ -46,3 +49,23 @@ def check_epsilon_equivalence(cfg_new: CFG, cfg_old: CFG) -> bool:
         if production not in productions_new_with_epsilon:
             return False
     return True
+
+
+def cfg_to_ecfg(cfg: CFG) -> ECFG:
+    productions = {}
+    for production in cfg.productions:
+        body = Regex(
+            " ".join(cfg_obj.value for cfg_obj in production.body)
+            if production.body
+            else "$"
+        )
+        if production.head not in productions:
+            productions[production.head] = body
+        else:
+            productions[production.head] = productions[production.head].union(body)
+
+    ecfg_productions = [
+        ECFGProduction(head, body) for head, body in productions.items()
+    ]
+
+    return ECFG(cfg.variables, cfg.start_symbol, ecfg_productions)
