@@ -75,7 +75,7 @@ def automata_intersection_rpq(
 ) -> set[tuple]:
     graph_automaton = graph_to_nfa(graph, start_nodes, final_nodes)
     graph = graph_automaton.to_networkx()
-    regex_automaton = regex_to_dfa(regex)
+    regex_automaton = str_regex_to_dfa(regex)
     adjacency_matrix = nx.adjacency_matrix(graph)
     previous_count_nonzero = None
     nonterminal = Symbol("NONTERMINAL")

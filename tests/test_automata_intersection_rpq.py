@@ -4,8 +4,8 @@ from pyformlang.finite_automaton import Symbol, State, NondeterministicFiniteAut
 
 
 def test_automata_intersection1():
-    automaton1 = regex_to_dfa("(a|b).(c|a).(a*)")
-    automaton2 = regex_to_dfa("a*")
+    automaton1 = str_regex_to_dfa("(a|b).(c|a).(a*)")
+    automaton2 = str_regex_to_dfa("a*")
     intersection = automata_intersection(automaton1, automaton2)
     assert not intersection.accepts([Symbol("a")])
     assert intersection.accepts([Symbol("a"), Symbol("a")])
@@ -16,8 +16,8 @@ def test_automata_intersection1():
 
 
 def test_automata_intersection2():
-    automaton1 = regex_to_dfa("(ab|ac).(d*)")
-    automaton2 = regex_to_dfa("((ab)*).(d)")
+    automaton1 = str_regex_to_dfa("(ab|ac).(d*)")
+    automaton2 = str_regex_to_dfa("((ab)*).(d)")
     intersection = automata_intersection(automaton1, automaton2)
     assert not intersection.accepts([Symbol("ab")])
     assert not intersection.accepts([Symbol("ac")])
@@ -26,8 +26,8 @@ def test_automata_intersection2():
 
 
 def test_automata_intersection3():
-    automaton1 = regex_to_dfa("(a*).(b*).(c*)")
-    automaton2 = regex_to_dfa("b.(c*)")
+    automaton1 = str_regex_to_dfa("(a*).(b*).(c*)")
+    automaton2 = str_regex_to_dfa("b.(c*)")
     intersection = automata_intersection(automaton1, automaton2)
     assert not intersection.accepts([Symbol("a")])
     assert intersection.accepts([Symbol("b")])

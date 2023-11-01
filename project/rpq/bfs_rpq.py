@@ -3,7 +3,7 @@ import networkx as nx
 import numpy as np
 from scipy.sparse import eye, lil_matrix, coo_array
 from project.rpq.graph_operations import boolean_decomposition
-from project.automaton_utils import regex_to_dfa
+from project.automaton_utils import str_regex_to_dfa
 
 
 def direct_sum(matrix1: lil_matrix, matrix2: lil_matrix) -> lil_matrix:
@@ -178,10 +178,12 @@ def bfs_graph_reg_foreach(
 def bfs_rpq_all(
     graph: nx.MultiDiGraph, regex: str, start_nodes: set, final_nodes: set = set()
 ) -> set[tuple]:
-    return bfs_graph_reg_all(graph, regex_to_dfa(regex), start_nodes, final_nodes)
+    return bfs_graph_reg_all(graph, str_regex_to_dfa(regex), start_nodes, final_nodes)
 
 
 def bfs_rpq_foreach(
     graph: nx.MultiDiGraph, regex: str, start_nodes: set, final_nodes: set = set()
 ) -> dict[set]:
-    return bfs_graph_reg_foreach(graph, regex_to_dfa(regex), start_nodes, final_nodes)
+    return bfs_graph_reg_foreach(
+        graph, str_regex_to_dfa(regex), start_nodes, final_nodes
+    )

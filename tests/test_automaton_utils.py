@@ -5,7 +5,7 @@ from project.graph_utils import get_graph_by_name
 
 
 def test_regex_to_dfa():
-    dfa = regex_to_dfa("(a|b).(b|c)")
+    dfa = str_regex_to_dfa("(a|b).(b|c)")
     assert dfa.accepts([Symbol("a"), Symbol("b")])
     assert dfa.accepts([Symbol("a"), Symbol("c")])
     assert dfa.accepts([Symbol("b"), Symbol("b")])
