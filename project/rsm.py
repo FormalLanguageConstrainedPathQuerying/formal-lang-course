@@ -3,7 +3,7 @@ from pyformlang.cfg import Variable
 from pyformlang.finite_automaton import DeterministicFiniteAutomaton
 
 
-class VariableFiniteAutomaton:
+class RSMBox:
     """
     RSM can be represented as a set of finite automata for each nonterminal.
     This class is a finite automaton for a single nonterminal.
@@ -13,7 +13,7 @@ class VariableFiniteAutomaton:
         self._variable = variable
         self._dfa = dfa
 
-    def __eq__(self, other: "VariableFiniteAutomaton"):
+    def __eq__(self, other: "RSMBox"):
         return self._variable == other._variable and self._dfa.is_equivalent_to(
             other._dfa
         )
@@ -39,7 +39,7 @@ class RSM:
     def __init__(
         self,
         start_variable: Variable,
-        variables_finite_automata: Iterable[VariableFiniteAutomaton],
+        variables_finite_automata: Iterable[RSMBox],
     ):
         self._start_variable = start_variable
         self._variables_finite_automata = variables_finite_automata
@@ -53,5 +53,5 @@ class RSM:
         return self._start_variable
 
     @property
-    def variables_finite_automata(self) -> Iterable[VariableFiniteAutomaton]:
+    def variables_finite_automata(self) -> Iterable[RSMBox]:
         return self._variables_finite_automata

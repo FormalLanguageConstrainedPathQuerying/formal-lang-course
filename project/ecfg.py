@@ -3,7 +3,7 @@ from pyformlang.cfg import Variable
 from pyformlang.regular_expression import Regex
 
 from project.automaton_utils import regex_to_dfa
-from project.rsm import VariableFiniteAutomaton, RSM
+from project.rsm import RSMBox, RSM
 
 
 class ECFGProduction:
@@ -111,7 +111,7 @@ class ECFG:
 
 def ecfg_to_rsm(ecfg: ECFG) -> RSM:
     automata = [
-        VariableFiniteAutomaton(production.head, regex_to_dfa(production.body))
+        RSMBox(production.head, regex_to_dfa(production.body))
         for production in ecfg.productions
     ]
     return RSM(ecfg.start_variable, automata)

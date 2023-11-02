@@ -6,7 +6,7 @@ from project.automaton_utils import regex_to_dfa
 from project.regex import check_regex_equality
 from project.cfg import cfg_to_ecfg
 from project.ecfg import ecfg_to_rsm, ECFG, InvalidECFGException
-from project.rsm import VariableFiniteAutomaton
+from project.rsm import RSMBox
 
 
 @pytest.mark.parametrize(
@@ -136,7 +136,7 @@ def test_variables_finite_automata_regex_equality(ecfg_text):
     act_start_variable = ecfg.start_variable
     exp_start_variable = rsm.start_variable
     exp_boxes = [
-        VariableFiniteAutomaton(production.head, regex_to_dfa(production.body))
+        RSMBox(production.head, regex_to_dfa(production.body))
         for production in ecfg.productions
     ]
     act_boxes = rsm.variables_finite_automata
