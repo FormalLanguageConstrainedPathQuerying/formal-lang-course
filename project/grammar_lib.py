@@ -222,6 +222,9 @@ def hellings_path_query(
         if start_node == "\n" or final_node == "\n":
             continue
 
+        if start_node == "\\n" or final_node == "\\n":
+            continue
+
         if start_node not in start_nodes:
             continue
 
