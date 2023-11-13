@@ -36,7 +36,7 @@ def cfpq_all(cfg: CFG, graph: MultiDiGraph) -> set[tuple[Any, Variable, Any]]:
             for var in terminal_productions[term]:
                 q.add((edge[0], var, edge[1]))
 
-    result = q.copy()
+    result = set(q)
     while q:
         node1, cur_var, node2 = q.pop()
 
