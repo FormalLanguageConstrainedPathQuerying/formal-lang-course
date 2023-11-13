@@ -54,10 +54,5 @@ class TestForHellingCfpq:
         cfpq_result = cfpq(cfg, graph)
 
         # should have all correct bracket sequence substrings of "aabbab"
-        not_empty_result = {
-            elem for elem in cfpq_result if elem[0] != elem[1]
-        }
+        not_empty_result = {elem for elem in cfpq_result if elem[0] != elem[1]}
         assert not_empty_result == {(0, 4), (4, 6), (0, 6), (1, 3)}
-
-
-

@@ -8,6 +8,22 @@ from project.cfg.transformers import transform_to_wcnf
 
 
 def cfpq_all(cfg: CFG, graph: MultiDiGraph) -> set[tuple[Any, Variable, Any]]:
+    """Executes the Hellings algorithm for all the pair of nodes in a graph using the specified grammar.
+
+    Parameters
+    ----------
+    cfg : CFG
+        The context-free grammar to be used for deriving the subgraphs.
+    graph : MultiDiGraph
+        The directed graph used to yield the subgraphs.
+
+    Returns
+    -------
+    set[tuple[Any, Variable, Any]]
+        A set of tuples, each containing two nodes of the graph and a variable.
+        Each tuple represents a valid path in the graph as per the grammar.
+
+    """
     wcnf = transform_to_wcnf(cfg)
 
     q = set()
@@ -67,6 +83,31 @@ def cfpq(
     final_nodes: set = None,
     start_symbol: str = None,
 ) -> set[tuple[Any, Any]]:
+    """Computes the context-free path querying (CFPQ) for the given graph and grammar.
+
+    The function performs the Hellings-based algorithm for CFPQ, but only adds the paths
+    from the start nodes to the final nodes with the specified start symbol.
+
+    Parameters
+    ----------
+    cfg : CFG
+        The context-free grammar used for path querying.
+    graph : MultiDiGraph
+        The directed graph used for path querying.
+    start_nodes : set, optional
+        The set of nodes from which paths can start. If not provided, all nodes are considered as start nodes.
+    final_nodes : set, optional
+        The set of nodes where paths can end. If not provided, all nodes are considered as final nodes.
+    start_symbol : str, optional
+        The start symbol of the grammar. If not provided, 'S' is considered as the start symbol.
+
+    Returns
+    -------
+    set[tuple[Any, Any]]
+        A set of tuples representing the start and end nodes of the paths in the graph
+        that are valid according to the specified context-free grammar.
+
+    """
     if start_nodes is None:
         start_nodes = set(graph.nodes)
     if final_nodes is None:
