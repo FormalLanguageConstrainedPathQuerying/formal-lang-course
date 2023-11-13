@@ -1,7 +1,7 @@
 from pyformlang.cfg import CFG
 
 
-def transform_to_wcnf(cfg: CFG):
+def transform_to_wcnf(cfg: CFG) -> CFG:
     """Transforms a CFG to the Weak Chomsky Normal Form
     if possible without transform to Chomsky Normal Form
 
