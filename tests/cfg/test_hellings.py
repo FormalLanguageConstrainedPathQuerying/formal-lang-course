@@ -3,7 +3,7 @@ from pathlib import Path
 import networkx as nx
 from pyformlang.cfg import Variable
 
-from project.cfg.cfpq.hellings import cfpq
+from project.cfg.cfpq.hellings import cfpq_all
 from project.cfg.io import read_from_file
 
 
@@ -19,7 +19,7 @@ class TestForHellingCfpq:
         graph.add_edge(3, 2, label="b")
 
         # Test from lecture notes (page 113)
-        assert cfpq(cfg, graph) == {
+        assert cfpq_all(cfg, graph) == {
             (0, Variable("S"), 2),
             (2, Variable("C"), 3),
             (1, Variable("A"), 2),

@@ -1,12 +1,13 @@
 import queue
+from typing import Any
 
 from networkx import MultiDiGraph
-from pyformlang.cfg import CFG
+from pyformlang.cfg import CFG, Variable
 
 from project.cfg.transformers import transform_to_wcnf
 
 
-def cfpq(cfg: CFG, graph: MultiDiGraph):
+def cfpq_all(cfg: CFG, graph: MultiDiGraph) -> set[tuple[Any, Variable, Any]]:
     wcnf = transform_to_wcnf(cfg)
 
     q = set()
@@ -57,3 +58,31 @@ def cfpq(cfg: CFG, graph: MultiDiGraph):
         result = result.union(next_result)
 
     return result
+
+
+def cfpq(
+    cfg: CFG,
+    graph: MultiDiGraph,
+    start_nodes: set = None,
+    final_nodes: set = None,
+    start_symbol: str = None,
+) -> set[tuple[Any, Any]]:
+    if start_nodes is None:
+        start_nodes = set(graph.nodes)
+    if final_nodes is None:
+        final_nodes = set(graph.nodes)
+    if start_symbol is None:
+        start_symbol = "S"
+
+    hellings_result = cfpq_all(cfg, graph)
+
+    cfpq_result = set()
+    for start_node, var, final_node in hellings_result:
+        if (
+            var.value == start_symbol
+            and start_node in start_nodes
+            and final_node in final_nodes
+        ):
+            cfpq_result.add((start_node, final_node))
+
+    return cfpq_result
