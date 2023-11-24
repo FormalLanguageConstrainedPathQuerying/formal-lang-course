@@ -67,7 +67,7 @@ def hellings_alg(
     return r
 
 
-def cfpq(
+def hellings_cfpq(
     graph: nx.MultiDiGraph,
     cfg: CFG,
     start_nodes: set[int] = None,

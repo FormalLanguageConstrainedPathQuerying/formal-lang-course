@@ -4,12 +4,23 @@ from itertools import product
 from cfpq_data import labeled_cycle_graph, labeled_two_cycles_graph
 from pyformlang.cfg import CFG
 
-from project.hellings_alg import hellings_alg, cfpq
+from project.cfpq.hellings_alg import hellings_alg, hellings_cfpq
+from project.cfpq.matrix_alg import matrix_alg, matrix_cfpq
 
 
 Config = namedtuple(
     "Config", ["start_var", "start_nodes", "final_nodes", "expected_result"]
 )
+
+
+@pytest.fixture(params=[hellings_alg, matrix_alg])
+def alg(request):
+    return request.param
+
+
+@pytest.fixture(params=[hellings_cfpq, matrix_cfpq])
+def cfpq(request):
+    return request.param
 
 
 @pytest.mark.parametrize(
@@ -69,8 +80,8 @@ Config = namedtuple(
         ),
     ],
 )
-def test_hellings_answer(cfg, graph, expected_result):
-    assert hellings_alg(graph, CFG.from_text(cfg)) == expected_result
+def test_hellings_answer(alg, cfg, graph, expected_result):
+    assert alg(graph, CFG.from_text(cfg)) == expected_result
 
 
 @pytest.mark.parametrize(
@@ -119,7 +130,7 @@ def test_hellings_answer(cfg, graph, expected_result):
         ),
     ],
 )
-def test_cfpq_answer(cfg, graph, confs):
+def test_cfpq_answer(cfpq, cfg, graph, confs):
     assert all(
         cfpq(
             graph,
