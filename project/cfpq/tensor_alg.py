@@ -19,7 +19,7 @@ def tensor_alg(
     counter = 0
 
     nfa_by_graph = graph_to_nfa(graph)
-    bm = BooleanDecomposition.from_automaton(nfa_by_graph)
+    decomposition = BooleanDecomposition.from_automaton(nfa_by_graph)
 
     for production in cfg.productions:
         nonterm.add(production.head.value)
@@ -35,8 +35,8 @@ def tensor_alg(
 
     for production in cfg.productions:
         if len(production.body) == 0:
-            bm.bool_matrices[production.head.value] = identity(
-                bm.num_states, dtype=bool
+            decomposition.bool_matrices[production.head.value] = identity(
+                decomposition.num_states, dtype=bool
             ).todok()
 
     changed = True
@@ -48,30 +48,32 @@ def tensor_alg(
 
     while changed:
         changed = False
-        transitive_closure = bfa.intersect(bm).transitive_closure()
+        transitive_closure = bfa.intersect(decomposition).transitive_closure()
         x, y = transitive_closure.nonzero()
 
         for (i, j) in zip(x, y):
-            rfa_from = i // bm.num_states
-            rfa_to = j // bm.num_states
-            graph_from = i % bm.num_states
-            graph_to = j % bm.num_states
+            rfa_from = i // decomposition.num_states
+            rfa_to = j // decomposition.num_states
+            graph_from = i % decomposition.num_states
+            graph_to = j % decomposition.num_states
 
             if (rfa_from, rfa_to) not in rsm_heads:
                 continue
 
             variable = rsm_heads[(rfa_from, rfa_to)]
-            m = bm.bool_matrices.get(
+            m = decomposition.bool_matrices.get(
                 variable,
-                dok_matrix((bm.num_states, bm.num_states), dtype=bool),
+                dok_matrix(
+                    (decomposition.num_states, decomposition.num_states), dtype=bool
+                ),
             )
             if not m[graph_from, graph_to]:
                 changed = True
                 m[graph_from, graph_to] = True
-                bm.bool_matrices[variable] = m
+                decomposition.bool_matrices[variable] = m
 
     result = set()
-    for key, m in bm.bool_matrices.items():
+    for key, m in decomposition.bool_matrices.items():
         if key not in nonterm:
             continue
         for (u, v) in m.keys():
