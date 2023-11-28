@@ -6,6 +6,7 @@ from pyformlang.cfg import CFG
 
 from project.cfpq.hellings_alg import hellings_alg, hellings_cfpq
 from project.cfpq.matrix_alg import matrix_alg, matrix_cfpq
+from project.cfpq.tensor_alg import tensor_alg, tensor_cfpq
 
 
 Config = namedtuple(
@@ -13,12 +14,12 @@ Config = namedtuple(
 )
 
 
-@pytest.fixture(params=[hellings_alg, matrix_alg])
+@pytest.fixture(params=[hellings_alg, matrix_alg, tensor_alg])
 def alg(request):
     return request.param
 
 
-@pytest.fixture(params=[hellings_cfpq, matrix_cfpq])
+@pytest.fixture(params=[hellings_cfpq, matrix_cfpq, tensor_cfpq])
 def cfpq(request):
     return request.param
 
