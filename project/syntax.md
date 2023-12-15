@@ -140,6 +140,6 @@ print res                                     // Печать результат
 ```
 g_1 = load_graph("graph1")                        // Загрузка графа
 g_2 = load_graph("graph2")                        // Загрузка графа
-cl = filter({l -> l in g_w.labels}, g_p.labels)  // Получение общих меток  
+cl = filter({l -> l in g_w.labels}, g_p.labels)   // Получение общих меток  
 print cl                                          // Печать результата
 ```
