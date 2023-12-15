@@ -4,6 +4,7 @@ from typing import Optional
 from pyformlang.cfg import CFG, Variable, Terminal, Epsilon
 from pyformlang.regular_expression import Regex
 from networkx import MultiDiGraph
+from scipy.sparse import dok_array, csr_array, eye
 
 from project.extended_context_free_grammar import ECFG
 
@@ -145,6 +146,19 @@ def hellings_path_query(
     start_nodes: Optional[set] = None,
     final_nodes: Optional[set] = None,
 ):
+    """
+    Gets pairs of nodes of a given graph so that path exists that is accepted by context-free request
+    Uses hellings algorithm
+
+    Args:
+        graph: graph to find paths in
+        request: context free grammar to check paths
+        start_nodes: set of nodes that are starting
+        final_nodes: set of nodes that are final
+
+    Returns:
+        pairs of nodes in graph so that path exists that is accepted by context-free request
+    """
     if start_nodes is None:
         start_nodes = graph.nodes
     if final_nodes is None:
@@ -157,7 +171,6 @@ def hellings_path_query(
     var_prods = dict()
 
     for prod in wcnf.productions:
-        # S -> eps
         if len(prod.body) == 0:
             eps_prods.add(prod.head)
             continue
@@ -215,6 +228,125 @@ def hellings_path_query(
 
                     remaining.add((fst_start, var, snd_end))
                     result.add((fst_start, var, snd_end))
+
+    final_result = set()
+
+    for start_node, var, final_node in result:
+        if start_node == "\n" or final_node == "\n":
+            continue
+
+        if start_node == "\\n" or final_node == "\\n":
+            continue
+
+        if start_node not in start_nodes:
+            continue
+
+        if final_node not in final_nodes:
+            continue
+
+        if var != request.start_symbol:
+            continue
+
+        final_result.add((start_node, final_node))
+
+    return final_result
+
+
+def matrix_path_query(
+    graph: MultiDiGraph,
+    request: CFG,
+    start_nodes: Optional[set] = None,
+    final_nodes: Optional[set] = None,
+) -> set:
+    """
+    Gets pairs of nodes of a given graph so that path exists that is accepted by context-free request
+    Uses matrix algorithm
+
+    Args:
+        graph: graph to find paths in
+        request: context free grammar to check paths
+        start_nodes: set of nodes that are starting
+        final_nodes: set of nodes that are final
+
+    Returns:
+        pairs of nodes in graph so that path exists that is accepted by context-free request
+    """
+    if start_nodes is None:
+        start_nodes = graph.nodes
+    if final_nodes is None:
+        final_nodes = graph.nodes
+
+    wcnf = wcnf_of_cfg(request)
+    eps_prods = set()
+    term_prods = dict()
+    var_prods = dict()
+
+    for prod in wcnf.productions:
+        if len(prod.body) == 0:
+            eps_prods.add(prod.head)
+            continue
+
+        if prod.body[0].__class__ is Terminal:
+            terminal = prod.body[0]
+            if terminal.value not in term_prods.keys():
+                term_prods[terminal.value] = set()
+            term_prods[terminal.value].add(prod.head)
+            continue
+
+        if prod.body[0].__class__ is Variable:
+            fst = prod.body[0]
+            snd = prod.body[1]
+            if prod.head not in var_prods.keys():
+                var_prods[prod.head] = set()
+            var_prods[prod.head] = (fst, snd)
+            continue
+
+    indexes = dict()
+
+    for index, node in enumerate(graph.nodes):
+        indexes[node] = index
+
+    matrices = dict()
+    size = len(indexes)
+
+    for var in wcnf.variables:
+        matrices[var] = dok_array((size, size), dtype=bool)
+
+    for start_node, end_node, label in graph.edges.data("label"):
+        start_index = indexes[start_node]
+        end_index = indexes[end_node]
+
+        if label not in term_prods.keys():
+            term_prods[label] = set()
+
+        for var in term_prods[label]:
+            matrices[var][start_index, end_index] = True
+
+    for matrix in matrices.values():
+        matrix.tocsr()
+
+    for var in eps_prods:
+        matrices[var] += csr_array(eye(size, dtype=bool))
+
+    changing = True
+    while changing:
+        changing = False
+
+        for var, (fst_body, snd_body) in var_prods.items():
+            old_nnz = matrices[var].nnz
+            matrices[var] += matrices[fst_body] @ matrices[snd_body]
+
+            if old_nnz != matrices[var].nnz:
+                changing = True
+
+    indexes = dict((v, k) for k, v in indexes.items())
+    result = set()
+
+    for var in matrices.keys():
+        for start_index, end_index in zip(*matrices[var].nonzero()):
+            start_node = indexes[start_index]
+            end_node = indexes[end_index]
+            result.add((start_node, var, end_node))
 
     final_result = set()
 
