@@ -42,7 +42,7 @@ expr =
 
 pattern =
     PatVar of var
-  | PatWild 
+  | PatWild
   | PatTuple of List<pattern>
 
 lambda = List<pattern> * expr
