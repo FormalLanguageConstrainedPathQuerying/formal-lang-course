@@ -43,9 +43,9 @@ expr =
 pattern =
     PatVar of var
   | PatWild 
-  | PatTuple of List<list>
+  | PatTuple of List<pattern>
 
-lambda = List<var> * expr
+lambda = List<pattern> * expr
 ```
 
 ## Конкретный синтаксис
@@ -65,7 +65,9 @@ expr ->
     | '(' expr ')'
 
 graph ->
-      var | REGEX | CFG
+      var 
+    | REGEX 
+    | CFG
     | graph '.' 'set_starts' '(' set? ')'
     | graph '.' 'set_finals' '(' set? ')'
     | graph '.' 'add_starts' '(' set ')'
@@ -82,6 +84,7 @@ bool ->
       var
     | 'true' | 'false'
     | expr 'in' expr                       // Contains
+
 
 set ->
       var
@@ -104,8 +107,15 @@ pattern ->
 lambda -> '{' pattern '->' expr '}'
 
 var -> [a-zA-Z_][a-zA-Z_0-9]*
-val -> STR | INT
-STR -> '"' .*? '"'
+
+val -> 
+    STR 
+  | INT
+  | bool
+  | REGEX
+  | CFG
+
+STR -> '"' [^"\n]* '"'
 INT -> '-'? [1-9][0-9]*
 REGEX -> 'r' STR
 CFG -> 'c' STR
