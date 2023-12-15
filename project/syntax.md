@@ -65,8 +65,8 @@ expr ->
     | '(' expr ')'
 
 graph ->
-      var 
-    | REGEX 
+      var
+    | REGEX
     | CFG
     | graph '.' 'set_starts' '(' set? ')'
     | graph '.' 'set_finals' '(' set? ')'
@@ -84,7 +84,6 @@ bool ->
       var
     | 'true' | 'false'
     | expr 'in' expr                       // Contains
-
 
 set ->
       var
@@ -108,8 +107,8 @@ lambda -> '{' pattern '->' expr '}'
 
 var -> [a-zA-Z_][a-zA-Z_0-9]*
 
-val -> 
-    STR 
+val ->
+    STR
   | INT
   | bool
   | REGEX
@@ -125,7 +124,7 @@ EOL -> [\n]+
 ## Примеры
 
 ```
-g = load_graph("graph").set_starts({0 .. 10}) // Получение графа 
+g = load_graph("graph").set_starts({0 .. 10}) // Получение графа
 res = map({(_, f) -> f}, g.reachables)        // Получение достижимых вершин данного множества
 ```
 
@@ -140,6 +139,6 @@ print res                                     // Печать результат
 ```
 g_1 = load_graph("graph1")                        // Загрузка графа
 g_2 = load_graph("graph2")                        // Загрузка графа
-cl = filter({l -> l in g_w.labels}, g_p.labels)   // Получение общих меток  
+cl = filter({l -> l in g_w.labels}, g_p.labels)   // Получение общих меток
 print cl                                          // Печать результата
 ```
