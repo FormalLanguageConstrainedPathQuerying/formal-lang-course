@@ -25,6 +25,10 @@ jobs:
           pip install pytest
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
+      - name: Generate parser
+        working-directory: project/parser
+        run: antlr4 QueryLanguage.g4 -Dlanguage=Python3
+
       - name: Test with pytest
         run: |
           python3 ./scripts/run_tests.py

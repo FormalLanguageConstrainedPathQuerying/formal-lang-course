@@ -1,0 +1,15 @@
+strict digraph program {
+1 [label=program];
+1 -> 2;
+2 [label=statement];
+3 [label=print];
+2 -> 3;
+4 [label="("];
+2 -> 4;
+2 -> 5;
+5 [label=expr];
+6 [label="Hello world!"];
+5 -> 6;
+7 [label=")"];
+2 -> 7;
+}

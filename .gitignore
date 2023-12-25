@@ -148,3 +148,9 @@ _minted-presentation/
 # Test generated
 tests/generated/*
 !tests/generated/.gitkeep
+
+# Parsers generated
+project/parser/QueryLanguage*
+!project/parser/QueryLanguage.g4
+
+

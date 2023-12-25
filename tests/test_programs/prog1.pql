@@ -1,0 +1,17 @@
+x = 24
+y = 92
+z = 34
+s = {x, y, z}
+
+g1 = load_dot("123")
+g2 = load_graph("skos")
+
+r1 = x in s
+r2 = 24 in s
+r3 = 24 in (filter({(x) -> x in {32}}, s))
+
+print(r3)
+print(r4)
+
+print(g2)
+print(g2*)
