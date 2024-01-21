@@ -14,6 +14,10 @@ __all__ = [
 
 
 class FAMatrix:
+
+    """adjacency matrix of a finite automaton + its symbols, start and final states, its size and
+    a list of states, which is necessary to reconstruct the original states from indices in the matrix"""
+
     def __init__(self):
         self.matrix = []
         self.symbols = set()
@@ -32,6 +36,9 @@ class FAMatrix:
 
 
 def matrix_from_fa_graph(graph):
+
+    """generates an adjacency matrix from a finite automaton"""
+
     edges = list(graph.edges(data="label", default="ɛ"))
     nodes = list(graph.nodes(data=True))
 
@@ -70,6 +77,9 @@ def matrix_from_fa_graph(graph):
 
 
 def bool_dec(matrix: FAMatrix):
+
+    """boolean decomposition of an adjacency matrix"""
+
     matrices = dict()
 
     for symbol in matrix.symbols:
@@ -84,6 +94,9 @@ def bool_dec(matrix: FAMatrix):
 
 
 def kronecker(matrixA: FAMatrix, matrixB: FAMatrix):
+
+    """Kronecker product of adjacency matrices"""
+
     size = matrixA.size * matrixB.size
     matrix = []
     for i in range(size):
@@ -137,6 +150,10 @@ def kronecker(matrixA: FAMatrix, matrixB: FAMatrix):
 
 
 def intersect_finite_automata(A, B):
+
+    """takes two automata and returns their intersection, which is calculated through Kronecker product
+    of adjacency matrices"""
+
     graphA = A.to_networkx()
     graphB = B.to_networkx()
 
@@ -162,6 +179,9 @@ def intersect_finite_automata(A, B):
 
 
 def csr_matrices_are_equal(A, B, size):
+
+    """compares sparse matrices"""
+
     answer = True
     for i in range(size):
         for j in range(size):
@@ -174,6 +194,10 @@ def csr_matrices_are_equal(A, B, size):
 
 
 def regex_path_in_automaton(regex, graph, starts, finals):
+
+    """takes regex, graph, and start and final states of the graph, and returns pairs of start and final states that
+    are connected by a path, that forms a word, that is recognized by regex"""
+
     regex_matrix = matrix_from_fa_graph(
         regex.to_epsilon_nfa().to_deterministic().to_networkx()
     )
