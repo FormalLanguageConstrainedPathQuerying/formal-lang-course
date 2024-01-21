@@ -15,12 +15,12 @@ def get_dfa_from_regex(regex):
     return dfa
 
 
-def get_nfa_from_graph(graph, start=[], final=[]):
-    """takes a graph and generates a non-deterministic final automaton based on it
+def get_nfa_from_graph(graph, start=None, final=None):
+    """takes a graph and generates a non-deterministic final automaton based on it.
     lists of start and final states/nodes can be given, otherwise all states
     will be start and final"""
 
-    edges = list(graph.edges(data="label", default="epsilon"))
+    edges = list(graph.edges(data="label", default="ɛ"))
     nodes = list(graph.nodes())
     nfa = EpsilonNFA()
 
@@ -28,14 +28,14 @@ def get_nfa_from_graph(graph, start=[], final=[]):
     for node in nodes:
         states[node] = State(node)
 
-    if not start:
+    if start is None:
         for node in nodes:
             nfa.add_start_state(states[node])
     else:
         for node in start:
             nfa.add_start_state(states[node])
 
-    if not final:
+    if final is None:
         for node in nodes:
             nfa.add_final_state(states[node])
     else:
@@ -46,7 +46,7 @@ def get_nfa_from_graph(graph, start=[], final=[]):
     for edge in edges:
 
         if not edge[2] in symbols:
-            if edge[2] == "epsilon":
+            if edge[2] == "ɛ":
                 symbols[edge[2]] = Epsilon()
             else:
                 symbols[edge[2]] = Symbol(edge[2])
