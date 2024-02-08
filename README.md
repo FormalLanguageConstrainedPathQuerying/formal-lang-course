@@ -7,7 +7,7 @@
 а также материалы курса и другая сопутствующая информация.
 
 Актуальное:
-- [Таблица с текущими результатами](https://docs.google.com/spreadsheets/d/1-vx82auNr0PQDQ3SwA7IYewZyOC9iHIaoX1w1qRUZ3I/edit?usp=sharing)
+- [Таблица с текущими результатами](https://docs.google.com/spreadsheets/d/1zVPStPIwvrCY2cZBLypZyCMgZ5yB2RLS0TCkwR7JfXo/edit?usp=sharing)
 - [Список задач](https://github.com/FormalLanguageConstrainedPathQuerying/formal-lang-course/tree/main/tasks)
 - [Стиль кода как референс](https://www.python.org/dev/peps/pep-0008/)
 - [О достижимости с ограничениями в терминах формальных языков](https://github.com/FormalLanguageConstrainedPathQuerying/FormalLanguageConstrainedReachability-LectureNotes)
