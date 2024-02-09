@@ -144,3 +144,5 @@ _minted-presentation/
 *.fdb_latexmk
 *.fls
 *.gz
+.DS_Store
+*/.DS_Store
