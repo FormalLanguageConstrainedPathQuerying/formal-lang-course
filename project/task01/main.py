@@ -7,6 +7,8 @@ from networkx.drawing.nx_pydot import write_dot
 
 from dataclasses import dataclass
 
+from typing import Tuple
+
 
 @dataclass
 class GraphProps:
@@ -27,7 +29,7 @@ def get_graph_props_by_name(name: str) -> GraphProps:
 
 def two_cycle_graph_to_dot(
         path: str, n: int, m: int,
-        *, labels: tuple[str, str] = ("a", "b")):
+        *, labels: Tuple[str, str] = ("a", "b")):
     graph: MultiDiGraph = \
             cfpq.labeled_two_cycles_graph(n=n, m=m, labels=labels)
     write_dot(G=graph, path=path)
