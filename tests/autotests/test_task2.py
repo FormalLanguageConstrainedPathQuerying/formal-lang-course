@@ -2,6 +2,7 @@
 # You MUST NOT touch anything here except ONE block below
 # You CAN modify this file IF AND ONLY IF you have found a bug and are willing to fix it
 # Otherwise, please report it
+import pyformlang.finite_automaton
 from networkx import MultiDiGraph
 from pyformlang.regular_expression import Regex
 import pytest
@@ -58,38 +59,72 @@ class TestRegexToDfa:
         assert dfa.accepts(word)
 
 
-LABELS = ["a", "b", "c", "x", "y", "z", "alpha", "beta", "gamma", "ɛ"]
+LABELS = ["a", "b", "c", "x", "y", "z", "alpha", "beta", "gamma"]
 
 
-@pytest.fixture(scope="class", params=range(2))
+@pytest.fixture(scope="class", params=range(5))
 def graph(request) -> MultiDiGraph:
     n_of_nodes = random.randint(5, 20)
     graph = nx.scale_free_graph(n_of_nodes)
 
     for _, _, data in graph.edges(data=True):
-        data["label"] = LABELS[random.randint(0, len(LABELS) - 1)]
+        data["label"] = random.choice(LABELS)
 
     return graph
 
 
+def take_a_step(graph: MultiDiGraph, node):
+    for node_to, edge_dict in dict(graph[node]).items():
+        for edge_data in edge_dict.values():
+            yield {"node_to": node_to, "label": edge_data["label"]}
+
+
+def get_all_words_by_n_steps(graph: MultiDiGraph, n: int) -> list[str]:
+    start_nodes = list(map(lambda x: x[0], graph.nodes(data="is_start")))
+
+    def is_final_node(node):
+        return graph.nodes(data=True)[node]["is_final"]
+
+    def get_all_words_by_node(node, word):
+        for trans in take_a_step(graph, node):
+            tmp = word.copy()
+            tmp.append(trans["label"])
+            if is_final_node(trans["node_to"]):
+                yield tmp.copy()
+            yield from get_all_words_by_node(trans["node_to"], tmp.copy())
+
+    result = list()
+    for start in start_nodes:
+        result.extend(itertools.islice(get_all_words_by_node(start, []), 0, n))
+    return result
+
+
 class TestGraphToNfa:
+    def test_not_specified(self, graph: MultiDiGraph) -> None:
+        nfa: pyformlang.finite_automaton.NondeterministicFiniteAutomaton = graph_to_nfa(
+            graph, set(), set()
+        )
+        words = get_all_words_by_n_steps(graph, random.randint(10, 100))
+        word = random.choice(words)
+        assert nfa.accepts(word)
+
     def test_random(
         self,
         graph: MultiDiGraph,
     ) -> None:
-        # print(graph.edges(data=True))
-        assert True
-
-    def test_all(self, graph: MultiDiGraph) -> None:
-        for _, data in graph.nodes(data=True):
-            data["is_start"] = True
-            data["is_final"] = True
-        # print(graph.nodes(data=True))
-
-        starting_node = random.choice(list(graph.nodes))
-        # print(starting_node)
-        p = nx.dfs_edges(graph, starting_node)
-        path = itertools.takewhile(lambda node: not node[1]["is_final"], p)
-        print(list(p))
-
-        assert True
+        start_nodes = set(
+            random.choices(
+                list(graph.nodes().keys()), k=random.randint(1, len(graph.nodes))
+            )
+        )
+        final_nodes = set(
+            random.choices(
+                list(graph.nodes().keys()), k=random.randint(1, len(graph.nodes))
+            )
+        )
+        nfa: pyformlang.finite_automaton.NondeterministicFiniteAutomaton = graph_to_nfa(
+            graph, start_nodes, final_nodes
+        )
+        words = get_all_words_by_n_steps(graph, random.randint(10, 100))
+        word = random.choice(words)
+        assert nfa.accepts(word)
