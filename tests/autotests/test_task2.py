@@ -59,7 +59,7 @@ class TestRegexToDfa:
         assert dfa.accepts(word)
 
 
-LABELS = ["a", "b", "c", "x", "y", "z", "alpha", "beta", "gamma"]
+LABELS = ["a", "b", "c", "x", "y", "z", "alpha", "beta", "gamma", "ɛ"]
 
 
 @pytest.fixture(scope="class", params=range(5))
@@ -88,7 +88,9 @@ def get_all_words_by_n_steps(graph: MultiDiGraph, n: int) -> list[str]:
     def get_all_words_by_node(node, word):
         for trans in take_a_step(graph, node):
             tmp = word.copy()
-            tmp.append(trans["label"])
+            label = trans["label"]
+            if label != "ɛ":
+                tmp.append(label)
             if is_final_node(trans["node_to"]):
                 yield tmp.copy()
             yield from get_all_words_by_node(trans["node_to"], tmp.copy())
