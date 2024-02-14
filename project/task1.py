@@ -11,12 +11,14 @@ def get_graph_info(name: str) -> tuple[int, int, set]:
 
     edge_labels = []
     for u, v, e in graph.edges(data=True):
-        edge_labels.append(e['label'])
+        edge_labels.append(e["label"])
 
     return edges, vertices, set(edge_labels)
 
 
-def make_and_save_dot(len1: int, len2: int, save_path: str, labels: tuple[str, str]) -> None:
+def make_and_save_dot(
+    len1: int, len2: int, save_path: str, labels: tuple[str, str]
+) -> None:
     graph = cfpq_data.labeled_two_cycles_graph(len1, len2, labels=labels)
     data = nx.drawing.nx_pydot.to_pydot(graph)
     data.write_raw(save_path)
@@ -24,4 +26,4 @@ def make_and_save_dot(len1: int, len2: int, save_path: str, labels: tuple[str, s
 
 if __name__ == "__main__":
     print("HI")
-    print(get_graph_info('bzip'))
+    print(get_graph_info("bzip"))
