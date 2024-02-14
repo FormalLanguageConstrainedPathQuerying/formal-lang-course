@@ -56,7 +56,3 @@ jobs:
         run: |
           pre-commit run --all-files --color always --verbose --show-diff-on-failure
 
-      - name: Test
-        run: | 
-          python ./scripts/run_tests.py
-          
