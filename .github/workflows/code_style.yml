@@ -55,7 +55,8 @@ jobs:
       - name: Run pre-commit
         run: |
           pre-commit run --all-files --color always --verbose --show-diff-on-failure
-   pytest:
+          
+  pytest:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
