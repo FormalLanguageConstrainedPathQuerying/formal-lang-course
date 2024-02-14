@@ -33,13 +33,13 @@ def test_get_graph_info_by_name_generations():
         'hasChild',
         'versionInfo',
         'type',
-        'equivalentClass'
+        'equivalentClass',
     }
 
     assert get_graph_info_by_name("generations") == (129, 273, labels)
 
 
-def test_create_labeled_two_cycles_graph(path: str ='graph.dot'):
+def test_create_labeled_two_cycles_graph(path: str ="graph.dot"):
     create_labeled_two_cycles_graph(n=5, m=4, labels=("a", "b"), path=path)
 
     graph = nx.Graph(nx.nx_pydot.read_dot(path))
