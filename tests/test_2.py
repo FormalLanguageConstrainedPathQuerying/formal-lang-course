@@ -13,19 +13,19 @@ import os
 
 
 def generate_random_regex(length):
-    symbols = ['a', 'b', "c", "d", "$"]
+    symbols = ["a", "b", "c", "d", "$"]
 
     rules = [
         lambda: f"({generate_random_regex(length=length - 1)})",
         lambda: f"(({generate_random_regex(length=length - 1)})|({generate_random_regex(length=length - 1)}))",
         lambda: f"(({generate_random_regex(length=length - 1)})*)",
-        lambda: f"(({generate_random_regex(length=length - 1)}).({generate_random_regex(length=length - 1)}))"
+        lambda: f"(({generate_random_regex(length=length - 1)}).({generate_random_regex(length=length - 1)}))",
     ]
 
     if length <= 1:
         regex = random.choice(symbols)
     else:
-        regex = ''.join(random.choice(rules)() for _ in range(length))
+        regex = "".join(random.choice(rules)() for _ in range(length))
     return regex
 
 
@@ -33,7 +33,7 @@ def generate_random_regex(length):
 def test_regex_to_dfa(length):
     random_regex = generate_random_regex(length)
     dfa = project.task2.regex_to_dfa(random_regex)
-    assert (Regex(random_regex).accepts(random_regex) == dfa.accepts(random_regex))
+    assert Regex(random_regex).accepts(random_regex) == dfa.accepts(random_regex)
 
 
 test_graph_to_nfa_two_cicles_test_cases = [
@@ -46,7 +46,7 @@ test_graph_to_nfa_two_cicles_test_cases = [
     ["abc", False],
     ["abcd", False],
     ["abaa", False],
-    ["baa", True]
+    ["baa", True],
 ]
 
 
@@ -54,7 +54,9 @@ test_graph_to_nfa_two_cicles_test_cases = [
 def test_graph_to_nfa_two_cicles(word, expected):
     n1 = random.randint(2, 4)
     n2 = random.randint(2, 4)
-    file_path = os.path.abspath(f"test_resources/test_build_and_save_graph_with_two_cicles_{1}.dot")
+    file_path = os.path.abspath(
+        f"test_resources/test_build_and_save_graph_with_two_cicles_{1}.dot"
+    )
     project.task1.build_and_save_graph_with_two_cicles(n1, n2, file_path)
 
     readed_graphs = pydot.graph_from_dot_file(file_path)

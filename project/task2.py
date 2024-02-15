@@ -18,7 +18,9 @@ def regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton or None:
     return dfa
 
 
-def graph_to_nfa(graph: nx.MultiDiGraph, start_nodes=None, final_nodes=None) -> NondeterministicFiniteAutomaton:
+def graph_to_nfa(
+    graph: nx.MultiDiGraph, start_nodes=None, final_nodes=None
+) -> NondeterministicFiniteAutomaton:
     nfa = NondeterministicFiniteAutomaton()
 
     if start_nodes is None:
