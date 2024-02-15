@@ -37,11 +37,13 @@ def test_build_and_save_graph_with_two_cicles(i):
 
     readed_num_nodes = networkx.number_of_nodes(readed_graph)
     readed_num_edges = networkx.number_of_edges(readed_graph)
+    readed_labels = set(networkx.get_edge_attributes(readed_graph, "label").values())
 
     os.remove(file_path)
 
     assert readed_num_nodes == n1 + n2 - 1
     assert readed_num_edges == n1 + n2
+    assert readed_labels == {"a", "b"}
 
 
 if __name__ == "__main__":
