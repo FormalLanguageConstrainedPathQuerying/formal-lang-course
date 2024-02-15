@@ -1,4 +1,3 @@
-
 from pyformlang.regular_expression import Regex
 from pyformlang.finite_automaton import DeterministicFiniteAutomaton
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton
@@ -18,8 +17,8 @@ def regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton or None:
     dfa = nfa.to_deterministic()
     return dfa
 
-def graph_to_nfa(graph: nx.MultiDiGraph, start_nodes=None, final_nodes = None) -> NondeterministicFiniteAutomaton:
 
+def graph_to_nfa(graph: nx.MultiDiGraph, start_nodes=None, final_nodes=None) -> NondeterministicFiniteAutomaton:
     nfa = NondeterministicFiniteAutomaton()
 
     if start_nodes is None:
@@ -38,13 +37,10 @@ def graph_to_nfa(graph: nx.MultiDiGraph, start_nodes=None, final_nodes = None) -
     for node in final_nodes:
         nfa.add_final_state(State(node))
 
-    for edge in graph.edges(data = True):
+    for edge in graph.edges(data=True):
         if edge[2]["label"] == "eps":
             nfa.add_transition(State(edge[0]), Epsilon(), State(edge[1]))
         else:
             nfa.add_transition(State(edge[0]), Symbol(edge[2]["label"]), State(edge[1]))
 
     return nfa
-
-
-

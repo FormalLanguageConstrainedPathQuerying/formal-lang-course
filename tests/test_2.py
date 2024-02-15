@@ -12,15 +12,14 @@ import pydot
 import os
 
 
-
 def generate_random_regex(length):
     symbols = ['a', 'b', "c", "d", "$"]
 
     rules = [
-        lambda: f"({generate_random_regex(length = length-1)})",
-        lambda: f"(({generate_random_regex(length = length-1)})|({generate_random_regex(length = length-1)}))",
-        lambda: f"(({generate_random_regex(length = length-1)})*)",
-        lambda: f"(({generate_random_regex(length = length-1)}).({generate_random_regex(length = length-1)}))"
+        lambda: f"({generate_random_regex(length=length - 1)})",
+        lambda: f"(({generate_random_regex(length=length - 1)})|({generate_random_regex(length=length - 1)}))",
+        lambda: f"(({generate_random_regex(length=length - 1)})*)",
+        lambda: f"(({generate_random_regex(length=length - 1)}).({generate_random_regex(length=length - 1)}))"
     ]
 
     if length <= 1:
@@ -50,6 +49,7 @@ test_graph_to_nfa_two_cicles_test_cases = [
     ["baa", True]
 ]
 
+
 @pytest.mark.parametrize("word, expected", test_graph_to_nfa_two_cicles_test_cases)
 def test_graph_to_nfa_two_cicles(word, expected):
     n1 = random.randint(2, 4)
@@ -62,8 +62,6 @@ def test_graph_to_nfa_two_cicles(word, expected):
 
     nfa = project.task2.graph_to_nfa(readed_graph)
 
-
     assert nfa.accepts(word) == expected
 
     os.remove(file_path)
-
