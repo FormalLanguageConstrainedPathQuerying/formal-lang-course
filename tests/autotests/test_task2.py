@@ -34,7 +34,6 @@ REGEX_TO_TEST = [
 ]
 
 
-@pytest.mark.skip("")
 class TestRegexToDfa:
     @pytest.mark.parametrize("regex_str", REGEX_TO_TEST, ids=lambda regex: regex)
     def test(self, regex_str: str) -> None:
@@ -62,9 +61,58 @@ class TestRegexToDfa:
 LABELS = ["a", "b", "c", "x", "y", "z", "alpha", "beta", "gamma", "ɛ"]
 
 
+class GraphWordsHelper:
+    graph = None
+    all_paths = None
+
+    def __init__(self, graph: MultiDiGraph):
+        self.graph = graph
+        self.all_paths = nx.shortest_path(graph)
+
+    def is_reachable(self, source, target):
+        if source not in self.all_paths.keys():
+            return False
+        return target in self.all_paths[source].keys()
+
+    def _take_a_step(self, node):
+        for node_to, edge_dict in dict(self.graph[node]).items():
+            for edge_data in edge_dict.values():
+                yield {"node_to": node_to, "label": edge_data["label"]}
+
+    def _is_final_node(self, node):
+        return self.graph.nodes(data=True)[node]["is_final"]
+
+    def generate_words_by_node(self, node, word=None):
+        if word is None:
+            word = list()
+        for trans in self._take_a_step(node):
+            tmp = word.copy()
+            label = trans["label"]
+            if label != "ɛ":
+                tmp.append(label)
+            if self._is_final_node(trans["node_to"]):
+                yield tmp.copy()
+            yield from self.generate_words_by_node(trans["node_to"], tmp.copy())
+
+    def take_words_by_node(self, node, n):
+        final_nodes = list(map(lambda x: x[0], self.graph.nodes(data="is_final")))
+        if any(
+            map(lambda final_node: self.is_reachable(node, final_node), final_nodes)
+        ):
+            return itertools.islice(self.generate_words_by_node(node), 0, n)
+        return []
+
+    def get_all_words_less_then_n(self, n: int) -> list[str]:
+        start_nodes = list(map(lambda x: x[0], self.graph.nodes(data="is_start")))
+        result = list()
+        for start in start_nodes:
+            result.extend(self.take_words_by_node(start, n))
+        return result
+
+
 @pytest.fixture(scope="class", params=range(5))
 def graph(request) -> MultiDiGraph:
-    n_of_nodes = random.randint(5, 20)
+    n_of_nodes = random.randint(1, 20)
     graph = nx.scale_free_graph(n_of_nodes)
 
     for _, _, data in graph.edges(data=True):
@@ -73,42 +121,18 @@ def graph(request) -> MultiDiGraph:
     return graph
 
 
-def take_a_step(graph: MultiDiGraph, node):
-    for node_to, edge_dict in dict(graph[node]).items():
-        for edge_data in edge_dict.values():
-            yield {"node_to": node_to, "label": edge_data["label"]}
-
-
-def get_all_words_by_n_steps(graph: MultiDiGraph, n: int) -> list[str]:
-    start_nodes = list(map(lambda x: x[0], graph.nodes(data="is_start")))
-
-    def is_final_node(node):
-        return graph.nodes(data=True)[node]["is_final"]
-
-    def get_all_words_by_node(node, word):
-        for trans in take_a_step(graph, node):
-            tmp = word.copy()
-            label = trans["label"]
-            if label != "ɛ":
-                tmp.append(label)
-            if is_final_node(trans["node_to"]):
-                yield tmp.copy()
-            yield from get_all_words_by_node(trans["node_to"], tmp.copy())
-
-    result = list()
-    for start in start_nodes:
-        result.extend(itertools.islice(get_all_words_by_node(start, []), 0, n))
-    return result
-
-
 class TestGraphToNfa:
     def test_not_specified(self, graph: MultiDiGraph) -> None:
         nfa: pyformlang.finite_automaton.NondeterministicFiniteAutomaton = graph_to_nfa(
             graph, set(), set()
         )
-        words = get_all_words_by_n_steps(graph, random.randint(10, 100))
-        word = random.choice(words)
-        assert nfa.accepts(word)
+        words_helper = GraphWordsHelper(graph)
+        words = words_helper.get_all_words_less_then_n(random.randint(10, 100))
+        if len(words) == 0:
+            assert nfa.is_empty()
+        else:
+            word = random.choice(words)
+            assert nfa.accepts(word)
 
     def test_random(
         self,
@@ -127,6 +151,10 @@ class TestGraphToNfa:
         nfa: pyformlang.finite_automaton.NondeterministicFiniteAutomaton = graph_to_nfa(
             graph, start_nodes, final_nodes
         )
-        words = get_all_words_by_n_steps(graph, random.randint(10, 100))
-        word = random.choice(words)
-        assert nfa.accepts(word)
+        words_helper = GraphWordsHelper(graph)
+        words = words_helper.get_all_words_less_then_n(random.randint(10, 100))
+        if len(words) == 0:
+            assert nfa.is_empty()
+        else:
+            word = random.choice(words)
+            assert nfa.accepts(word)
