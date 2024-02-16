@@ -31,7 +31,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: test-artifacts
-          path: ./tests
+          path: /home/runner/work/formal-lang-course/formal-lang-course/test_resources/
 
   use_test_artifacts:
     needs: test
@@ -42,4 +42,4 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: test-artifacts
-          path: ./tests
+          path: /home/runner/work/formal-lang-course/formal-lang-course/test_resources/
