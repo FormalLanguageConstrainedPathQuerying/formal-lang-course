@@ -5,6 +5,7 @@ import project.task1
 import random
 import pydot
 import os
+from pkg_resources import iter_entry_points
 
 graphs = cfpq_data.dataset.DATASET[0:15]
 
@@ -39,6 +40,8 @@ def test_build_and_save_graph_with_two_cicles(i):
 
     readed_num_nodes = networkx.number_of_nodes(readed_graph)
     readed_num_edges = networkx.number_of_edges(readed_graph)
+
+    os.remove(file_path)
 
     assert readed_num_nodes == n1 + n2 - 1
     assert readed_num_edges == n1 + n2
