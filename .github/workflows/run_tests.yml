@@ -26,5 +26,20 @@ jobs:
       - name: Test with pytest
         run: |
           pip install pytest
-          git add ./tests/test_resources
           python -m pytest -s tests/
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-artifacts
+          path: ./tests
+
+  use_test_artifacts:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download test artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: test-artifacts
+          path: ./tests
