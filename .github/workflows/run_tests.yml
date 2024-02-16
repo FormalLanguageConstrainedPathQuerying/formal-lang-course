@@ -26,5 +26,5 @@ jobs:
       - name: Test with pytest
         run: |
           pip install pytest
-          git add ../../tests/test_resources
+          git add ./tests/test_resources
           python -m pytest -s tests/
