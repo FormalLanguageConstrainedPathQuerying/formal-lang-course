@@ -33,7 +33,9 @@ def test_graph_info(graph_name):
 def test_build_and_save_graph_with_two_cicles(i):
     n1 = random.randint(2, 100)
     n2 = random.randint(2, 100)
-    file_path = f"{dir_path}/test_resources/test_build_and_save_graph_with_two_cicles_{i}.dot"
+    file_path = (
+        f"{dir_path}/test_resources/test_build_and_save_graph_with_two_cicles_{i}.dot"
+    )
 
     project.task1.build_and_save_graph_with_two_cicles(n1, n2, file_path)
 
@@ -42,8 +44,6 @@ def test_build_and_save_graph_with_two_cicles(i):
 
     readed_num_nodes = networkx.number_of_nodes(readed_graph)
     readed_num_edges = networkx.number_of_edges(readed_graph)
-
-    os.remove(file_path)
 
     assert readed_num_nodes == n1 + n2 - 1
     assert readed_num_edges == n1 + n2
