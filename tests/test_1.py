@@ -31,7 +31,7 @@ def test_build_and_save_graph_with_two_cicles(i):
     n1 = random.randint(2, 100)
     n2 = random.randint(2, 100)
     file_path = os.path.abspath(
-        f"test_resources/test_build_and_save_graph_with_two_cicles_{i}.dot"
+        f"./test_resources/test_build_and_save_graph_with_two_cicles_{i}.dot"
     )
     project.task1.build_and_save_graph_with_two_cicles(n1, n2, file_path)
 
