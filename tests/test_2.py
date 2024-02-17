@@ -10,6 +10,7 @@ from project.task1 import build_and_save_graph_with_two_cicles, graph_info
 import random
 import pydot
 import os
+import tempfile
 
 
 def generate_random_regex(length):
@@ -54,9 +55,9 @@ test_graph_to_nfa_two_cicles_test_cases = [
 def test_graph_to_nfa_two_cicles(word, expected):
     n1 = random.randint(2, 4)
     n2 = random.randint(2, 4)
-    file_path = os.path.abspath(
-        f"test_resources/test_build_and_save_graph_with_two_cicles_{1}.dot"
-    )
+    with tempfile.NamedTemporaryFile() as tmp:
+        file_path = tmp.name
+
     project.task1.build_and_save_graph_with_two_cicles(n1, n2, file_path)
 
     readed_graphs = pydot.graph_from_dot_file(file_path)
