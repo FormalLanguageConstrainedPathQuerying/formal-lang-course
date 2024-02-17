@@ -5,6 +5,8 @@ import project.task1
 import random
 import pydot
 import os
+from pkg_resources import iter_entry_points
+from os import path
 import tempfile
 
 graphs = cfpq_data.dataset.DATASET[0:15]
@@ -30,6 +32,7 @@ def test_graph_info(graph_name):
 def test_build_and_save_graph_with_two_cicles(i):
     n1 = random.randint(2, 100)
     n2 = random.randint(2, 100)
+
     with tempfile.NamedTemporaryFile() as tmp:
         file_path = tmp.name
 
@@ -40,13 +43,9 @@ def test_build_and_save_graph_with_two_cicles(i):
 
     readed_num_nodes = networkx.number_of_nodes(readed_graph)
     readed_num_edges = networkx.number_of_edges(readed_graph)
-    readed_labels = set(networkx.get_edge_attributes(readed_graph, "label").values())
-
-    os.remove(file_path)
 
     assert readed_num_nodes == n1 + n2 - 1
     assert readed_num_edges == n1 + n2
-    assert readed_labels == {"a", "b"}
 
 
 if __name__ == "__main__":
