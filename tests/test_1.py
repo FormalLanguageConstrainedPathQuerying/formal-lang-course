@@ -5,6 +5,7 @@ import project.task1
 import random
 import pydot
 import os
+import tempfile
 
 graphs = cfpq_data.dataset.DATASET[0:15]
 
@@ -29,9 +30,9 @@ def test_graph_info(graph_name):
 def test_build_and_save_graph_with_two_cicles(i):
     n1 = random.randint(2, 100)
     n2 = random.randint(2, 100)
-    file_path = os.path.abspath(
-        f"test_resources/test_build_and_save_graph_with_two_cicles_{i}.dot"
-    )
+    with tempfile.NamedTemporaryFile() as tmp:
+        file_path = tmp.name
+
     project.task1.build_and_save_graph_with_two_cicles(n1, n2, file_path)
 
     readed_graphs = pydot.graph_from_dot_file(file_path)
