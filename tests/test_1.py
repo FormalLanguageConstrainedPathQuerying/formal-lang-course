@@ -12,6 +12,7 @@ graphs = cfpq_data.dataset.DATASET[0:15]
 
 dir_path = path.dirname(path.realpath(__file__))
 
+
 @pytest.mark.parametrize("graph_name", graphs)
 def test_graph_info(graph_name):
     graph_path = cfpq_data.download(graph_name)
