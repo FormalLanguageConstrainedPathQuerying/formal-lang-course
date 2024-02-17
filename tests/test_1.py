@@ -6,9 +6,11 @@ import random
 import pydot
 import os
 from pkg_resources import iter_entry_points
+from os import path
 
 graphs = cfpq_data.dataset.DATASET[0:15]
 
+dir_path = path.dirname(path.realpath(__file__))
 
 @pytest.mark.parametrize("graph_name", graphs)
 def test_graph_info(graph_name):
@@ -31,7 +33,7 @@ def test_build_and_save_graph_with_two_cicles(i):
     n1 = random.randint(2, 100)
     n2 = random.randint(2, 100)
     file_path = os.path.abspath(
-        f"./test_resources/test_build_and_save_graph_with_two_cicles_{i}.dot"
+        f"{dir_path}/test_resources/test_build_and_save_graph_with_two_cicles_{i}.dot"
     )
     project.task1.build_and_save_graph_with_two_cicles(n1, n2, file_path)
 
