@@ -4,6 +4,7 @@ from pyformlang.finite_automaton import NondeterministicFiniteAutomaton
 from pyformlang.finite_automaton import State, Epsilon
 from pyformlang.finite_automaton import Symbol
 import networkx as nx
+from typing import Set
 
 
 def regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton or None:
@@ -19,7 +20,7 @@ def regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton or None:
 
 
 def graph_to_nfa(
-    graph: nx.MultiDiGraph, start_nodes=None, final_nodes=None
+    graph: nx.MultiDiGraph, start_nodes : Set[int] = None, final_nodes : Set[int] = None
 ) -> NondeterministicFiniteAutomaton:
     nfa = NondeterministicFiniteAutomaton()
 
