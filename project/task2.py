@@ -20,7 +20,7 @@ def regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton or None:
 
 
 def graph_to_nfa(
-    graph: nx.MultiDiGraph, start_nodes : Set[int] = None, final_nodes : Set[int] = None
+    graph: nx.MultiDiGraph, start_nodes: Set[int] = None, final_nodes: Set[int] = None
 ) -> NondeterministicFiniteAutomaton:
     nfa = NondeterministicFiniteAutomaton()
 
