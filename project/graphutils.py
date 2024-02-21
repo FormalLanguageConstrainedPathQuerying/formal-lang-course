@@ -1,5 +1,6 @@
 from cfpq_data import *
 import networkx
+from networkx import MultiDiGraph
 
 
 def graph_signature(graph_name):
@@ -13,3 +14,4 @@ def save_twocycled_graph(vertices1, vertices2, labels):
     networkx.drawing.nx_pydot.write_dot(
         graph, "twocycled_" + str(vertices1) + "_" + str(vertices2) + ".dot"
     )
+    return graph

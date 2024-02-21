@@ -12,7 +12,7 @@ import networkx as nx
 
 # Fix import statements in try block to run tests
 try:
-    from project.task2 import regex_to_dfa, graph_to_nfa
+    from project.automata import regex_to_dfa, graph_to_nfa
 except ImportError:
     pytestmark = pytest.mark.skip("Task 2 is not ready to test!")
 
@@ -114,6 +114,12 @@ class GraphWordsHelper:
 def graph(request) -> MultiDiGraph:
     n_of_nodes = random.randint(1, 20)
     graph = nx.scale_free_graph(n_of_nodes)
+
+    # for i in graph.nodes:
+    #     graph.nodes[i]["is_start"] = graph.in_degree(i) == 0
+    #     graph.nodes[i]["is_final"] = graph.out_degree(i) == 0
+    #     print(str(graph.nodes[i]["is_start"]) +
+    #           " lol " + str(graph.nodes[i]["is_final"]))
 
     for _, _, data in graph.edges(data=True):
         data["label"] = random.choice(LABELS)
