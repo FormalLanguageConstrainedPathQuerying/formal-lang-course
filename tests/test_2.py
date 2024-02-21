@@ -66,5 +66,3 @@ def test_graph_to_nfa_two_cicles(word, expected):
     nfa = project.task2.graph_to_nfa(readed_graph)
 
     assert nfa.accepts(word) == expected
-
-    os.remove(file_path)
