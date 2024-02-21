@@ -105,7 +105,7 @@ class GraphWordsHelper:
             return itertools.islice(self.generate_words_by_node(node), 0, n)
         return []
 
-    def get_all_words_less_then_n(self, n: int) -> list[str]:
+    def get_all_words_less_then_n(self, n: int) -> List[int]:
         start_nodes = list(map(lambda x: x[0], self.graph.nodes(data="is_start")))
         result = list()
         for start in start_nodes:
