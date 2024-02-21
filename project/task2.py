@@ -21,16 +21,16 @@ def regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton or None:
 
 
 def graph_to_nfa(
-    graph: nx.MultiDiGraph, start_nodes: Set[int] = None, final_nodes: Set[int] = None
+    graph: nx.MultiDiGraph, start_nodes: Set[int] = set(), final_nodes: Set[int] = set()
 ) -> NondeterministicFiniteAutomaton:
     nfa = NondeterministicFiniteAutomaton()
 
-    if len(start_nodes) == 0 or start_nodes is None:
+    if len(start_nodes) == 0:
         start_nodes = graph.nodes
     else:
         start_nodes = []
 
-    if len(final_nodes) == 0 or final_nodes is None:
+    if len(final_nodes) == 0:
         final_nodes = graph.nodes
     else:
         final_nodes = []
