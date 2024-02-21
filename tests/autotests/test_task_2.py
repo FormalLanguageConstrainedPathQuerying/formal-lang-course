@@ -11,6 +11,7 @@ import pytest
 import random
 import itertools
 import networkx as nx
+from typing import *
 
 # Fix import statements in try block to run tests
 try:
