@@ -1,6 +1,6 @@
+# import cfpq_data
 from cfpq_data import *
 import networkx
-from networkx import MultiDiGraph
 
 
 def graph_signature(graph_name):

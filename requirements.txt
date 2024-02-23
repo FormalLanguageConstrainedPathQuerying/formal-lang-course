@@ -1,8 +1,7 @@
 antlr4-python3-runtime
 black
-cfpq-data
+cfpq-data==4.0.2
 networkx==3.2.1
 pre-commit
 pydot
 pytest
-scipy
