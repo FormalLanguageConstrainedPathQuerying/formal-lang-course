@@ -23,7 +23,7 @@ jobs:
       matrix:
 
         # Each option you define in the matrix has a key and value
-        python-version: [ 3.8 ]
+        python-version: [ 3.9 ]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
