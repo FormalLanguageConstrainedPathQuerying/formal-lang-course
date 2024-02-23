@@ -2,7 +2,10 @@ from networkx import MultiDiGraph
 
 from pyparsing import Set
 
-from pyformlang.finite_automaton import DeterministicFiniteAutomaton, NondeterministicFiniteAutomaton
+from pyformlang.finite_automaton import (
+    DeterministicFiniteAutomaton,
+    NondeterministicFiniteAutomaton,
+)
 from pyformlang.regular_expression import Regex
 
 
@@ -11,7 +14,7 @@ def regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton:
 
 
 def graph_to_nfa(
-  graph: MultiDiGraph, start_states: Set[int], final_states: Set[int]
+    graph: MultiDiGraph, start_states: Set[int], final_states: Set[int]
 ) -> NondeterministicFiniteAutomaton:
     nfa: NondeterministicFiniteAutomaton = NondeterministicFiniteAutomaton()
 
