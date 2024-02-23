@@ -61,17 +61,24 @@ class TestRegexToDfa:
 
 
 LABELS = ["a", "b", "c", "x", "y", "z", "alpha", "beta", "gamma"]
+LABEL = "label"
+IS_FINAL = "is_final"
+IS_START = "is_start"
 
 
 class GraphWordsHelper:
     graph = None
     final_nodes = None
     transitive_closure = None
+    start_nodes = None
 
     def __init__(self, graph: MultiDiGraph):
         self.graph = graph.copy()
         self.final_nodes = list(
-            map(lambda x: x[0], filter(lambda y: y[1], graph.nodes(data="is_final")))
+            map(lambda x: x[0], filter(lambda y: y[1], self.graph.nodes(data=IS_FINAL)))
+        )
+        self.start_nodes = list(
+            map(lambda x: x[0], filter(lambda y: y[1], self.graph.nodes(data=IS_START)))
         )
         self.transitive_closure: nx.MultiDiGraph = nx.transitive_closure(
             copy.deepcopy(self.graph), reflexive=False
@@ -89,7 +96,7 @@ class GraphWordsHelper:
     def _take_a_step(self, node):
         for node_to, edge_dict in dict(self.graph[node]).items():
             for edge_data in edge_dict.values():
-                yield node_to, edge_data["label"]
+                yield node_to, edge_data[LABEL]
 
     def _is_final_node(self, node):
         return node in self.final_nodes
@@ -112,14 +119,8 @@ class GraphWordsHelper:
         return []
 
     def get_words_with_limiter(self, limiter: int) -> list[str]:
-        start_nodes = list(
-            map(
-                lambda x: x[0],
-                filter(lambda y: y[1], self.graph.nodes(data="is_start")),
-            )
-        )
         result = list()
-        for start in start_nodes:
+        for start in self.start_nodes:
             result.extend(self.take_n_words_by_node(start, limiter))
             if start in self.final_nodes:
                 result.append([])
@@ -132,15 +133,15 @@ def graph(request) -> MultiDiGraph:
     graph = nx.scale_free_graph(n_of_nodes)
 
     for _, _, data in graph.edges(data=True):
-        data["label"] = random.choice(LABELS)
+        data[LABEL] = random.choice(LABELS)
     for _, data in graph.nodes(data=True):
-        data["is_final"] = False
-        data["is_start"] = False
+        data[IS_FINAL] = False
+        data[IS_START] = False
     return graph
 
 
 class TestGraphToNfa:
-    def test_random(
+    def test_random_start_and_final(
         self,
         graph: MultiDiGraph,
     ) -> None:
@@ -159,9 +160,9 @@ class TestGraphToNfa:
         )
         for node, data in graph.nodes(data=True):
             if node in start_nodes:
-                data["is_start"] = True
+                data[IS_START] = True
             if node in final_nodes:
-                data["is_final"] = True
+                data[IS_FINAL] = True
         words_helper = GraphWordsHelper(graph)
         words = words_helper.get_words_with_limiter(random.randint(10, 100))
         if len(words) == 0:
@@ -170,13 +171,13 @@ class TestGraphToNfa:
             word = random.choice(words)
             assert nfa.accepts(word)
 
-    def test_not_specified(self, graph: MultiDiGraph) -> None:
+    def test_not_specified_start_and_final(self, graph: MultiDiGraph) -> None:
         nfa: pyformlang.finite_automaton.NondeterministicFiniteAutomaton = graph_to_nfa(
             graph.copy(), set(), set()
         )
         for _, data in graph.nodes(data=True):
-            data["is_final"] = True
-            data["is_start"] = True
+            data[IS_FINAL] = True
+            data[IS_START] = True
         words_helper = GraphWordsHelper(graph)
         words = words_helper.get_words_with_limiter(random.randint(10, 100))
         if len(words) == 0:
