@@ -21,7 +21,7 @@ def regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton or None:
 
 
 def graph_to_nfa(
-    graph: nx.MultiDiGraph, start_nodes: Set[int] = set(), final_nodes: Set[int] = set()
+        graph: nx.MultiDiGraph, start_nodes: Set[int] = set(), final_nodes: Set[int] = set()
 ) -> NondeterministicFiniteAutomaton:
     nfa = NondeterministicFiniteAutomaton()
 
@@ -38,29 +38,29 @@ def graph_to_nfa(
     states = {}
 
     for node in graph.nodes:
-        graph.nodes(data=True)[node]["is_start"] = False
-        graph.nodes(data=True)[node]["is_final"] = False
+        # graph.nodes(data=True)[node]["is_start"] = False
+        # graph.nodes(data=True)[node]["is_final"] = False
         states[node] = State(node)
 
-
     for node in start_nodes:
-        graph.nodes(data=True)[node]["is_start"] = True
-        nfa.add_start_state(State(node))
+        # graph.nodes(data=True)[node]["is_start"] = True
+        nfa.add_start_state(states[node])
 
     for node in final_nodes:
-        graph.nodes(data=True)[node]["is_final"] = True
-        nfa.add_final_state(State(node))
+        # graph.nodes(data=True)[node]["is_final"] = True
+        nfa.add_final_state(states[node])
 
     # eps_edges = []
 
     for edge in graph.edges(data=True):
-        if edge[2]["label"] == "eps":
-            # eps_edges.append(edge)
-            nfa.add_transition(states[edge[0]], Symbol("eps"), states[edge[1]])
-        else:
-            nfa.add_transition(states[edge[0]], Symbol(edge[2]["label"]), states[edge[1]])
+        # if edge[2]["label"] == "eps":
+        #     # eps_edges.append(edge)
+        #     nfa.add_transition(states[edge[0]], Epsilon(), states[edge[1]])
+        # else:
+        nfa.add_transition(states[edge[0]], Symbol(edge[2]["label"]), states[edge[1]])
 
 
+    # nfa.remove_epsilon_transitions()
 
     # for e in eps_edges:
     #     e_to = e[1]
@@ -68,8 +68,5 @@ def graph_to_nfa(
     #     for e2 in graph.edges(data=True):
     #         if e2[0] == e_to:
     #             nfa.add_transition(states[e_from], Epsilon(), states[e2[1]])
-
-
-    nfa.remove_epsilon_transitions()
 
     return nfa
