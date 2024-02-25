@@ -135,13 +135,13 @@ class TestGraphToNfa:
             assert nfa.is_empty()
         else:
             word = random.choice(words)
-            print(word)
             assert nfa.accepts(word)
 
     def test_random(
         self,
         graph: MultiDiGraph,
     ) -> None:
+        print("LLL" + str(len(graph.nodes)))
         start_nodes = set(
             random.choices(
                 list(graph.nodes().keys()), k=random.randint(1, len(graph.nodes))

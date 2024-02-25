@@ -35,9 +35,13 @@ def graph_to_nfa(
     else:
         final_nodes = []
 
+    states = {}
+
     for node in graph.nodes:
         graph.nodes(data=True)[node]["is_start"] = False
         graph.nodes(data=True)[node]["is_final"] = False
+        states[node] = State(node)
+
 
     for node in start_nodes:
         graph.nodes(data=True)[node]["is_start"] = True
@@ -47,19 +51,25 @@ def graph_to_nfa(
         graph.nodes(data=True)[node]["is_final"] = True
         nfa.add_final_state(State(node))
 
-    eps_edges = []
+    # eps_edges = []
 
     for edge in graph.edges(data=True):
         if edge[2]["label"] == "eps":
-            eps_edges.append(edge)
+            # eps_edges.append(edge)
+            nfa.add_transition(states[edge[0]], Symbol("eps"), states[edge[1]])
         else:
-            nfa.add_transition(State(edge[0]), Symbol(edge[2]["label"]), State(edge[1]))
+            nfa.add_transition(states[edge[0]], Symbol(edge[2]["label"]), states[edge[1]])
 
-    for e in eps_edges:
-        e_to = e[1]
-        e_from = e[0]
-        for e2 in graph.edges(data=True):
-            if e2[0] == e_to:
-                nfa.add_transition(State(e_from), Symbol(e2[2]["label"]), State(e2[1]))
+
+
+    # for e in eps_edges:
+    #     e_to = e[1]
+    #     e_from = e[0]
+    #     for e2 in graph.edges(data=True):
+    #         if e2[0] == e_to:
+    #             nfa.add_transition(states[e_from], Epsilon(), states[e2[1]])
+
+
+    nfa.remove_epsilon_transitions()
 
     return nfa
