@@ -1,6 +1,6 @@
 from pyformlang.finite_automaton import DeterministicFiniteAutomaton, State
-from project.dfa import regex_to_dfa, graph_to_nfa
-from project.graph import create_two_cycles_graph
+from project.task2 import regex_to_dfa, graph_to_nfa
+from project.task1 import create_two_cycles_graph
 
 
 def test_1():
