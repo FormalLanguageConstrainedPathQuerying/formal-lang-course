@@ -1,10 +1,10 @@
 from pyformlang.finite_automaton import DeterministicFiniteAutomaton, State
-from project.dfa import regex2dfa, graph2nfa
+from project.dfa import regex_to_dfa, graph_to_nfa
 from project.graph import create_two_cycles_graph
 
 
 def test_1():
-    dfa = regex2dfa("(1|0)*")
+    dfa = regex_to_dfa("(1|0)*")
 
     bin_dfa = DeterministicFiniteAutomaton()
 
@@ -17,6 +17,6 @@ def test_1():
 
 
 def test_2():
-    nfa = graph2nfa(create_two_cycles_graph(3, 3, ("1", "0")), [0], [0])
-    dfa = regex2dfa("(1 1 1 1|0 0 0 0)*")
+    nfa = graph_to_nfa(create_two_cycles_graph(3, 3, ("1", "0")), [0], [0])
+    dfa = regex_to_dfa("(1 1 1 1|0 0 0 0)*")
     assert dfa.is_equivalent_to(nfa)
