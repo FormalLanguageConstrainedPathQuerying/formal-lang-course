@@ -3,6 +3,8 @@ from pyformlang.finite_automaton import NondeterministicFiniteAutomaton
 from typing import Iterable, Any
 from pyformlang.regular_expression import Regex
 import networkx as nx
+
+
 def regex_to_dfa(expr: str) -> DeterministicFiniteAutomaton:
     """Return minimized DFA from regular expression string
 
@@ -12,10 +14,11 @@ def regex_to_dfa(expr: str) -> DeterministicFiniteAutomaton:
     dfa = Regex(expr).to_epsilon_nfa()
     return dfa.minimize()
 
+
 def graph_to_nfa(
-    graph: nx.MultiDiGraph,
-    starts: Iterable[Any] = None,
-    finals: Iterable[Any] = None,
+        graph: nx.MultiDiGraph,
+        starts: Iterable[Any] = None,
+        finals: Iterable[Any] = None,
 ) -> NondeterministicFiniteAutomaton:
     """Return nondeterministic finite automaton from :class:`nx.MultiDiGraph` graph
 
