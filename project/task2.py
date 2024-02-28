@@ -29,8 +29,10 @@ def graph_to_nfa(
         if label is not None:
             labels.add(label)
 
-    start_states = start_states if start_states is not None else states
-    final_states = final_states if final_states is not None else states
+    if not start_states:
+        start_states = states
+    if not final_states:
+        final_states = states
 
     nfa = NondeterministicFiniteAutomaton()
 
