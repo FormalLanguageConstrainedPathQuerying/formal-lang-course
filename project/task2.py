@@ -28,10 +28,13 @@ def graph_to_nfa(
     finals -- `graph's` nodes marked as finals;
     """
     nfa = NondeterministicFiniteAutomaton()
+    if starts is not None:
+        for node in starts:
+            nfa.add_start_state(node)
+    if finals is not None:
+        for node in finals:
+            nfa.add_final_state(node)
+
     nfa.add_transitions([(v, d["label"], u) for v, u, d in graph.edges(data=True)])
 
-    for node in starts:
-        nfa.add_start_state(node)
-    for node in finals:
-        nfa.add_final_state(node)
     return nfa
