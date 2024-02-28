@@ -9,7 +9,6 @@ import os
 from unittest.mock import patch, MagicMock
 
 
-
 @patch("cfpq_data.download")
 @patch("cfpq_data.graph_from_csv")
 def test_get_graph_info(mock_graph_from_csv, mock_download):
