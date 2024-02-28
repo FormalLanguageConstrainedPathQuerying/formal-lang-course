@@ -28,6 +28,6 @@ def graph_info(graph: nx.MultiDiGraph) -> GraphInfo:
 
 
 def create_two_cycles_graph(
-        n: int, m: int, labels: tuple = ("a", "b")
+    n: int, m: int, labels: tuple = ("a", "b")
 ) -> nx.MultiDiGraph:
     return cfpq_data.labeled_two_cycles_graph(n, m, labels=labels)
