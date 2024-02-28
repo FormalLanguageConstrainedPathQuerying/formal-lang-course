@@ -1,6 +1,6 @@
-from pyformlang.finite_automaton import DeterministicFiniteAutomaton
+from pyformlang.finite_automaton import DeterministicFiniteAutomaton, NondeterministicFiniteAutomaton
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton
-from typing import Iterable, Any
+from typing import Iterable, Any, List
 from pyformlang.regular_expression import Regex
 import networkx as nx
 
@@ -19,7 +19,7 @@ def graph_to_nfa(
         graph: nx.MultiDiGraph,
         starts: Iterable[Any] = None,
         finals: Iterable[Any] = None,
-) -> NondeterministicFiniteAutomaton:
+) -> list[Any] | NondeterministicFiniteAutomaton:
     """Return nondeterministic finite automaton from :class:`nx.MultiDiGraph` graph
 
     Keyword arguments:
@@ -27,9 +27,9 @@ def graph_to_nfa(
     starts -- `graph's` nodes marked as starts;
     finals -- `graph's` nodes marked as finals;
     """
-    nfa = NondeterministicFiniteAutomaton()
     if not graph.edges() or (starts is None and finals is None):
-        return nfa
+        return []
+    nfa = NondeterministicFiniteAutomaton()
 
     if starts is not None:
         for node in starts:
