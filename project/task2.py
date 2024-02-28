@@ -4,6 +4,7 @@ from pyformlang.regular_expression import Regex
 from networkx import MultiDiGraph
 from typing import Set
 
+
 def regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton:
     """Return minimized DFA from regular expression string
 
@@ -15,24 +16,31 @@ def regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton:
 
 
 def graph_to_nfa(
-    graph: MultiDiGraph, start_states: Set[int], final_states: Set[int]
+        graph: MultiDiGraph, start_states: Set[int], final_states: Set[int]
 ) -> NondeterministicFiniteAutomaton:
-    """Return nondeterministic finite automaton from `networkx.MultiDiGraph` graph
-
-    Keyword arguments:
-    graph -- source graph;
-    start_states -- set of nodes marked as start states;
-    final_states -- set of nodes marked as final states;
     """
+    Builds NFA from multi-digraph.
+    If start states and/or final states aren't specified, all states will be start/final.
+    """
+
+    states = set(graph.nodes())
+    labels = set()
+    for _, _, label in graph.edges(data="label"):
+        if label is not None:
+            labels.add(label)
+
+    start_states = start_states if start_states is not None else states
+    final_states = final_states if final_states is not None else states
+
     nfa = NondeterministicFiniteAutomaton()
 
-    for node in graph.nodes():
-        if node in start_states:
-            nfa.add_start_state(node)
-        if node in final_states:
-            nfa.add_final_state(node)
+    for state in states:
+        if state in start_states:
+            nfa.add_start_state(state)
+        if state in final_states:
+            nfa.add_final_state(state)
 
-    for source, dest, label in graph.edges(data="label", default=None):
+    for source, dest, label in graph.edges(data="label"):
         if label is not None:
             nfa.add_transition(source, label, dest)
 
