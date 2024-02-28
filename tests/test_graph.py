@@ -2,7 +2,6 @@ import project.task1 as pg
 from tempfile import NamedTemporaryFile
 
 
-
 def test_1_graph_info():
     gwc_i = pg.graph_info(pg.load_graph("wc"))
     gskos_i = pg.graph_info(pg.load_graph("skos"))
