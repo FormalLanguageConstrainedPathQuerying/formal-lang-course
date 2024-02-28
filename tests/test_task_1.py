@@ -6,9 +6,8 @@ import random
 import pydot
 import os
 
-import pytest
 from unittest.mock import patch, MagicMock
-from project import task1
+
 
 
 @patch("cfpq_data.download")
