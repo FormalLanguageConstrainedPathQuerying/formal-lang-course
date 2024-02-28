@@ -26,11 +26,11 @@ def graph_to_nfa(
     """
     nfa = NondeterministicFiniteAutomaton()
 
-    for node in start_states:
-        nfa.add_start_state(node)
-
-    for node in final_states:
-        nfa.add_final_state(node)
+    for node in graph.nodes():
+        if node in start_states:
+            nfa.add_start_state(node)
+        if node in final_states:
+            nfa.add_final_state(node)
 
     for source, dest, label in graph.edges(data="label", default=None):
         if label is not None:
