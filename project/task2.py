@@ -28,7 +28,7 @@ def graph_to_nfa(
     finals -- `graph's` nodes marked as finals;
     """
     nfa = NondeterministicFiniteAutomaton()
-    if starts is None and finals is None:
+    if not graph.edges():
         return nfa
 
     if starts is not None:
