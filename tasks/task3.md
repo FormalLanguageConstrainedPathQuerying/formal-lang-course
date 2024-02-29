@@ -1,12 +1,12 @@
 # Задача 3. Регулярные запросы для всех пар вершин
 
-* **Жёсткий дедлайн**: 28.02.2024, 23:59
+* **Жёсткий дедлайн**: 06.03.2024, 23:59
 * Полный балл: 5
 
 ## Задача
 
-- [ ] Реализовать тип (FiniteAutomaton), представляющий конечный автомат в виде разреженной матрицы смежности из [sciPy](https://docs.scipy.org/doc/scipy/reference/sparse.html) и информации о стартовых и финальных вершинах. У типа должны быть конструкторы от DeterministicFiniteAutomaton и NondeterministicFiniteAutomaton из [Задачи 2](https://github.com/FormalLanguageConstrainedPathQuerying/formal-lang-course/blob/main/tasks/task2.md).
-- [ ] Реализовать функцию-интерпретатор для типа FiniteAutomaton, выясняющую, принимает ли автомат заданную строку и является ли язык, задающийся автоматом, пустым. Для реализации последней функции рекомендуется использовать транзитивное замыкание матрицы смежности.
+- [ ] Реализовать тип (FiniteAutomaton), представляющий конечный автомат в виде разреженной матрицы смежности из [sciPy](https://docs.scipy.org/doc/scipy/reference/sparse.html) (или сразу её булевой декомпозиции) и информации о стартовых и финальных вершинах. У типа должны быть конструкторы от ```DeterministicFiniteAutomaton``` и ```NondeterministicFiniteAutomaton``` из [Задачи 2](https://github.com/FormalLanguageConstrainedPathQuerying/formal-lang-course/blob/main/tasks/task2.md).
+- [ ] Реализовать функцию-интерпретатор для типа ```FiniteAutomaton```, выясняющую, принимает ли автомат заданную строку и является ли язык, задающийся автоматом, пустым. Для реализации последней функции рекомендуется использовать транзитивное замыкание матрицы смежности.
   - Требуемые функции:
      ```python
     def accepts(self, word: Iterable[Symbol]) -> bool:
