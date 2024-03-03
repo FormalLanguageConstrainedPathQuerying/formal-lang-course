@@ -27,4 +27,4 @@ jobs:
 
       - name: Run pytest
         run: |
-          python -m pytest tests/
+          python ./scripts/run_tests.py
