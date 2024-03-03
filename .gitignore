@@ -144,3 +144,6 @@ _minted-presentation/
 *.fdb_latexmk
 *.fls
 *.gz
+
+# My Python Venv
+fl_venv
