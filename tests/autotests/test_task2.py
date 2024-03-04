@@ -14,7 +14,7 @@ import networkx as nx
 
 # Fix import statements in try block to run tests
 try:
-    from project.task2 import regex_to_dfa, graph_to_nfa
+    from project.task02 import regex_to_dfa, graph_to_nfa
 except ImportError:
     pytestmark = pytest.mark.skip("Task 2 is not ready to test!")
 
