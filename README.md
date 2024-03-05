@@ -16,7 +16,7 @@
 - Свежее по теории автоматов и их применению в различных областях: [Editors: Jean-Éric Pin. 2021. "Handbook of Automata Theory"](https://ems.press/books/standalone/172)
 
 Технологии:
-- Python 3.8+
+- Python 3.9+
 - Pytest для unit тестирования
 - GitHub Actions для CI
 - Google Colab для постановки и оформления экспериментов
