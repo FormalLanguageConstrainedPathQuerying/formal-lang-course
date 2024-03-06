@@ -1,0 +1,26 @@
+name: graph test
+
+on:
+    push
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        env:
+            PYTHONPATH: ${{ github.workspace }}
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@main
+
+            - name: Setup Python
+              uses: actions/setup-python@main
+              with:
+                  python-version: "3.12.0"
+
+            - name: Install dependencies
+              run: pip install -r requirements.txt
+
+            - name: Run tests
+              run: python ./scripts/run_tests.py
