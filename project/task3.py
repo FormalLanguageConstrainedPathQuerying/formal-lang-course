@@ -1,11 +1,12 @@
 from symtable import Symbol
+from networkx import MultiDiGraph
 from pyformlang.finite_automaton import (
     DeterministicFiniteAutomaton,
     NondeterministicFiniteAutomaton,
     State,
 )
 from scipy.sparse import dok_matrix, kron
-
+from project.task2 import graph_to_nfa, regex_to_dfa
 from typing import Dict, Set, Iterable
 
 
@@ -167,11 +168,15 @@ def transition_function_statate_to_sym_convert(automaton1: FiniteAutomaton):
 def intersect_automata(
     automaton1: FiniteAutomaton, automaton2: FiniteAutomaton
 ) -> FiniteAutomaton:
-    automaton1_transition_function: Dict = transition_function_statate_to_sym_convert(
-        automaton1
+    automaton1_transition_function: Dict = (
+        transition_function_statate_to_sym_convert(automaton1)
+        if not automaton1.is_symbols
+        else automaton1.transition_function
     )
-    automaton2_transition_function: Dict = transition_function_statate_to_sym_convert(
-        automaton2
+    automaton2_transition_function: Dict = (
+        transition_function_statate_to_sym_convert(automaton2)
+        if not automaton2.is_symbols
+        else automaton2.transition_function
     )
 
     symbols = (
@@ -233,3 +238,16 @@ def intersect_automata(
         states_to_index=state_to_index,
         symbols_to_index=symbols_to_index,
     )
+
+
+def paths_ends(
+    graph: MultiDiGraph, start_nodes: set[int], final_nodes: set[int], regex: str
+) -> list:
+    automaton1 = FiniteAutomaton(nka=graph_to_nfa(graph=graph))
+    automaton2 = FiniteAutomaton(dka=regex_to_dfa(regex=regex))
+
+    final_automete: FiniteAutomaton = intersect_automata(
+        automaton1=automaton1, automaton2=automaton2
+    )
+
+    return zip(final_automete.starts_states, final_automete.finals_states)
