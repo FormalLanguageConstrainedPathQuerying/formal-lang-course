@@ -123,7 +123,6 @@ class FiniteAutomaton:
 def intersect_automata(
     automaton1: FiniteAutomaton, automaton2: FiniteAutomaton
 ) -> FiniteAutomaton:
-    # Intersect two automata and return the resulting automaton
     ans = FiniteAutomaton()
     ans.start_states = automaton1.start_states.intersection(automaton2.start_states)
     ans.final_states = automaton1.final_states.intersection(automaton2.final_states)

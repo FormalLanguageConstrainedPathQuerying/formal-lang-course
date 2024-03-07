@@ -56,8 +56,6 @@ class TestIntersect:
             all_word_parts = list(words)
             if len(all_word_parts) == 0:
                 assert intersect_fa.is_empty()
-                print("Ассерт empty прошел")
-                return
             word_parts = random.choice(all_word_parts)
         else:
             index = random.randint(0, 2**9)
