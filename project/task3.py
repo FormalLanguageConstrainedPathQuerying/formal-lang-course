@@ -7,7 +7,7 @@ from scipy.sparse import dok_matrix, kron
 from pyformlang.regular_expression import PythonRegex
 from networkx import MultiDiGraph
 from typing import Iterable, Tuple, Set
-from task2 import regex_to_dfa, graph_to_nfa
+from project.task2 import graph_to_nfa, regex_to_dfa
 
 
 class FiniteAutomaton:
