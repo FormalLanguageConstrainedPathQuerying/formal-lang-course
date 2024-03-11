@@ -123,7 +123,7 @@ def paths_ends(
 ):
     graph_fa = FiniteAutomaton(graph_to_nfa(graph, start_nodes, final_nodes))
 
-    regex_fa = regex_to_dfa(regex)
+    regex_fa = FiniteAutomaton(regex_to_dfa(regex))
 
     intersected_fa = intersect_automata(graph_fa, regex_fa)
 
