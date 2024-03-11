@@ -4,6 +4,9 @@ from pyformlang.finite_automaton import (
     State,
 )
 from scipy.sparse import dok_matrix, kron
+from pyformlang.regular_expression import PythonRegex
+from networkx import MultiDiGraph
+from typing import Iterable, Tuple, Set
 
 
 class FiniteAutomaton:
@@ -112,3 +115,21 @@ def intersect_automata(
                 final_states.add(sk)
 
     return FiniteAutomaton(basa, start_states, final_states, states_map)
+
+
+def paths_ends(
+    graph: MultiDiGraph, start_nodes: Set[int], final_nodes: Set[int], regex: str
+):
+    graph_fa = nfa_to_mat(graph)
+
+    regex_fa = PythonRegex(regex).to_epsilon_nfa().to_deterministic().minimize()
+
+    intersected_fa = intersect_automata(graph_fa, regex_fa)
+
+    paths = []
+    for start_node in start_nodes:
+        for final_node in final_nodes:
+            if intersected_fa.accepts([start_node, final_node]):
+                paths.append((start_node, final_node))
+
+    return paths
