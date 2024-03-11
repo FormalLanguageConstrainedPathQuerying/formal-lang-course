@@ -7,6 +7,7 @@ from scipy.sparse import dok_matrix, kron
 from pyformlang.regular_expression import PythonRegex
 from networkx import MultiDiGraph
 from typing import Iterable, Tuple, Set
+from task2 import regex_to_dfa, graph_to_nfa
 
 
 class FiniteAutomaton:
@@ -120,9 +121,9 @@ def intersect_automata(
 def paths_ends(
     graph: MultiDiGraph, start_nodes: Set[int], final_nodes: Set[int], regex: str
 ):
-    graph_fa = nfa_to_mat(graph)
+    graph_fa = FiniteAutomaton(graph_to_nfa(graph, start_nodes, final_nodes))
 
-    regex_fa = PythonRegex(regex).to_epsilon_nfa().to_deterministic().minimize()
+    regex_fa = regex_to_dfa(regex)
 
     intersected_fa = intersect_automata(graph_fa, regex_fa)
 
