@@ -6,8 +6,8 @@
 
 ## Задача
 
-- [ ] Сделать `fork` данного репозитория.
-- [ ] Добавить ссылку на ваш `fork` в [таблицу](https://docs.google.com/spreadsheets/d/1zVPStPIwvrCY2cZBLypZyCMgZ5yB2RLS0TCkwR7JfXo/edit?usp=sharing).
+- [x] Сделать `fork` данного репозитория.
+- [x] Добавить ссылку на ваш `fork` в [таблицу](https://docs.google.com/spreadsheets/d/1zVPStPIwvrCY2cZBLypZyCMgZ5yB2RLS0TCkwR7JfXo/edit?usp=sharing).
 - [ ] Добавить в совладельцы форка одного из ассистентов (чтобы узнать, кого именно, нужно посмотреть в [таблицу](https://docs.google.com/spreadsheets/d/1zVPStPIwvrCY2cZBLypZyCMgZ5yB2RLS0TCkwR7JfXo/edit?usp=sharing))
 - [ ] Реализовать модуль, предоставляющий перечисленные ниже возможности. Для работы с графами использовать [cfpq-data](https://formallanguageconstrainedpathquerying.github.io/CFPQ_Data/tutorial.html#graphs). Данный модуль в дальнейшем будет расширяться. Функции, которые необходимо реализовать:
   - [ ] По имени графа вернуть количество вершин, рёбер и перечислить различные метки, встречающиеся на рёбрах. Для получения графа по имени использовать [эту функцию](https://formallanguageconstrainedpathquerying.github.io/CFPQ_Data/tutorial.html#get-a-real-graph).
