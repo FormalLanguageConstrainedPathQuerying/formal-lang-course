@@ -13,12 +13,12 @@ class FiniteAutomaton:
         if nka is None:
             return
 
-        state_to_i = {s: i for i, s in enumerate(nka.states)}
+        map_index_to_state = {s: i for i, s in enumerate(nka.states)}
 
-        self.i_to_state = list(nka.states)
+        self.map_index_to_state = list(nka.states)
 
-        self.start_states = {state_to_i[st] for st in nka.start_states}
-        self.final_states = {state_to_i[fi] for fi in nka.final_states}
+        self.start_states = {map_index_to_state[st] for st in nka.start_states}
+        self.final_states = {map_index_to_state[fi] for fi in nka.final_states}
 
         self.func_to_steps = {}
 
@@ -35,7 +35,7 @@ class FiniteAutomaton:
                         else {value[symbols]}
                     ):
                         self.func_to_steps[symbols][
-                            state_to_i[key], state_to_i[fi]
+                            map_index_to_state[key], map_index_to_state[fi]
                         ] = True
 
     def accepts(self, word: Iterable[Symbol]) -> bool:
@@ -120,7 +120,7 @@ def paths_ends(
     n_states2 = fa2.func_to_steps.values().__iter__().__next__().shape[0]
 
     def convert_to_node(i):
-        return fa1.i_to_state[i // n_states2].value
+        return fa1.map_index_to_state[i // n_states2].value
 
     res = []
     for st, fi in product(finite_automaton.start_states, finite_automaton.final_states):
