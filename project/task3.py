@@ -120,7 +120,7 @@ def paths_ends(
     n_states2 = fa2.func_to_steps.values().__iter__().__next__().shape[0]
 
     def convert_to_node(i):
-        return graph.nodes[fa1.i_to_state[i // n_states2]].value
+        return fa1.i_to_state[i // n_states2].value
 
     res = []
     for st, fi in product(finite_automaton.start_states, finite_automaton.final_states):
