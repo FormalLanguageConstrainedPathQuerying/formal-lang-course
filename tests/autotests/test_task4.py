@@ -84,6 +84,8 @@ class TestReachability:
             deepcopy(graph), deepcopy(start_nodes), deepcopy(final_nodes), query
         )
 
+        assert len(set(reachable.keys())) == len(set(map(lambda x: x[0], ends)))
+
         equivalency_flag = True
         for start, final in ends:
             if start in reachable.keys() and final in reachable[start]:
