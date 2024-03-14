@@ -36,9 +36,10 @@ class FiniteAutomaton:
         return nfa.accepts(word)
 
     def is_empty(self) -> bool:
-        if len(self.basa) == 0 or len(list(self.basa.values())[0]) == 0:
-            return True
-        return False
+        if isinstance(self.basa, dict):
+            return len(self.basa) == 0
+        else:
+            return self.basa.shape[0] == 0
 
 
 def nfa_to_mat(automaton: NondeterministicFiniteAutomaton) -> FiniteAutomaton:
