@@ -4,7 +4,6 @@ from pyformlang.finite_automaton import (
     State,
 )
 from scipy.sparse import dok_matrix, kron, block_diag, csr_matrix
-from pyformlang.regular_expression import PythonRegex
 from networkx import MultiDiGraph
 from typing import Iterable, Tuple, Set
 from project.task2 import graph_to_nfa, regex_to_dfa
@@ -61,7 +60,7 @@ def nfa_to_mat(automaton: NondeterministicFiniteAutomaton) -> FiniteAutomaton:
     states = automaton.to_dict()
     n = len(automaton.states)
     states_map = {v: i for i, v in enumerate(automaton.states)}
-    basa = {}
+    basa = dict()
 
     for label in automaton.symbols:
         basa[label] = dok_matrix((n, n), dtype=bool)
@@ -81,21 +80,21 @@ def nfa_to_mat(automaton: NondeterministicFiniteAutomaton) -> FiniteAutomaton:
 def mat_to_nfa(automaton: FiniteAutomaton) -> NondeterministicFiniteAutomaton:
     nfa = NondeterministicFiniteAutomaton()
 
-    for label in automaton.basa:
+    for label in automaton.basa.keys():
         n = automaton.basa[label].shape[0]
         for u in range(n):
             for v in range(n):
                 if automaton.basa[label][u, v]:
                     nfa.add_transition(
-                        automaton.states_map[u],
+                        automaton.mapOverState_(u),
                         label,
-                        automaton.states_map[v],
+                        automaton.mapOverState_(v),
                     )
 
     for start_state in automaton.start_states:
-        nfa.add_start_state(automaton.states_map[start_state])
+        nfa.add_start_state(automaton.mapOverState_(start_state))
     for final_state in automaton.final_states:
-        nfa.add_final_state(automaton.states_map[final_state])
+        nfa.add_final_state(automaton.mapOverState_(final_state))
 
     return nfa
 
@@ -116,10 +115,10 @@ def intersect_automata(
     automaton1: FiniteAutomaton, automaton2: FiniteAutomaton
 ) -> FiniteAutomaton:
     labels = automaton1.basa.keys() & automaton2.basa.keys()
-    basa = {}
+    basa = dict()
     start_states = set()
     final_states = set()
-    states_map = {}
+    states_map = dict()
 
     for label in labels:
         basa[label] = kron(automaton1.basa[label], automaton2.basa[label], "csr")
@@ -130,12 +129,12 @@ def intersect_automata(
             k = len(automaton2.states_map) * i + j
             sk = State(k)
             states_map[sk] = k
-
+            assert isinstance(u, State)
             if u in automaton1.start_states and v in automaton2.start_states:
-                start_states.add(sk)
+                start_states.add(State(k))
 
             if u in automaton1.final_states and v in automaton2.final_states:
-                final_states.add(sk)
+                final_states.add(State(k))
 
     return FiniteAutomaton(basa, start_states, final_states, states_map)
 

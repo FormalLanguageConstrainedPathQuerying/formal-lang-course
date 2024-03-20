@@ -3,15 +3,6 @@ from scipy.sparse import dok_matrix, block_diag
 from project.task3 import FiniteAutomaton, intersect_automata, transitive_closure
 
 
-def diag(mat):
-    result = dok_matrix(mat.shape, dtype=bool)
-    for i in range(mat.shape[0]):
-        for j in range(mat.shape[0]):
-            if mat[j, i]:
-                result[i] += mat[j]
-    return result
-
-
 def reachability_with_constraints(
     fa: FiniteAutomaton, constraints_fa: FiniteAutomaton
 ) -> dict[int, set[int]]:
@@ -25,6 +16,14 @@ def reachability_with_constraints(
         for i in range(m):
             front[i, s + m] = True
         return front
+
+    def diag(mat):
+        result = dok_matrix(mat.shape, dtype=bool)
+        for i in range(mat.shape[0]):
+            for j in range(mat.shape[0]):
+                if mat[j, i]:
+                    result[i] += mat[j]
+        return result
 
     labels = fa.labels() & constraints_fa.labels()
     result = {s: set() for s in fa.start_states}
