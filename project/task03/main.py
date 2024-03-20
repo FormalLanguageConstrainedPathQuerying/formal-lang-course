@@ -1,3 +1,4 @@
+import numpy as np
 from pyformlang.finite_automaton import (
     DeterministicFiniteAutomaton,
     NondeterministicFiniteAutomaton,
@@ -7,16 +8,11 @@ from scipy.sparse import csr_matrix, kron
 from project.task02 import graph_to_nfa, regex_to_dfa
 from networkx import MultiDiGraph
 from networkx.classes.reportviews import NodeView
-from networkx.algorithms.shortest_paths.generic import shortest_path
 
 
 class FiniteAutomaton:
 
     def __init__(self, automaton=None, start=None, final=None, state_map=None):
-        self.matrix = None
-        self.start = set() if start is None else start
-        self.final = set() if final is None else final
-        self.state_map = dict() if state_map is None else state_map
 
         if isinstance(
             automaton, (DeterministicFiniteAutomaton, NondeterministicFiniteAutomaton)
@@ -26,6 +22,9 @@ class FiniteAutomaton:
             )
         else:
             self.matrix = automaton
+            self.start = set() if start is None else start
+            self.final = set() if final is None else final
+            self.state_map = dict() if state_map is None else state_map
 
     def accepts(self, word) -> bool:
         return FiniteAutomaton.__to_nfa(self).accepts(word)
@@ -39,12 +38,16 @@ class FiniteAutomaton:
         states = automaton.to_dict()
         state_map = {v: i for i, v in enumerate(automaton.states)}
 
+        # В старой домашке тесты без этого проходят
+        def to_set(a):
+            return a if isinstance(a, set) else {a}
+
         matrix = dict()
         for label in automaton.symbols:
             matrix[label] = csr_matrix((n, n), dtype=bool)
             for u, edges in states.items():
                 if label in edges:
-                    for v in {edges[label]}:
+                    for v in to_set(edges[label]):
                         matrix[label][state_map[u], state_map[v]] = True
 
         return matrix, automaton.start_states, automaton.final_states, state_map
@@ -92,19 +95,42 @@ def intersect_automata(a: FiniteAutomaton, b: FiniteAutomaton) -> FiniteAutomato
     return automaton
 
 
+def transitive_closure(fa: FiniteAutomaton):
+    if fa.is_empty():
+        return csr_matrix((0, 0), dtype=bool)
+
+    result = np.zeros_like(next(iter(fa.matrix.values())), dtype=bool)
+    for m in fa.matrix.values():
+        result += m
+
+    p = 0
+    f_sparse = csr_matrix(result)
+    while True:
+        p_new = f_sparse.count_nonzero()
+        if p_new == p:
+            break
+        p = p_new
+        f_sparse = f_sparse @ f_sparse
+    return result
+
+
 def paths_ends(
     graph: MultiDiGraph, start_nodes: set[int], final_nodes: set[int], regex: str
 ) -> list[tuple[NodeView, NodeView]]:
-    automaton_regex = FiniteAutomaton(regex_to_dfa(regex))
     automaton_graph = FiniteAutomaton(graph_to_nfa(graph, start_nodes, final_nodes))
-    intersection = intersect_automata(automaton_regex, automaton_graph)
-    paths = []
-    for start in intersection.start:
-        for final in intersection.final:
-            try:
-                shortest = shortest_path(intersection, start, final)
-                paths.append((start, final))
-            except:
-                pass
+    automaton_regex = FiniteAutomaton(regex_to_dfa(regex))
+    return reachable_under_constraint(automaton_graph, automaton_regex)
 
-    return paths
+
+def reachable_under_constraint(
+    a: FiniteAutomaton, b: FiniteAutomaton
+) -> list[tuple[NodeView, NodeView]]:
+    intersected = intersect_automata(a, b)
+    tc = transitive_closure(intersected)
+
+    size = len(b.state_map)
+    result = []
+    for u, v in zip(*tc.nonzero()):
+        if u in intersected.start and v in intersected.final:
+            result.append((a.state_map[u // size], a.state_map[v // size]))
+    return result
