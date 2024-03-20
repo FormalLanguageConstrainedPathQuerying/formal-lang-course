@@ -3,7 +3,7 @@ from pyformlang.finite_automaton import (
     NondeterministicFiniteAutomaton,
     State,
 )
-from scipy.sparse import dok_matrix, kron
+from scipy.sparse import dok_matrix, kron, block_diag, csr_matrix
 from pyformlang.regular_expression import PythonRegex
 from networkx import MultiDiGraph
 from typing import Iterable, Tuple, Set
@@ -41,6 +41,21 @@ class FiniteAutomaton:
         else:
             return self.basa.shape[0] == 0
 
+    def final_idxs(self):
+        return [self.mapOverState_(t) for t in self.final_states]
+
+    def start_idxs(self):
+        return [self.mapOverState_(t) for t in self.start_states]
+
+    def labels(self):
+        return self.basa.keys()
+
+    def size(self):
+        return len(self.states_map)
+
+    def mapOverState_(self, u):
+        return self.states_map[State(u)]
+
 
 def nfa_to_mat(automaton: NondeterministicFiniteAutomaton) -> FiniteAutomaton:
     states = automaton.to_dict()
@@ -52,9 +67,10 @@ def nfa_to_mat(automaton: NondeterministicFiniteAutomaton) -> FiniteAutomaton:
         basa[label] = dok_matrix((n, n), dtype=bool)
         for u, edges in states.items():
             if label in edges:
-                if not isinstance(edges[label], set):
-                    edges[label] = {edges[label]}
-                for v in edges[label]:
+                e = edges[label]
+                if not isinstance(e, set):
+                    e = {e}
+                for v in e:
                     basa[label][states_map[u], states_map[v]] = True
 
     return FiniteAutomaton(
@@ -71,9 +87,9 @@ def mat_to_nfa(automaton: FiniteAutomaton) -> NondeterministicFiniteAutomaton:
             for v in range(n):
                 if automaton.basa[label][u, v]:
                     nfa.add_transition(
-                        automaton.states_map[State(u)],
+                        automaton.states_map[u],
                         label,
-                        automaton.states_map[State(v)],
+                        automaton.states_map[v],
                     )
 
     for start_state in automaton.start_states:
@@ -85,10 +101,15 @@ def mat_to_nfa(automaton: FiniteAutomaton) -> NondeterministicFiniteAutomaton:
 
 
 def transitive_closure(automaton: FiniteAutomaton):
-    adjacency = sum(automaton.basa.values())
-    for _ in range(adjacency.shape[0]):
-        adjacency += adjacency @ adjacency
-    return adjacency
+    if len(automaton.basa.values()) == 0:
+        return dok_matrix((0, 0), dtype=bool)
+    adj = sum(automaton.basa.values())
+    last_ = -1
+    while adj.count_nonzero() != last_:
+        last_ = adj.count_nonzero()
+        adj += adj @ adj
+
+    return adj
 
 
 def intersect_automata(
@@ -107,8 +128,8 @@ def intersect_automata(
         for v, j in automaton2.states_map.items():
 
             k = len(automaton2.states_map) * i + j
-            states_map[k] = k
             sk = State(k)
+            states_map[sk] = k
 
             if u in automaton1.start_states and v in automaton2.start_states:
                 start_states.add(sk)
