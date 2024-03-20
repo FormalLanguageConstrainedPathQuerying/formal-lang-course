@@ -32,7 +32,9 @@ class FiniteAutomaton:
 
     def accepts(self, word) -> bool:
         nfa = mat_to_nfa(self)
-        return nfa.accepts(word)
+        print(word)
+        real_word = "".join(list(word))
+        return nfa.accepts(real_word)
 
     def is_empty(self) -> bool:
         if isinstance(self.basa, dict):
@@ -142,16 +144,23 @@ def intersect_automata(
 def paths_ends(
     graph: MultiDiGraph, start_nodes: Set[int], final_nodes: Set[int], regex: str
 ):
-    graph_fa = FiniteAutomaton(graph_to_nfa(graph, start_nodes, final_nodes))
+    graph_fa = nfa_to_mat(graph_to_nfa(graph, start_nodes, final_nodes))
 
-    regex_fa = FiniteAutomaton(regex_to_dfa(regex))
+    regex_fa = nfa_to_mat(regex_to_dfa(regex))
 
     intersected_fa = intersect_automata(graph_fa, regex_fa)
 
+    closure = transitive_closure(intersected_fa)
+
     paths = []
-    for start_node in start_nodes:
-        for final_node in final_nodes:
-            if intersected_fa.accepts([start_node, final_node]):
-                paths.append((start_node, final_node))
+    map = {v: i for i, v in graph_fa.states_map.items()}
+    for start_node, final_node in zip(*closure.nonzero()):
+        if (
+            start_node in intersected_fa.start_states
+            and final_node in intersected_fa.final_states
+        ):
+            paths.append(
+                (map[start_node // regex_fa.size()], map[final_node // regex_fa.size()])
+            )
 
     return paths
