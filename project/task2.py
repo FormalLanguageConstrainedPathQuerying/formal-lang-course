@@ -16,7 +16,7 @@ def regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton or None:
         return None
 
     nfa = regex.to_epsilon_nfa()
-    dfa = nfa.to_deterministic()
+    dfa = nfa.to_deterministic().minimize()
     return dfa
 
 
