@@ -32,7 +32,6 @@ class FiniteAutomaton:
 
     def accepts(self, word) -> bool:
         nfa = mat_to_nfa(self)
-        print(word)
         real_word = "".join(list(word))
         return nfa.accepts(real_word)
 
