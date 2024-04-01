@@ -3,19 +3,20 @@
 # You CAN modify this file IF AND ONLY IF you have found a bug and are willing to fix it
 # Otherwise, please report it
 import itertools
-from pyformlang import cfg
-from networkx import MultiDiGraph
-from pyformlang.regular_expression import Regex
-import pytest
 import random
-import networkx as nx
 from copy import deepcopy
+
+import networkx as nx
+import pytest
+from networkx import MultiDiGraph
+from pyformlang import cfg
+from pyformlang.regular_expression import Regex
 
 # Fix import statements in try block to run tests
 try:
     from project.task2 import graph_to_nfa, regex_to_dfa
     from project.task4 import reachability_with_constraints
-    from project.task6 import cfg_to_weak_normal_form, cfpq_with_hellings
+    from project.task6 import cfpq_with_hellings
 except ImportError:
     pytestmark = pytest.mark.skip("Task 6 is not ready to test!")
 
@@ -168,3 +169,12 @@ class TestReachability:
             if a != b:
                 assert False
         assert True
+
+
+def test_cfg_to_weak_normal_form_exists():
+    try:
+        import project.task6
+
+        assert "cfg_to_weak_normal_form" in dir(project.task6)
+    except NameError:
+        assert False
