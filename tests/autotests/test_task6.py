@@ -10,11 +10,11 @@ import networkx as nx
 import pytest
 from networkx import MultiDiGraph
 from pyformlang import cfg
-from pyformlang.regular_expression import Regex
 
 # Fix import statements in try block to run tests
 try:
     from project.task2 import graph_to_nfa, regex_to_dfa
+    from project.task3 import FiniteAutomaton
     from project.task4 import reachability_with_constraints
     from project.task6 import cfpq_with_hellings
 except ImportError:
@@ -27,16 +27,16 @@ REGEXP_CFG: dict[str, list[cfg.CFG]] = {
         cfg.CFG.from_text("S -> $ | S S | a"),
         cfg.CFG.from_text("S -> S a S | $"),
     ],
-    "abc": [cfg.CFG.from_text("S -> a b c"), cfg.CFG.from_text("S -> a B\nB -> b c")],
+    "a b c": [cfg.CFG.from_text("S -> a b c"), cfg.CFG.from_text("S -> a B\nB -> b c")],
     "a*b*": [
         cfg.CFG.from_text("S -> S1 S2\nS2 -> $ | b S2\nS1 -> $ | a S1"),
         cfg.CFG.from_text("S -> $ | S1 | a S\nS1 -> $ | b S1"),
     ],
-    "(ab)*": [
+    "(a b)*": [
         cfg.CFG.from_text("S -> $ | a b S"),
         cfg.CFG.from_text("S -> $ | S S1\nS1 -> a b"),
     ],
-    "ab*c*": [
+    "a b*c*": [
         cfg.CFG.from_text("S -> S1 S2 S3\nS1 -> a\nS2 -> $ | S2 b\nS3 -> $ | c S3"),
         cfg.CFG.from_text("S -> a S2 S3\nS2 -> S2 b | $\nS3 -> c | $ | S3 S3"),
     ],
@@ -55,7 +55,7 @@ REGEXP_CFG: dict[str, list[cfg.CFG]] = {
 
 GRAMMARS = [
     [
-        cfg.CFG.from_text("S -> $ | a S b | c S d | S S"),
+        cfg.CFG.from_text("S -> $ | a S b | S S"),
         cfg.CFG.from_text("S -> $ | a S b S"),
         cfg.CFG.from_text("S -> $ | S a S b"),
         cfg.CFG.from_text("S -> $ | a S b | S S S"),
@@ -63,20 +63,24 @@ GRAMMARS = [
     [
         cfg.CFG.from_text("S -> $ | a S b | c S d | S S"),
         cfg.CFG.from_text("S -> $ | a S b S | c S d S"),
-        cfg.CFG.from_text("S -> $ | S a S b | c S d S"),
+        cfg.CFG.from_text("S -> $ | S a S b | S c S d"),
         cfg.CFG.from_text("S -> $ | a S b | c S d S | S S S"),
     ],
     [
-        cfg.CFG.from_text("S -> $ | S1 S S2\nS1 -> a | c\n S2 -> b | d"),
+        cfg.CFG.from_text("S -> $ | S1 S S2\nS1 -> a | c\n S2 -> b | d\n S -> S S"),
         cfg.CFG.from_text("S -> $ | S1 S S2 S\n S1 -> a | c\nS2 -> b | d"),
         cfg.CFG.from_text("S -> $ | S a S b | S a S d | S c S d | S c S b"),
         cfg.CFG.from_text("S -> $ | S1 S S2 | S S S\nS1 -> a | c\nS2-> b | d"),
     ],
     [
-        cfg.CFG.from_text("S -> S S Se S1 Se\nSe -> $ | Se e\nS1 -> $ | a S1 b"),
+        cfg.CFG.from_text("S -> S S | Se S1 Se\nSe -> $ | Se e\nS1 -> $ | a S1 b"),
         cfg.CFG.from_text("S -> S1 | S S | e\nS1 -> $ | a S1 b"),
         cfg.CFG.from_text("S -> S2 S | $\n S2 -> e | S1\n S1 -> $ | a S1 b"),
-        cfg.CFG.from_text("S -> $ |  S1 S | e S\n S1 -> $ | a S1 b"),
+        cfg.CFG.from_text("S -> $ | S1 S | e S\n S1 -> $ | a S1 b"),
+    ],
+    [
+        cfg.CFG.from_text("S -> a S | $"),
+        cfg.CFG.from_text("S -> S1 | a\nS1 -> a S1 | $"),
     ],
 ]
 
@@ -89,7 +93,7 @@ IS_START = "is_start"
 
 @pytest.fixture(scope="function", params=range(5))
 def graph_s(request) -> MultiDiGraph:
-    n_of_nodes = random.randint(1, 20)
+    n_of_nodes = random.randint(20, 40)
     graph = nx.scale_free_graph(n_of_nodes)
 
     for _, _, data in graph.edges(data=True):
@@ -99,7 +103,7 @@ def graph_s(request) -> MultiDiGraph:
 
 @pytest.fixture(scope="function", params=range(5))
 def graph_b(request) -> MultiDiGraph:
-    n_of_nodes = random.randint(1, 40)
+    n_of_nodes = random.randint(20, 40)
     graph = nx.scale_free_graph(n_of_nodes)
 
     for _, _, data in graph.edges(data=True):
@@ -112,7 +116,6 @@ class TestReachability:
         "regex_str, cfg_list", REGEXP_CFG.items(), ids=lambda regexp_cfgs: regexp_cfgs
     )
     def test_rpq_cfpq(self, graph_s, regex_str, cfg_list) -> None:
-        regex = Regex(regex_str)
         start_nodes = set(
             random.choices(
                 list(graph_s.nodes().keys()), k=random.randint(1, len(graph_s.nodes))
@@ -123,6 +126,7 @@ class TestReachability:
                 list(graph_s.nodes().keys()), k=random.randint(1, len(graph_s.nodes))
             )
         )
+
         for node, data in graph_s.nodes(data=True):
             if node in start_nodes:
                 data[IS_START] = True
@@ -134,15 +138,14 @@ class TestReachability:
                 cf_gram, deepcopy(graph_s), start_nodes, final_nodes
             )
             rpq: dict[int, set[int]] = reachability_with_constraints(
-                regex_to_dfa(regex), graph_to_nfa(graph_s, start_nodes, final_nodes)
+                FiniteAutomaton(graph_to_nfa(graph_s, start_nodes, final_nodes)),
+                FiniteAutomaton(regex_to_dfa(regex_str)),
             )
             rpq_set = set()
             for node_from, nodes_to in rpq.items():
                 for node_to in nodes_to:
                     rpq_set.add((node_from, node_to))
-            if cfpq != rpq_set:
-                assert False
-        assert True
+            assert cfpq == rpq_set
 
     @pytest.mark.parametrize("eq_grammars", GRAMMARS, ids=lambda grammars: grammars)
     def test_different_grammars(self, graph_b, eq_grammars):
@@ -156,19 +159,21 @@ class TestReachability:
                 list(graph_b.nodes().keys()), k=random.randint(1, len(graph_b.nodes))
             )
         )
+
         for node, data in graph_b.nodes(data=True):
             if node in start_nodes:
                 data[IS_START] = True
             if node in final_nodes:
                 data[IS_FINAL] = True
+
         eq_cfpqs = [
-            cfpq_with_hellings(cf_gram, deepcopy(graph_b), start_nodes, final_nodes)
+            cfpq_with_hellings(
+                deepcopy(cf_gram), deepcopy(graph_b), start_nodes, final_nodes
+            )
             for cf_gram in eq_grammars
         ]
         for a, b in itertools.combinations(eq_cfpqs, 2):
-            if a != b:
-                assert False
-        assert True
+            assert a == b
 
 
 def test_cfg_to_weak_normal_form_exists():
