@@ -5,7 +5,7 @@
 import itertools
 import random
 from copy import deepcopy
-
+import cfpq_data as cd
 import networkx as nx
 import pytest
 from networkx import MultiDiGraph
@@ -92,42 +92,28 @@ IS_START = "is_start"
 
 
 @pytest.fixture(scope="function", params=range(5))
-def graph_s(request) -> MultiDiGraph:
+def graph(request) -> MultiDiGraph:
     n_of_nodes = random.randint(20, 40)
-    graph = nx.scale_free_graph(n_of_nodes)
-
-    for _, _, data in graph.edges(data=True):
-        data[LABEL] = random.choice(LABELS)
-    return graph
-
-
-@pytest.fixture(scope="function", params=range(5))
-def graph_b(request) -> MultiDiGraph:
-    n_of_nodes = random.randint(20, 40)
-    graph = nx.scale_free_graph(n_of_nodes)
-
-    for _, _, data in graph.edges(data=True):
-        data[LABEL] = random.choice(LABELS)
-    return graph
+    return cd.graphs.labeled_scale_free_graph(n_of_nodes, labels=LABELS)
 
 
 class TestReachability:
     @pytest.mark.parametrize(
         "regex_str, cfg_list", REGEXP_CFG.items(), ids=lambda regexp_cfgs: regexp_cfgs
     )
-    def test_rpq_cfpq(self, graph_s, regex_str, cfg_list) -> None:
+    def test_rpq_cfpq(self, graph, regex_str, cfg_list) -> None:
         start_nodes = set(
             random.choices(
-                list(graph_s.nodes().keys()), k=random.randint(1, len(graph_s.nodes))
+                list(graph.nodes().keys()), k=random.randint(1, len(graph.nodes))
             )
         )
         final_nodes = set(
             random.choices(
-                list(graph_s.nodes().keys()), k=random.randint(1, len(graph_s.nodes))
+                list(graph.nodes().keys()), k=random.randint(1, len(graph.nodes))
             )
         )
 
-        for node, data in graph_s.nodes(data=True):
+        for node, data in graph.nodes(data=True):
             if node in start_nodes:
                 data[IS_START] = True
             if node in final_nodes:
@@ -135,10 +121,10 @@ class TestReachability:
 
         for cf_gram in cfg_list:
             cfpq: set[tuple[int, int]] = cfpq_with_hellings(
-                cf_gram, deepcopy(graph_s), start_nodes, final_nodes
+                cf_gram, deepcopy(graph), start_nodes, final_nodes
             )
             rpq: dict[int, set[int]] = reachability_with_constraints(
-                FiniteAutomaton(graph_to_nfa(graph_s, start_nodes, final_nodes)),
+                FiniteAutomaton(graph_to_nfa(graph, start_nodes, final_nodes)),
                 FiniteAutomaton(regex_to_dfa(regex_str)),
             )
             rpq_set = set()
@@ -148,19 +134,19 @@ class TestReachability:
             assert cfpq == rpq_set
 
     @pytest.mark.parametrize("eq_grammars", GRAMMARS, ids=lambda grammars: grammars)
-    def test_different_grammars(self, graph_b, eq_grammars):
+    def test_different_grammars(self, graph, eq_grammars):
         start_nodes = set(
             random.choices(
-                list(graph_b.nodes().keys()), k=random.randint(1, len(graph_b.nodes))
+                list(graph.nodes().keys()), k=random.randint(1, len(graph.nodes))
             )
         )
         final_nodes = set(
             random.choices(
-                list(graph_b.nodes().keys()), k=random.randint(1, len(graph_b.nodes))
+                list(graph.nodes().keys()), k=random.randint(1, len(graph.nodes))
             )
         )
 
-        for node, data in graph_b.nodes(data=True):
+        for node, data in graph.nodes(data=True):
             if node in start_nodes:
                 data[IS_START] = True
             if node in final_nodes:
@@ -168,7 +154,7 @@ class TestReachability:
 
         eq_cfpqs = [
             cfpq_with_hellings(
-                deepcopy(cf_gram), deepcopy(graph_b), start_nodes, final_nodes
+                deepcopy(cf_gram), deepcopy(graph), start_nodes, final_nodes
             )
             for cf_gram in eq_grammars
         ]
