@@ -2,7 +2,6 @@ from pyformlang.cfg import CFG, Variable, Terminal
 import pyformlang
 import networkx as nx
 from typing import *
-import itertools
 
 
 def read_cfgrammar(path, start="S") -> CFG:
@@ -26,64 +25,58 @@ def cfpq_with_hellings(
     start_nodes: Set[int] = None,
     final_nodes: Set[int] = None,
 ) -> Set[Tuple[int, int]]:
+    # Преобразуем грамматику в НФХ, если она уже не в НФХ
+    cfg = cfg_to_weak_normal_form(cfg)
 
-    cnf = cfg_to_weak_normal_form(cfg)
-    is_epsilon = True
+    # Инициализация рабочих множеств
+    R = set()
 
-    triples = set()
+    # Строим индекс для правил вида A -> a
+    terminals_to_variables = {}
+    for rule in cfg.productions:
+        if len(rule.body) == 1 and isinstance(rule.body[0], pyformlang.cfg.Terminal):
+            terminal = rule.body[0]
+            if terminal not in terminals_to_variables:
+                terminals_to_variables[terminal] = set()
+            terminals_to_variables[terminal].add(rule.head)
 
+    # Добавляем начальные рёбра
     for edge in graph.edges(data=True):
-        for production in cnf.productions:
-            if (
-                len(production.body) == 1
-                and production.body[0].value == edge[2]["label"]
-            ):
-                triples.add((production.head.value, edge[0], edge[1]))
-            elif len(production.body) == 0:
-                is_epsilon = True
+        u, v, data = edge
+        if data["label"] in terminals_to_variables:
+            for variable in terminals_to_variables[data["label"]]:
+                R.add((u, variable, v))
 
-    if is_epsilon:
-        for node in graph.nodes:
-            triples.add(("S", node, node))
+    # Основной цикл алгоритма
+    changed = True
+    while changed:
+        changed = False
+        new_R = set()
+        for u, A, v in R:
+            for s, B, t in R:
+                if t == u:
+                    # Ищем C -> B A
+                    for rule in cfg.productions:
+                        if rule.body == [B, A]:
+                            if (s, rule.head, v) not in R:
+                                new_R.add((s, rule.head, v))
+                                changed = True
+                if s == v:
+                    # Ищем C -> A B
+                    for rule in cfg.productions:
+                        if rule.body == [A, B]:
+                            if (u, rule.head, t) not in R:
+                                new_R.add((u, rule.head, t))
+                                changed = True
+        R |= new_R
 
-    added = True
-    while added:
-        added = False
-        new_triples = set()
-        for triple1 in triples:
-            for triple2 in triples:
-                if triple1[2] == triple2[1]:
-                    for production in cnf.productions:
-                        if (
-                            len(production.body) == 2
-                            and production.body[0].value == triple1[0]
-                            and production.body[1].value == triple2[0]
-                        ):
-                            new_triple = (triple1[0], triple1[2], triple2[1])
-                            if new_triple not in triples:
-                                new_triples.add(new_triple)
-                                added = True
-                        # elif len(production.body) == 1:
-                        #     if production.body[0].value == triple1[0]:
-                        #         new_triple = (triple1[0], triple1[1], triple1[2])
-                        #         if new_triple not in triples:
-                        #             new_triples.add(new_triple)
-                        #             added = True
-                        #     elif production.body[0].value == triple2[0]:
-                        #         new_triple = (triple2[0], triple2[1], triple2[2])
-                        #         if new_triple not in triples:
-                        #             new_triples.add(new_triple)
-                        #             added = True
+    # Формируем итоговое множество достижимых пар вершин
+    result = {(u, v) for u, A, v in R if A == cfg.start_symbol}
 
-        triples.update(new_triples)
-
-    result = set()
-    for s, u, v in triples:
-        if (
-            s == cfg.start_symbol
-            and (start_nodes is None or u in start_nodes)
-            and (final_nodes is None or v in final_nodes)
-        ):
-            result.add((u, v))
+    # Опциональная фильтрация по стартовым и финальным вершинам
+    if start_nodes:
+        result = {pair for pair in result if pair[0] in start_nodes}
+    if final_nodes:
+        result = {pair for pair in result if pair[1] in final_nodes}
 
     return result

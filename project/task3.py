@@ -48,7 +48,7 @@ class FiniteAutomaton:
         return [self.mapOverState_(t) for t in self.start_states]
 
     def labels(self):
-        return self.basa.keys()
+        return self.states_map.keys()
 
     def size(self):
         return len(self.states_map)
