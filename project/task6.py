@@ -25,13 +25,10 @@ def cfpq_with_hellings(
     start_nodes: Set[int] = None,
     final_nodes: Set[int] = None,
 ) -> Set[Tuple[int, int]]:
-    # Преобразуем грамматику в НФХ, если она уже не в НФХ
     cfg = cfg_to_weak_normal_form(cfg)
 
-    # Инициализация рабочих множеств
     R = set()
 
-    # Строим индекс для правил вида A -> a
     terminals_to_variables = {}
     for rule in cfg.productions:
         if len(rule.body) == 1 and isinstance(rule.body[0], pyformlang.cfg.Terminal):
@@ -40,14 +37,12 @@ def cfpq_with_hellings(
                 terminals_to_variables[terminal] = set()
             terminals_to_variables[terminal].add(rule.head)
 
-    # Добавляем начальные рёбра
     for edge in graph.edges(data=True):
         u, v, data = edge
         if data["label"] in terminals_to_variables:
             for variable in terminals_to_variables[data["label"]]:
                 R.add((u, variable, v))
 
-    # Основной цикл алгоритма
     changed = True
     while changed:
         changed = False
@@ -55,14 +50,12 @@ def cfpq_with_hellings(
         for u, A, v in R:
             for s, B, t in R:
                 if t == u:
-                    # Ищем C -> B A
                     for rule in cfg.productions:
                         if rule.body == [B, A]:
                             if (s, rule.head, v) not in R:
                                 new_R.add((s, rule.head, v))
                                 changed = True
                 if s == v:
-                    # Ищем C -> A B
                     for rule in cfg.productions:
                         if rule.body == [A, B]:
                             if (u, rule.head, t) not in R:
@@ -70,10 +63,8 @@ def cfpq_with_hellings(
                                 changed = True
         R |= new_R
 
-    # Формируем итоговое множество достижимых пар вершин
     result = {(u, v) for u, A, v in R if A == cfg.start_symbol}
 
-    # Опциональная фильтрация по стартовым и финальным вершинам
     if start_nodes:
         result = {pair for pair in result if pair[0] in start_nodes}
     if final_nodes:
