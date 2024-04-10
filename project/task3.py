@@ -14,21 +14,24 @@ class FiniteAutomaton:
     def __init__(
         self, obj: any, start_states=set(), final_states=set(), states_map=dict()
     ):
+        self.fr = None
         if isinstance(obj, DeterministicFiniteAutomaton) or isinstance(
             obj, NondeterministicFiniteAutomaton
         ):
             mat = nfa_to_mat(obj)
-            self.basa, self.start_states, self.final_states, self.states_map = (
-                mat.basa,
-                mat.start_states,
-                mat.final_states,
-                mat.states_map,
-            )
+            (
+                self.basa,
+                self.start_states,
+                self.final_states,
+                self.states_map,
+                self.fr,
+            ) = (mat.basa, mat.start_states, mat.final_states, mat.states_map, "fa")
         else:
             self.basa = obj
             self.final_states = final_states
             self.start_states = start_states
             self.states_map = states_map
+            self.fr = "copy"
 
     def accepts(self, word) -> bool:
         nfa = mat_to_nfa(self)
