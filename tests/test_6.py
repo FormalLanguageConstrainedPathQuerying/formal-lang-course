@@ -8,7 +8,7 @@ from pyformlang.cfg import CFG
 
 def test_grammar_weak1():
 
-    g = read_cfgrammar("filesForTest/cfgTest1")
+    g = read_cfgrammar("../tests/filesForTest/cfgTest1")
 
     actual = cfg_to_weak_normal_form(g)
 
@@ -30,7 +30,7 @@ def test_grammar_weak1():
 
 def test_grammar_weak2():
 
-    actual = cfg_to_weak_normal_form(read_cfgrammar("filesForTest/cfgTest2"))
+    actual = cfg_to_weak_normal_form(read_cfgrammar("../tests/filesForTest/cfgTest2"))
     expected = CFG.from_text(
         """
     S -> NP VP
