@@ -1,0 +1,4 @@
+S -> NP VP
+VP -> V NP
+V -> foo | quu
+NP -> boo | shoo
