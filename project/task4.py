@@ -6,7 +6,8 @@ from project.task3 import FiniteAutomaton, intersect_automata, transitive_closur
 def reachability_with_constraints(
     fa: FiniteAutomaton, constraints_fa: FiniteAutomaton
 ) -> dict[int, set[int]]:
-
+    constraints_fa = FiniteAutomaton(constraints_fa)
+    fa = FiniteAutomaton(fa)
     m, n = constraints_fa.size(), fa.size()
 
     def get_front(s):

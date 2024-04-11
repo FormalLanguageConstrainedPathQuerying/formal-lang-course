@@ -18,12 +18,12 @@ class FiniteAutomaton:
             obj, NondeterministicFiniteAutomaton
         ):
             mat = nfa_to_mat(obj)
-            self.basa, self.start_states, self.final_states, self.states_map = (
-                mat.basa,
-                mat.start_states,
-                mat.final_states,
-                mat.states_map,
-            )
+            (
+                self.basa,
+                self.start_states,
+                self.final_states,
+                self.states_map,
+            ) = (mat.basa, mat.start_states, mat.final_states, mat.states_map)
         else:
             self.basa = obj
             self.final_states = final_states
@@ -48,7 +48,7 @@ class FiniteAutomaton:
         return [self.mapOverState_(t) for t in self.start_states]
 
     def labels(self):
-        return self.basa.keys()
+        return self.states_map.keys()
 
     def size(self):
         return len(self.states_map)
