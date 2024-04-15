@@ -19,7 +19,7 @@ try:
     from project.task7 import cfpq_with_matrix
     from project.task6 import cfpq_with_hellings
 except ImportError:
-    pytestmark = pytest.mark.skip("Task 6 is not ready to test!")
+    pytestmark = pytest.mark.skip("Task 7 is not ready to test!")
 
 REGEXP_CFG: dict[str, list[cfg.CFG]] = {
     "a": [cfg.CFG.from_text("S -> a"), cfg.CFG.from_text("S -> N B\nB -> $\nN -> a")],
