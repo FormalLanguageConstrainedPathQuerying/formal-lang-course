@@ -100,6 +100,26 @@ IS_FINAL = "is_final"
 IS_START = "is_start"
 
 
+def generate_rnd_start_and_final(graph):
+    start_nodes = set(
+        random.choices(
+            list(graph.nodes().keys()), k=random.randint(1, len(graph.nodes))
+        )
+    )
+    final_nodes = set(
+        random.choices(
+            list(graph.nodes().keys()), k=random.randint(1, len(graph.nodes))
+        )
+    )
+
+    for node, data in graph.nodes(data=True):
+        if node in start_nodes:
+            data[IS_START] = True
+        if node in final_nodes:
+            data[IS_FINAL] = True
+    return start_nodes, final_nodes
+
+
 @pytest.fixture(scope="function", params=range(5))
 def graph(request) -> MultiDiGraph:
     n_of_nodes = random.randint(20, 40)
@@ -111,22 +131,7 @@ class TestReachabilityMatrixAlgorithm:
         "regex_str, cfg_list", REGEXP_CFG.items(), ids=lambda regexp_cfgs: regexp_cfgs
     )
     def test_rpq_cfpq_matrix(self, graph, regex_str, cfg_list) -> None:
-        start_nodes = set(
-            random.choices(
-                list(graph.nodes().keys()), k=random.randint(1, len(graph.nodes))
-            )
-        )
-        final_nodes = set(
-            random.choices(
-                list(graph.nodes().keys()), k=random.randint(1, len(graph.nodes))
-            )
-        )
-
-        for node, data in graph.nodes(data=True):
-            if node in start_nodes:
-                data[IS_START] = True
-            if node in final_nodes:
-                data[IS_FINAL] = True
+        start_nodes, final_nodes = generate_rnd_start_and_final(graph)
 
         for cf_gram in cfg_list:
             cfpq: set[tuple[int, int]] = cfpq_with_matrix(
@@ -144,23 +149,7 @@ class TestReachabilityMatrixAlgorithm:
 
     @pytest.mark.parametrize("eq_grammars", GRAMMARS, ids=lambda grammars: grammars)
     def test_different_grammars(self, graph, eq_grammars):
-        start_nodes = set(
-            random.choices(
-                list(graph.nodes().keys()), k=random.randint(1, len(graph.nodes))
-            )
-        )
-        final_nodes = set(
-            random.choices(
-                list(graph.nodes().keys()), k=random.randint(1, len(graph.nodes))
-            )
-        )
-
-        for node, data in graph.nodes(data=True):
-            if node in start_nodes:
-                data[IS_START] = True
-            if node in final_nodes:
-                data[IS_FINAL] = True
-
+        start_nodes, final_nodes = generate_rnd_start_and_final(graph)
         eq_cfpqs = [
             cfpq_with_matrix(
                 deepcopy(cf_gram), deepcopy(graph), start_nodes, final_nodes
@@ -172,22 +161,7 @@ class TestReachabilityMatrixAlgorithm:
 
     @pytest.mark.parametrize("grammar", GRAMMARS_DIFFERENT, ids=lambda g: g)
     def test_hellings_matrix(self, graph, grammar):
-        start_nodes = set(
-            random.choices(
-                list(graph.nodes().keys()), k=random.randint(1, len(graph.nodes))
-            )
-        )
-        final_nodes = set(
-            random.choices(
-                list(graph.nodes().keys()), k=random.randint(1, len(graph.nodes))
-            )
-        )
-
-        for node, data in graph.nodes(data=True):
-            if node in start_nodes:
-                data[IS_START] = True
-            if node in final_nodes:
-                data[IS_FINAL] = True
+        start_nodes, final_nodes = generate_rnd_start_and_final(graph)
         hellings = cfpq_with_hellings(
             deepcopy(grammar), deepcopy(graph), start_nodes, final_nodes
         )
