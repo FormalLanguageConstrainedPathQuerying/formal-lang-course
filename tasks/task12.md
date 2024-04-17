@@ -37,7 +37,7 @@ expr =
   | Intersect of expr * expr     // пересечение языков
   | Concat of expr * expr        // конкатенация языков
   | Union of expr * expr         // объединение языков
-  | Star of expr                 // замыкание языков (звезда Клини)
+  | Star of expr                 // замыкание языка (звезда Клини)
   | Smb of expr                  // единичный переход
 
 lambda =
