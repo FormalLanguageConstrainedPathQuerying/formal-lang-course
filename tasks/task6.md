@@ -18,7 +18,7 @@
     graph: nx.DiGraph,
     start_nodes: set[int] = None,
     final_nodes: set[int] = None,
-  ) -> set[Tuple[int, int]]:
+  ) -> set[tuple[int, int]]:
      pass
   ```
 - [ ] Добавить необходимые тесты.
