@@ -8,4 +8,13 @@
 - [ ] Реализовать **функцию**, основанную на матричном алгоритме, решающую задачу достижимости между всеми парами вершин для заданного графа и заданной КС грамматики.
   - Для преобразования грамматики в ОНФХ использовать результаты предыдущих работ.
   - Для реализации матричных операций использовать [sciPy](https://docs.scipy.org/doc/scipy/reference/sparse.html).
+    ```python
+    def cfpq_with_matrix(
+        cfg: pyformlang.cfg.CFG,
+        graph: nx.DiGraph,
+        start_nodes: Set[int] = None,
+        final_nodes: Set[int] = None,
+    ) -> set[tuple[int, int]]:
+      pass
+    ```
 - [ ] Добавить необходимые тесты.
