@@ -20,7 +20,10 @@ def as_set(obj):
 
 class FiniteAutomaton:
     def __init__(
-            self, input_automaton: Union[NondeterministicFiniteAutomaton, DeterministicFiniteAutomaton, EpsilonNFA]
+        self,
+        input_automaton: Union[
+            NondeterministicFiniteAutomaton, DeterministicFiniteAutomaton, EpsilonNFA
+        ],
     ):
         self.start_states = input_automaton.start_states
         self.final_states = input_automaton.final_states
@@ -72,7 +75,7 @@ class FiniteAutomaton:
 
 
 def intersect_automata(
-        automaton_1: FiniteAutomaton, automaton_2: FiniteAutomaton
+    automaton_1: FiniteAutomaton, automaton_2: FiniteAutomaton
 ) -> EpsilonNFA:
     number_of_states = len(automaton_2)
     symbols_set = set(automaton_1.matrix.keys()).intersection(automaton_2.matrix.keys())
@@ -91,22 +94,23 @@ def intersect_automata(
     for s1 in automaton_1.start_states:
         for s2 in automaton_2.start_states:
             result_automaton.add_start_state(
-                automaton_1.state_to_idx[s1] * number_of_states + automaton_2.state_to_idx[s2]
+                automaton_1.state_to_idx[s1] * number_of_states
+                + automaton_2.state_to_idx[s2]
             )
 
     for s1 in automaton_1.final_states:
         for s2 in automaton_2.final_states:
             result_automaton.add_final_state(
-                automaton_1.state_to_idx[s1] * number_of_states + automaton_2.state_to_idx[s2]
+                automaton_1.state_to_idx[s1] * number_of_states
+                + automaton_2.state_to_idx[s2]
             )
 
     return result_automaton
 
 
-def paths_ends(graph: MultiDiGraph,
-               start_nodes: set[int],
-               final_nodes: set[int],
-               regex: str):
+def paths_ends(
+    graph: MultiDiGraph, start_nodes: set[int], final_nodes: set[int], regex: str
+):
     query = task2.regex_to_dfa(regex)
     aut = task2.graph_to_nfa(graph, start_nodes, final_nodes)
 
