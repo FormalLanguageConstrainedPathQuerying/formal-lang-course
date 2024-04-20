@@ -11,7 +11,7 @@
   - Необходимые функции:
   ```python
   def cfpq_with_tensor(
-    cfg: pyformlang.rsa.RecursiveAutomaton,
+    rsm: pyformlang.rsa.RecursiveAutomaton,
     graph: nx.DiGraph,
     final_nodes: set[int] = None,
     start_nodes: set[int] = None,
