@@ -10,7 +10,7 @@
   - Требуемая функция:
   ```python
   def cfpq_with_gll(
-        cfg: pyformlang.rsa.RecursiveAutomaton,
+        rsm: pyformlang.rsa.RecursiveAutomaton,
         graph: nx.DiGraph,
         start_nodes: set[int] = None,
         final_nodes: set[int] = None,
