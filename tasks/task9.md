@@ -7,4 +7,14 @@
 
 - [ ] Реализовать **функцию**, основанную на алгоритме Generalized LL (работающего с RSM), решающую задачу достижимости между всеми парами вершин для заданного графа и заданной КС грамматики.
   - Для работы с графами и RSM использовать функции из предыдущих задач.
+  - Требуемая функция:
+  ```python
+  def cfpq_with_gll(
+        rsm: pyformlang.rsa.RecursiveAutomaton,
+        graph: nx.DiGraph,
+        start_nodes: set[int] = None,
+        final_nodes: set[int] = None,
+    ) -> set[tuple[int, int]]:
+    pass
+  ```
 - [ ] Добавить необходимые тесты.
