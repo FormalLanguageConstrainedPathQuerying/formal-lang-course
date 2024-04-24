@@ -1,3 +1,5 @@
+from typing import Any
+
 import numpy as np
 from pyformlang.finite_automaton import (
     DeterministicFiniteAutomaton,
@@ -17,20 +19,28 @@ class FiniteAutomaton:
         if isinstance(
             automaton, (DeterministicFiniteAutomaton, NondeterministicFiniteAutomaton)
         ):
-            self.matrix, self.start, self.final, self.state_map = (
+            self.matrix, self.istart, self.ifinal, self.istate_map = (
                 FiniteAutomaton.__from_nfa(automaton)
             )
         else:
             self.matrix = automaton
-            self.start = set() if start is None else start
-            self.final = set() if final is None else final
-            self.state_map = dict() if state_map is None else state_map
+
+            self.istart = set() if start is None else start
+            self.ifinal = set() if final is None else final
+            self.istate_map = dict() if state_map is None else state_map
+        self.start = set() if start is None else start
+        self.final = set() if final is None else final
+        self.state_map = dict() if state_map is None else state_map
 
     def accepts(self, word) -> bool:
-        return FiniteAutomaton.__to_nfa(self).accepts(word)
+        nfa = FiniteAutomaton.__to_nfa(self)
+        return nfa.accepts("".join(list(word)))
 
     def is_empty(self) -> bool:
-        return not bool(self.matrix)
+        return len(self.matrix) == 0
+
+    def size(self):
+        return len(self.state_map)
 
     @staticmethod
     def __from_nfa(automaton: NondeterministicFiniteAutomaton) -> tuple:
@@ -62,13 +72,13 @@ class FiniteAutomaton:
                 for v in range(m_size):
                     if automaton.matrix[label][u, v]:
                         nfa.add_transition(
-                            automaton.state_map[u], label, automaton.state_map[v]
+                            automaton.istate_map[u], label, automaton.istate_map[v]
                         )
 
-        for s in automaton.start:
-            nfa.add_start_state(automaton.state_map[s])
-        for s in automaton.final:
-            nfa.add_final_state(automaton.state_map[s])
+        for s in automaton.istart:
+            nfa.add_start_state(automaton.istate_map[s])
+        for s in automaton.ifinal:
+            nfa.add_final_state(automaton.istate_map[s])
 
         return nfa
 
@@ -80,17 +90,17 @@ def intersect_automata(a: FiniteAutomaton, b: FiniteAutomaton) -> FiniteAutomato
         {label: kron(a.matrix[label], b.matrix[label], "csr") for label in labels}
     )
 
-    for u, i in a.state_map.items():
-        for v, j in b.state_map.items():
+    for u, i in a.istate_map.items():
+        for v, j in b.istate_map.items():
 
-            k = len(b.state_map) * i + j
-            automaton.state_map[k] = k
+            k = len(b.istate_map) * i + j
+            automaton.istate_map[k] = k
 
-            if u in a.start and v in b.start:
-                automaton.start.add(k)
+            if u in a.istart and v in b.istart:
+                automaton.istart.add(k)
 
-            if u in a.final and v in b.final:
-                automaton.final.add(k)
+            if u in a.ifinal and v in b.ifinal:
+                automaton.ifinal.add(k)
 
     return automaton
 
@@ -128,7 +138,7 @@ def reachable_under_constraint(
     intersected = intersect_automata(a, b)
     tc = transitive_closure(intersected)
 
-    size = len(b.state_map)
+    size = b.size()
     result = []
     for u, v in zip(*tc.nonzero()):
         if u in intersected.start and v in intersected.final:
