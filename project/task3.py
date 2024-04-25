@@ -8,6 +8,8 @@ from networkx import MultiDiGraph
 from typing import Iterable, Tuple, Set
 from project.task2 import graph_to_nfa, regex_to_dfa
 from scipy.sparse import dok_matrix, csr_matrix
+import pyformlang
+from pyformlang.cfg import Epsilon
 
 
 class FiniteAutomaton:
@@ -17,6 +19,8 @@ class FiniteAutomaton:
     final_states = None
     states_map = None
     flag = True
+    nullable_symbols = None  # only produced by rsa_to_mat
+    states_count = None  # only produced by rsa_to_mat
 
     def __init__(
         self,
@@ -68,6 +72,9 @@ class FiniteAutomaton:
     def mapOverState_(self, u):
         return self.states_map[State(u)]
 
+    def indexes_dict(self):
+        return {i: v for v, i in self.states_map.items()}
+
 
 def nfa_to_mat(
     automaton: NondeterministicFiniteAutomaton, matrix_class=dok_matrix
@@ -89,9 +96,11 @@ def nfa_to_mat(
                 for v in setEdges:
                     basa[label][states_map[u], states_map[v]] = True
 
-    return FiniteAutomaton(
+    res = FiniteAutomaton(
         basa, automaton.start_states, automaton.final_states, states_map
     )
+    res.states_count = len(automaton.states)
+    return res
 
 
 def mat_to_nfa(automaton: FiniteAutomaton) -> NondeterministicFiniteAutomaton:
@@ -176,4 +185,45 @@ def paths_ends(
             result.append(
                 (mapping[u // regex_dfa.size()], mapping[v // regex_dfa.size()])
             )
+    return result
+
+
+def rsm_to_mat(rsm: pyformlang.rsa.RecursiveAutomaton) -> FiniteAutomaton:
+    states = set()
+    start_states = set()
+    final_states = set()
+    nullable_symbols = set()
+
+    for var, p in rsm.boxes.items():
+        for state in p.dfa.states:
+            s = State((var, state.value))
+            states.add(s)
+            if state in p.dfa.start_states:
+                start_states.add(s)
+            if state in p.dfa.final_states:
+                final_states.add(s)
+
+    len_states = len(states)
+    mapping = {v: i for i, v in enumerate(sorted(states, key=lambda x: x.value[1]))}
+
+    m = dict()
+    for var, p in rsm.boxes.items():
+        for src, transition in p.dfa.to_dict().items():
+            for symbol, dst in transition.items():
+                label = symbol.value
+                if symbol not in m:
+                    m[label] = dok_matrix((len_states, len_states), dtype=bool)
+
+                dstSet = {dst} if not isinstance(dst, set) else dst
+                for target in dstSet:
+                    m[label][
+                        mapping[State((var, src.value))],
+                        mapping[State((var, target.value))],
+                    ] = True
+                if isinstance(dst, Epsilon):
+                    nullable_symbols.add(label)
+
+    result = FiniteAutomaton(m, start_states, final_states, mapping)
+    result.nullable_symbols = nullable_symbols
+    result.states_count = len_states
     return result
