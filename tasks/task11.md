@@ -9,7 +9,7 @@ prog = stmt*
 
 stmt = bind | add | remove | declare
 
-declare = VAR 'is' 'graph'
+declare = 'let' VAR 'is' 'graph'
 
 bind = 'let' VAR '=' expr
 
