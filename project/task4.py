@@ -1,13 +1,11 @@
 from scipy.sparse import dok_matrix, block_diag
 
-from project.task3 import FiniteAutomaton, intersect_automata, transitive_closure
+from project.task3 import FiniteAutomaton
 
 
 def reachability_with_constraints(
     fa: FiniteAutomaton, constraints_fa: FiniteAutomaton
 ) -> dict[int, set[int]]:
-    constraints_fa = FiniteAutomaton(constraints_fa)
-    fa = FiniteAutomaton(fa)
     m, n = constraints_fa.size(), fa.size()
 
     def get_front(s):
@@ -35,13 +33,18 @@ def reachability_with_constraints(
 
     for v in fa.start_idxs():
         front = get_front(v)
+        last_ = -1
         for _ in range(m * n):
             front = sum(
                 [dok_matrix((m, m + n), dtype=bool)]
                 + [diag(front @ adj[label]) for label in labels]
             )
-            for i in constraints_fa.final_idxs():
-                for j in fa.final_idxs():
-                    if front[i, j + m]:
-                        result[v].add(j)
+            fr = front[:, m:].nonzero()
+            for a, b in zip(fr[0], fr[1]):
+                if a in constraints_fa.final_idxs() and b in fa.final_idxs():
+                    result[v].add(b)
+                if hash(str(fr)) == last_:
+                    break
+                last_ = hash(str(fr))
+
     return result

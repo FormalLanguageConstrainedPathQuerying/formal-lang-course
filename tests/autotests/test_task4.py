@@ -13,7 +13,7 @@ from networkx import MultiDiGraph
 try:
     from project.task4 import reachability_with_constraints
     from project.task2 import regex_to_dfa, graph_to_nfa
-    from project.task4 import paths_ends, FiniteAutomaton
+    from project.task3 import paths_ends, FiniteAutomaton
 except ImportError as e:
     pytestmark = pytest.mark.skip("Task 4 is not ready to test!")
 

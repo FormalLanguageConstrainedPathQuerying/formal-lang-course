@@ -7,17 +7,29 @@ from scipy.sparse import dok_matrix, kron, block_diag, csr_matrix
 from networkx import MultiDiGraph
 from typing import Iterable, Tuple, Set
 from project.task2 import graph_to_nfa, regex_to_dfa
+from scipy.sparse import dok_matrix, csr_matrix
 
 
 class FiniteAutomaton:
 
+    basa = None
+    start_states = None
+    final_states = None
+    states_map = None
+    flag = True
+
     def __init__(
-        self, obj: any, start_states=set(), final_states=set(), states_map=dict()
+        self,
+        obj: any,
+        start_states=set(),
+        final_states=set(),
+        states_map=dict(),
+        matrix_class=dok_matrix,
     ):
         if isinstance(obj, DeterministicFiniteAutomaton) or isinstance(
             obj, NondeterministicFiniteAutomaton
         ):
-            mat = nfa_to_mat(obj)
+            mat = nfa_to_mat(obj, matrix_class=matrix_class)
             (
                 self.basa,
                 self.start_states,
@@ -48,7 +60,7 @@ class FiniteAutomaton:
         return [self.mapOverState_(t) for t in self.start_states]
 
     def labels(self):
-        return self.states_map.keys()
+        return self.states_map.keys() if self.flag else self.basa.keys()
 
     def size(self):
         return len(self.states_map)
@@ -57,20 +69,24 @@ class FiniteAutomaton:
         return self.states_map[State(u)]
 
 
-def nfa_to_mat(automaton: NondeterministicFiniteAutomaton) -> FiniteAutomaton:
+def nfa_to_mat(
+    automaton: NondeterministicFiniteAutomaton, matrix_class=dok_matrix
+) -> FiniteAutomaton:
     states = automaton.to_dict()
     n = len(automaton.states)
     states_map = {v: i for i, v in enumerate(automaton.states)}
     basa = dict()
 
     for label in automaton.symbols:
-        basa[label] = dok_matrix((n, n), dtype=bool)
+        basa[label] = matrix_class((n, n), dtype=bool)
         for u, edges in states.items():
             if label in edges:
-                e = edges[label]
-                if not isinstance(e, set):
-                    e = {e}
-                for v in e:
+                setEdges = (
+                    {edges[label]}
+                    if not isinstance(edges[label], set)
+                    else edges[label]
+                )
+                for v in setEdges:
                     basa[label][states_map[u], states_map[v]] = True
 
     return FiniteAutomaton(
@@ -113,24 +129,29 @@ def transitive_closure(automaton: FiniteAutomaton):
 
 
 def intersect_automata(
-    automaton1: FiniteAutomaton, automaton2: FiniteAutomaton
+    automaton1: FiniteAutomaton,
+    automaton2: FiniteAutomaton,
+    matrix_class_id="csr",
+    g=True,
 ) -> FiniteAutomaton:
-    labels = automaton1.basa.keys() & automaton2.basa.keys()
+    automaton1.flag = not g
+    automaton2.flag = not g
+    labels = automaton1.labels() & automaton2.labels()
     basa = dict()
     start_states = set()
     final_states = set()
     states_map = dict()
 
     for label in labels:
-        basa[label] = kron(automaton1.basa[label], automaton2.basa[label], "csr")
+        basa[label] = kron(
+            automaton1.basa[label], automaton2.basa[label], matrix_class_id
+        )
 
     for u, i in automaton1.states_map.items():
         for v, j in automaton2.states_map.items():
-
             k = len(automaton2.states_map) * i + j
-            sk = State(k)
-            states_map[sk] = k
-            assert isinstance(u, State)
+            states_map[State(k)] = k
+
             if u in automaton1.start_states and v in automaton2.start_states:
                 start_states.add(State(k))
 
@@ -141,25 +162,18 @@ def intersect_automata(
 
 
 def paths_ends(
-    graph: MultiDiGraph, start_nodes: Set[int], final_nodes: Set[int], regex: str
-):
-    graph_fa = nfa_to_mat(graph_to_nfa(graph, start_nodes, final_nodes))
+    graph: MultiDiGraph, start_nodes: set[int], final_nodes: set[int], regex: str
+) -> list[tuple[object, object]]:
+    graph_nfa = nfa_to_mat(graph_to_nfa(graph, start_nodes, final_nodes))
+    regex_dfa = nfa_to_mat(regex_to_dfa(regex))
+    intersection = intersect_automata(graph_nfa, regex_dfa, g=False)
+    closure = transitive_closure(intersection)
 
-    regex_fa = nfa_to_mat(regex_to_dfa(regex))
-
-    intersected_fa = intersect_automata(graph_fa, regex_fa)
-
-    closure = transitive_closure(intersected_fa)
-
-    paths = []
-    map = {v: i for i, v in graph_fa.states_map.items()}
-    for start_node, final_node in zip(*closure.nonzero()):
-        if (
-            start_node in intersected_fa.start_states
-            and final_node in intersected_fa.final_states
-        ):
-            paths.append(
-                (map[start_node // regex_fa.size()], map[final_node // regex_fa.size()])
+    mapping = {v: i for i, v in graph_nfa.states_map.items()}
+    result = list()
+    for u, v in zip(*closure.nonzero()):
+        if u in intersection.start_states and v in intersection.final_states:
+            result.append(
+                (mapping[u // regex_dfa.size()], mapping[v // regex_dfa.size()])
             )
-
-    return paths
+    return result
