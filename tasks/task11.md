@@ -31,7 +31,7 @@ select = v_filter? v_filter? 'return' VAR (',' VAR)? 'where' VAR 'reachable' 'fr
 
 v_filter = 'for' VAR 'in' expr
 
-VAR = [a..z]+[a..z 0..1]*
+VAR = [a..z]+[a..z 0..9]*
 NUM = [1..9]+[0..9]*
 CHAR = '"' [a..z] '"'
 
@@ -45,15 +45,15 @@ let g is graph
 add edge (1, "a", 2) to g
 add edge (2, "a", 3) to g
 add edge (3, "a", 1) to g
-add edge (1, "c", 0) to g
-add edge (0, "b", 4) to g
-add edge (4, "b", 0) to g
+add edge (1, "c", 5) to g
+add edge (5, "b", 4) to g
+add edge (4, "b", 5) to g
 
 let q = "a"^[1..3] . q . "b"^[2..3] | "c"
 
 let r1 = for v in [2] return u where u reachable from v in g by q
 
-add edge (0, "d", 5) to g
+add edge (5, "d", 6) to g
 
 let r2 = for v in [2,3] return u,v where u reachable from v in g by (q . "d")
 
