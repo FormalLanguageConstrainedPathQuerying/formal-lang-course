@@ -25,7 +25,7 @@ edge_expr = '(' expr ',' expr ',' expr ')'
 
 regexp = CHAR | VAR | '(' regexp ')' | (regexp '|' regexp) | (regexp '^' range) | (regexp '.' regexp) | (regexp '&' regexp)
 
-range = '[' NUM '..' NUM? ']'
+range = '[' NUM ('..' NUM)? ']'
 
 select = v_filter? v_filter? 'return' VAR (',' VAR)? 'where' VAR 'reachable' 'from' VAR 'in' VAR 'by' expr
 
@@ -42,7 +42,6 @@ CHAR = '"' [a..z] '"'
 ```
 let g is graph
 
-add edge (1, "a", 2) to g
 add edge (2, "a", 3) to g
 add edge (3, "a", 1) to g
 add edge (1, "c", 5) to g
@@ -200,3 +199,15 @@ _____________________________________
 - [ ] С использованием ANTLR реализовать синтаксический анализатор предложенного выше языка. А именно, реализовать функцию, которая принимает строку и возвращает дерево разбора.
 - [ ] Реализовать функцию, которая по дереву разбора возвращает количество узлов в нём.
 - [ ] Реализовать функцию, которая по дереву разбора строит строку, которая была разобрана.
+
+Требуемые функции:
+```python
+def prog_to_tree(program: str) ->  ProgContex:
+    pass
+
+def nodes_count(tree: ProgContex) -> int:
+    pass
+
+def tree_to_prog(tree: ProgContex) -> str:
+    pass
+```
