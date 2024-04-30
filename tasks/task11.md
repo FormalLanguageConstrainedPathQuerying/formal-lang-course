@@ -25,7 +25,7 @@ edge_expr = '(' expr ',' expr ',' expr ')'
 
 regexp = CHAR | VAR | '(' regexp ')' | (regexp '|' regexp) | (regexp '^' range) | (regexp '.' regexp) | (regexp '&' regexp)
 
-range = '[' NUM ('..' NUM)? ']'
+range = '[' NUM '..' NUM? ']'
 
 select = v_filter? v_filter? 'return' VAR (',' VAR)? 'where' VAR 'reachable' 'from' VAR 'in' VAR 'by' expr
 
@@ -42,6 +42,7 @@ CHAR = '"' [a..z] '"'
 ```
 let g is graph
 
+add edge (1, "a", 2) to g
 add edge (2, "a", 3) to g
 add edge (3, "a", 1) to g
 add edge (1, "c", 5) to g
