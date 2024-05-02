@@ -5,6 +5,7 @@
 import sys
 from copy import deepcopy
 import pytest
+import re
 
 # Fix import statements in try block to run tests
 try:
@@ -25,12 +26,15 @@ def fill_input(argv):
 
 class TestParser:
     @pytest.mark.parametrize("program", INPUT_PROGRAMS, ids=lambda x: x)
-    def id_test(self, program):
-        tree_before = prog_to_tree(program)
-        tree_after = prog_to_tree(tree_to_prog(tree_before))
+    def id_test(self, program: str):
+        tree_before, is_valid = prog_to_tree(program)
+        assert is_valid
+        program_after = tree_to_prog(tree_before)
+        tree_after, _ = prog_to_tree(program_after)
         assert nodes_count(tree_before) == nodes_count(tree_after)
-        assert program == tree_to_prog(tree_before)
-
-
-if __name__ == "__main__":
-    fill_input(sys.argv[1::])
+        assert program == program_after
+        reg = re.compile("[=,]", re.X)
+        if reg.search(program):
+            program_bad = reg.sub("", program)
+            _, is_valid_bad = prog_to_tree(program_bad)
+            assert not is_valid_bad
