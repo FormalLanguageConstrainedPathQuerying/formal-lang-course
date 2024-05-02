@@ -203,7 +203,8 @@ _____________________________________
 
 Требуемые функции:
 ```python
-def prog_to_tree(program: str) ->  ProgContex:
+# второе поле показывает, корректна ли строка (True, если корректна)
+def prog_to_tree(program: str) ->  tuple[ProgContex, bool]:
     pass
 
 def nodes_count(tree: ProgContex) -> int:
