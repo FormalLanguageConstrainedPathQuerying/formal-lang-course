@@ -204,12 +204,12 @@ _____________________________________
 Требуемые функции:
 ```python
 # второе поле показывает, корректна ли строка (True, если корректна)
-def prog_to_tree(program: str) ->  tuple[ProgContex, bool]:
+def prog_to_tree(program: str) ->  tuple[ParserRuleContext, bool]:
     pass
 
-def nodes_count(tree: ProgContex) -> int:
+def nodes_count(tree: ParserRuleContext) -> int:
     pass
 
-def tree_to_prog(tree: ProgContex) -> str:
+def tree_to_prog(tree: ParserRuleContext) -> str:
     pass
 ```
