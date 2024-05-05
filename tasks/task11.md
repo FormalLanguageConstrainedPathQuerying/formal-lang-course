@@ -204,7 +204,7 @@ _____________________________________
 Требуемые функции:
 ```python
 # второе поле показывает, корректна ли строка (True, если корректна)
-def prog_to_tree(program: str) ->  tuple[ParserRuleContext, bool]:
+def prog_to_tree(program: str) -> tuple[ParserRuleContext, bool]:
     pass
 
 def nodes_count(tree: ParserRuleContext) -> int:
