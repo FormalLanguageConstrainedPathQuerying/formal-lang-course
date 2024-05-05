@@ -7,7 +7,8 @@ from copy import deepcopy
 import pytest
 from networkx import MultiDiGraph
 from constants import QUERIES, LABELS
-from helper import generate_rnd_graph, generate_rnd_start_and_final
+from helper import generate_rnd_start_and_final
+from fixtures import graph
 
 # Fix import statements in try block to run tests
 try:
@@ -16,11 +17,6 @@ try:
     from project.task3 import paths_ends, FiniteAutomaton
 except ImportError:
     pytestmark = pytest.mark.skip("Task 4 is not ready to test!")
-
-
-@pytest.fixture(scope="class", params=range(5))
-def graph(request) -> MultiDiGraph:
-    return generate_rnd_graph(20, 40, LABELS)
 
 
 @pytest.fixture(scope="class", params=range(5))
