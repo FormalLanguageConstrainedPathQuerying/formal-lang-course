@@ -60,7 +60,7 @@ def generator(request) -> GeneratorTool:
     )
 
 
-@pytest.fixture(params=range(25))
+@pytest.fixture(params=range(100))
 def program(generator, request) -> str:
     # Grammarinator's API cannot return plain string, it can either write to the file or to the stdout
     # So we catch stdout
