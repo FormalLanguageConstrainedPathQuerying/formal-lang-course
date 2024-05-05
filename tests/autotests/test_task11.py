@@ -79,8 +79,10 @@ class TestParser:
         tree_after, is_valid_after = prog_to_tree(program_after)
         assert is_valid_after
         assert nodes_count(tree_before) == nodes_count(tree_after)
-        # reg = re.compile("[=,]", re.X)
-        # if reg.search(program):
-        #     program_bad = reg.sub("", program)
-        #     _, is_valid_bad = prog_to_tree(program_bad)
-        #     assert not is_valid_bad
+
+    def test_wrong(self, program: str):
+        reg = re.compile("[=,]", re.X)
+        if reg.search(program):
+            program_bad = reg.sub("", program)
+            _, is_valid_bad = prog_to_tree(program_bad)
+            assert not is_valid_bad
