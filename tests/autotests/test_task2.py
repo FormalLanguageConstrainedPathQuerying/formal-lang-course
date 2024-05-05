@@ -9,7 +9,8 @@ import pytest
 import random
 import itertools
 from helper import GraphWordsHelper, generate_rnd_graph, generate_rnd_start_and_final
-from constants import IS_FINAL, IS_START, REGEX_SIMPLE, LABELS_WITH_GREEKS
+from constants import IS_FINAL, IS_START, REGEX_SIMPLE
+from fixtures import small_graph
 
 # Fix import statements in try block to run tests
 try:
@@ -42,22 +43,17 @@ class TestRegexToDfa:
         assert dfa.accepts(word)
 
 
-@pytest.fixture(scope="class", params=range(8))
-def graph(request) -> MultiDiGraph:
-    return generate_rnd_graph(1, 20, LABELS_WITH_GREEKS)
-
-
 class TestGraphToNfa:
     def test_random_start_and_final(
         self,
-        graph: MultiDiGraph,
+        small_graph: MultiDiGraph,
     ) -> None:
-        copy_graph = graph.copy()
-        start_nodes, final_nodes = generate_rnd_start_and_final(graph)
+        copy_graph = small_graph.copy()
+        start_nodes, final_nodes = generate_rnd_start_and_final(small_graph)
         nfa: NondeterministicFiniteAutomaton = graph_to_nfa(
             copy_graph, start_nodes.copy(), final_nodes.copy()
         )
-        words_helper = GraphWordsHelper(graph)
+        words_helper = GraphWordsHelper(small_graph)
         words = words_helper.get_words_with_limiter(random.randint(10, 100))
         if len(words) == 0:
             assert nfa.is_empty()
@@ -65,12 +61,14 @@ class TestGraphToNfa:
             word = random.choice(words)
             assert nfa.accepts(word)
 
-    def test_not_specified_start_and_final(self, graph: MultiDiGraph) -> None:
-        nfa: NondeterministicFiniteAutomaton = graph_to_nfa(graph.copy(), set(), set())
-        for _, data in graph.nodes(data=True):
+    def test_not_specified_start_and_final(self, small_graph: MultiDiGraph) -> None:
+        nfa: NondeterministicFiniteAutomaton = graph_to_nfa(
+            small_graph.copy(), set(), set()
+        )
+        for _, data in small_graph.nodes(data=True):
             data[IS_FINAL] = True
             data[IS_START] = True
-        words_helper = GraphWordsHelper(graph)
+        words_helper = GraphWordsHelper(small_graph)
         words = words_helper.get_words_with_limiter(random.randint(10, 100))
         if len(words) == 0:
             assert nfa.is_empty()

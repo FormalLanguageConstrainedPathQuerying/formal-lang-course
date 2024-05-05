@@ -5,10 +5,10 @@
 import itertools
 from copy import deepcopy
 import pytest
-from networkx import MultiDiGraph
-from constants import REGEXP_CFG, GRAMMARS, GRAMMARS_DIFFERENT, EBNF_GRAMMARS, LABELS
-from helper import generate_rnd_graph, generate_rnd_start_and_final
+from constants import REGEXP_CFG, GRAMMARS, GRAMMARS_DIFFERENT, EBNF_GRAMMARS
+from helper import generate_rnd_start_and_final
 from rpq_template_test import rpq_cfpq_test, different_grammars_test
+from fixtures import graph
 
 # Fix import statements in try block to run tests
 try:
@@ -22,23 +22,16 @@ except ImportError:
     pytestmark = pytest.mark.skip("Task 8 is not ready to test!")
 
 
-@pytest.fixture(scope="function", params=range(5))
-def graph(request) -> MultiDiGraph:
-    return generate_rnd_graph(20, 40, LABELS)
-
-
 class TestReachabilityTensorAlgorithm:
-    @pytest.mark.parametrize(
-        "regex_str, cfg_list", REGEXP_CFG.items(), ids=lambda regexp_cfgs: regexp_cfgs
-    )
+    @pytest.mark.parametrize("regex_str, cfg_list", REGEXP_CFG.items())
     def test_rpq_cfpq_tensor(self, graph, regex_str, cfg_list) -> None:
         rpq_cfpq_test(graph, regex_str, cfg_list, cfpq_with_tensor)
 
-    @pytest.mark.parametrize("eq_grammars", GRAMMARS, ids=lambda grammars: grammars)
+    @pytest.mark.parametrize("eq_grammars", GRAMMARS)
     def test_different_grammars(self, graph, eq_grammars):
         different_grammars_test(graph, eq_grammars, cfpq_with_tensor)
 
-    @pytest.mark.parametrize("grammar", GRAMMARS_DIFFERENT, ids=lambda g: g)
+    @pytest.mark.parametrize("grammar", GRAMMARS_DIFFERENT)
     def test_hellings_matrix_tensor(self, graph, grammar):
         start_nodes, final_nodes = generate_rnd_start_and_final(graph)
         hellings = cfpq_with_hellings(
@@ -65,9 +58,7 @@ class TestReachabilityTensorAlgorithm:
         )
         assert ebnf_cfpq == cfg_cfpq
 
-    @pytest.mark.parametrize(
-        "regex_str, cfg_list", REGEXP_CFG.items(), ids=lambda regexp_cfgs: regexp_cfgs
-    )
+    @pytest.mark.parametrize("regex_str, cfg_list", REGEXP_CFG.items())
     def test_cfpq_tensor(self, graph, regex_str, cfg_list):
         start_nodes, final_nodes = generate_rnd_start_and_final(graph)
         eq_cfpqs = [

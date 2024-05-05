@@ -5,10 +5,10 @@
 import itertools
 from copy import deepcopy
 import pytest
-from networkx import MultiDiGraph
-from constants import REGEXP_CFG, GRAMMARS, GRAMMARS_DIFFERENT, LABELS
-from helper import generate_rnd_graph, generate_rnd_start_and_final
+from constants import REGEXP_CFG, GRAMMARS, GRAMMARS_DIFFERENT
+from helper import generate_rnd_start_and_final
 from rpq_template_test import rpq_cfpq_test, different_grammars_test
+from fixtures import graph
 
 # Fix import statements in try block to run tests
 try:
@@ -19,11 +19,6 @@ try:
     from project.task6 import cfpq_with_hellings
 except ImportError:
     pytestmark = pytest.mark.skip("Task 7 is not ready to test!")
-
-
-@pytest.fixture(scope="function", params=range(5))
-def graph(request) -> MultiDiGraph:
-    return generate_rnd_graph(20, 40, LABELS)
 
 
 class TestReachabilityMatrixAlgorithm:

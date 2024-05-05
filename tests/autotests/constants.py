@@ -4,7 +4,6 @@ LABEL: str = "label"
 IS_FINAL: str = "is_final"
 IS_START: str = "is_start"
 
-LABELS_WITH_GREEKS: list[str] = ["a", "b", "c", "x", "y", "z", "alpha", "beta", "gamma"]
 LABELS: list[str] = ["a", "b", "c", "d", "e", "f", "g", "h"]
 
 REGEX_SIMPLE: list[str] = [
