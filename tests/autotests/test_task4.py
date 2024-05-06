@@ -5,8 +5,7 @@
 import random
 from copy import deepcopy
 import pytest
-from networkx import MultiDiGraph
-from constants import QUERIES, LABELS
+from regex_constants import REGEXES
 from helper import generate_rnd_start_and_final
 from fixtures import graph
 
@@ -21,7 +20,7 @@ except ImportError:
 
 @pytest.fixture(scope="class", params=range(5))
 def query(request) -> str:
-    return random.choice(QUERIES)
+    return random.choice(REGEXES)
 
 
 class TestReachability:
