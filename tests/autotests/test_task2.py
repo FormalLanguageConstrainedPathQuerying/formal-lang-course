@@ -8,9 +8,10 @@ from pyformlang.regular_expression import Regex
 import pytest
 import random
 import itertools
-from helper import GraphWordsHelper, generate_rnd_graph, generate_rnd_start_and_final
-from constants import IS_FINAL, IS_START, REGEX_SIMPLE
+from helper import GraphWordsHelper, generate_rnd_start_and_final
+from constants import IS_FINAL, IS_START
 from fixtures import small_graph
+from regex_constants import REGEXES
 
 # Fix import statements in try block to run tests
 try:
@@ -20,7 +21,7 @@ except ImportError:
 
 
 class TestRegexToDfa:
-    @pytest.mark.parametrize("regex_str", REGEX_SIMPLE)
+    @pytest.mark.parametrize("regex_str", REGEXES)
     def test(self, regex_str: str) -> None:
         regex = Regex(regex_str)
         regex_cfg = regex.to_cfg()

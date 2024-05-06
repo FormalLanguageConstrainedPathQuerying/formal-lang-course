@@ -5,7 +5,7 @@
 import itertools
 from copy import deepcopy
 import pytest
-from constants import REGEXP_CFG, GRAMMARS, GRAMMARS_DIFFERENT, EBNF_GRAMMARS
+from grammars_constants import REGEXP_CFG, GRAMMARS, GRAMMARS_DIFFERENT, EBNF_GRAMMARS
 from helper import generate_rnd_start_and_final
 from rpq_template_test import rpq_cfpq_test, different_grammars_test
 from fixtures import graph

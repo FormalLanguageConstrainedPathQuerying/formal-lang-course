@@ -7,7 +7,7 @@ from pyformlang.cfg import CFG
 import pytest
 import random
 import itertools
-from constants import REGEX_TUPLE
+from regex_constants import REGEXES
 
 # Fix import statements in try block to run tests
 try:
@@ -18,7 +18,9 @@ except ImportError:
 
 
 class TestIntersect:
-    @pytest.mark.parametrize("regex_str1, regex_str2", REGEX_TUPLE)
+    @pytest.mark.parametrize(
+        "regex_str1, regex_str2", itertools.combinations(REGEXES, 2)
+    )
     def test(self, regex_str1: str, regex_str2: str) -> None:
         dfa1 = FiniteAutomaton(regex_to_dfa(regex_str1))
         dfa2 = FiniteAutomaton(regex_to_dfa(regex_str2))
