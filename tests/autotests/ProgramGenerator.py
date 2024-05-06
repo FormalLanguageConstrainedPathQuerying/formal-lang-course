@@ -272,18 +272,31 @@ class ProgramGenerator(Generator):
     def NUM(self, parent=None):
         with UnlexerRuleContext(self, "NUM", parent) as rule:
             current = rule.current
-            current.src += self._model.charset(
-                current, 0, ProgramGenerator._charsets[1]
-            )
-            with QuantifierContext(
-                rule, 0, 0, inf, ProgramGenerator._quant_sizes[0], 0
-            ) as quant0:
-                while quant0():
-                    with QuantifiedContext(rule):
-                        current = rule.current
-                        current.src += self._model.charset(
-                            current, 1, ProgramGenerator._charsets[2]
-                        )
+            with AlternationContext(
+                rule,
+                0,
+                ProgramGenerator._alt_sizes[0],
+                0,
+                ProgramGenerator._alt_conds[0],
+            ) as alt0:
+                current = rule.current
+                choice0 = alt0()
+                if choice0 == 0:
+                    current.src += "0"
+                elif choice0 == 1:
+                    current.src += self._model.charset(
+                        current, 0, ProgramGenerator._charsets[1]
+                    )
+                    with QuantifierContext(
+                        rule, 0, 0, inf, ProgramGenerator._quant_sizes[0], 0
+                    ) as quant0:
+                        while quant0():
+                            with QuantifiedContext(rule):
+                                current = rule.current
+                                current.src += self._model.charset(
+                                    current, 1, ProgramGenerator._charsets[2]
+                                )
+                    current = rule.current
             current = rule.current
             return current
 
