@@ -31,8 +31,8 @@ select = v_filter? v_filter? 'return' VAR (',' VAR)? 'where' VAR 'reachable' 'fr
 
 v_filter = 'for' VAR 'in' expr
 
-VAR = [a..z]+[a..z 0..9]*
-NUM = [1..9]+[0..9]*
+VAR = [a..z] [a..z 0..9]*
+NUM = 0 | ([1..9] [0..9]*)
 CHAR = '"' [a..z] '"'
 
 ```
