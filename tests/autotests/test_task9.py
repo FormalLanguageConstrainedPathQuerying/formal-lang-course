@@ -89,16 +89,16 @@ GRAMMARS = [
 
 GRAMMARS_DIFFERENT = [
     cfg.CFG.from_text(
-        "S -> S1 | S2\nS1 -> Sab | S1 c\nSab -> $ | a Sab b\nS2 -> Sbc | a S2\nSbc -> b Sbc c"
+        "S -> S1 | S2\nS1 -> Sab | S1 c\nSab -> $ | a Sab b\nS2 -> Sbc | a S2\nSbc -> $ | b Sbc c"
     ),
     cfg.CFG.from_text("S -> a | b | S c S | S d S | e S f | g S"),
-    cfg.CFG.from_text("S -> $ | a S b | b S a | e S f | S S | c S d | f S c | f S e"),
+    cfg.CFG.from_text("S -> $ | a S b | b S a | e S f | S S | c S d | d S c | f S e"),
 ]
 
 EBNF_GRAMMARS = [
     """S -> ( Sab c* ) | ( a* Sbc )
-    Sab -> a ( Sab | $ ) b
-    Sbc -> b ( Sbc | $ ) c""",
+    Sab -> (a Sab b) | $
+    Sbc -> (b Sbc c) | $""",
     "S -> a | b | (S ( c | d ) S ) | ( e S f ) | ( g S )",
     "S -> ( ( a S b ) | ( b S a ) | ( c S d ) | ( d S c ) | ( e S f ) | (f S e) )*",
 ]
