@@ -43,6 +43,12 @@ class TestReachabilityGllAlgorithm:
             graph, ebnf_list, cfg_list, ebnf_to_rsm, cfg_to_rsm, cfpq_with_gll
         )
 
+    @pytest.mark.parametrize("cfg_list, ebnf_list", CFG_EBNF)
+    def test_cfpq_gll(self, graph, cfg_list, ebnf_list):
+        cfpq_algorithm_test(
+            graph, ebnf_list, cfg_list, ebnf_to_rsm, cfg_to_rsm, cfpq_with_gll
+        )
+
     @pytest.mark.parametrize("grammar", GRAMMARS_DIFFERENT)
     def test_hellings_matrix_tensor(self, graph, grammar):
         start_nodes, final_nodes = generate_rnd_start_and_final(graph)
