@@ -1,14 +1,14 @@
 import pytest
-from helper import generate_rnd_graph
+from helper import generate_rnd_graph, generate_rnd_thick_graph
 from networkx import MultiDiGraph
 from constants import LABELS
+import random
 
-
-@pytest.fixture(scope="function", params=range(5))
-def graph(request) -> MultiDiGraph:
-    return generate_rnd_graph(20, 40, LABELS)
+funcs = [generate_rnd_thick_graph, generate_rnd_graph]
 
 
 @pytest.fixture(scope="function", params=range(8))
-def small_graph(request) -> MultiDiGraph:
-    return generate_rnd_graph(1, 20, LABELS)
+def graph(request) -> MultiDiGraph:
+    fun = random.choice(funcs)
+    # task 6 takes a long time if there are ranges [1, 100]
+    return fun(1, 40, LABELS)

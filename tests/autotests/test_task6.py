@@ -2,7 +2,6 @@
 # You MUST NOT touch anything here except ONE block below
 # You CAN modify this file IF AND ONLY IF you have found a bug and are willing to fix it
 # Otherwise, please report it
-import itertools
 import pytest
 from grammars_constants import REGEXP_CFG, GRAMMARS
 from rpq_template_test import rpq_cfpq_test, different_grammars_test
@@ -19,7 +18,7 @@ except ImportError:
 
 
 class TestReachability:
-    @pytest.mark.parametrize("regex_str, cfg_list", REGEXP_CFG.items())
+    @pytest.mark.parametrize("regex_str, cfg_list", REGEXP_CFG)
     def test_rpq_cfpq_hellings(self, graph, regex_str, cfg_list):
         rpq_cfpq_test(graph, regex_str, cfg_list, cfpq_with_hellings)
 
