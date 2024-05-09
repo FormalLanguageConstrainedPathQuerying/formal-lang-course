@@ -2,7 +2,6 @@
 # You MUST NOT touch anything here except ONE block below
 # You CAN modify this file IF AND ONLY IF you have found a bug and are willing to fix it
 # Otherwise, please report it
-import itertools
 from copy import deepcopy
 import pytest
 from grammars_constants import REGEXP_CFG, GRAMMARS, GRAMMARS_DIFFERENT
@@ -22,7 +21,7 @@ except ImportError:
 
 
 class TestReachabilityMatrixAlgorithm:
-    @pytest.mark.parametrize("regex_str, cfg_list", REGEXP_CFG.items())
+    @pytest.mark.parametrize("regex_str, cfg_list", REGEXP_CFG)
     def test_rpq_cfpq_matrix(self, graph, regex_str, cfg_list) -> None:
         rpq_cfpq_test(graph, regex_str, cfg_list, cfpq_with_matrix)
 

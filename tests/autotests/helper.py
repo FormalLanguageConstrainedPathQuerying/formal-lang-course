@@ -14,6 +14,13 @@ def generate_rnd_graph(
     return cfpq_data.graphs.labeled_scale_free_graph(n_of_nodes, labels=labels)
 
 
+def generate_rnd_thick_graph(
+    min_size: int, max_size: int, labels: list[str]
+) -> MultiDiGraph:
+    n_of_nodes = random.randint(min_size, max_size)
+    return cfpq_data.graphs.labeled_binomial_graph(n=n_of_nodes, p=0.4, labels=labels)
+
+
 def generate_rnd_start_and_final(graph: nx.MultiDiGraph) -> tuple[set[int], set[int]]:
     start_nodes = set(
         random.choices(
@@ -50,12 +57,12 @@ class GraphWordsHelper:
 
     def __init__(self, graph: MultiDiGraph):
         self.graph = graph.copy()
-        self.final_nodes = list(
-            map(lambda x: x[0], filter(lambda y: y[1], self.graph.nodes(data=IS_FINAL)))
-        )
-        self.start_nodes = list(
-            map(lambda x: x[0], filter(lambda y: y[1], self.graph.nodes(data=IS_START)))
-        )
+        self.final_nodes = {
+            node for node, data in self.graph.nodes(data=IS_FINAL) if data
+        }
+        self.start_nodes = {
+            node for node, data in self.graph.nodes(data=IS_START) if data
+        }
         self.transitive_closure: nx.MultiDiGraph = nx.transitive_closure(
             copy.deepcopy(self.graph), reflexive=False
         )
@@ -64,10 +71,9 @@ class GraphWordsHelper:
         return target in self.transitive_closure[source].keys()
 
     def _exists_any_final_path(self, node):
-        for final_node in self.final_nodes:
-            if self.is_reachable(node, final_node):
-                return True
-        return False
+        return any(
+            self.is_reachable(node, final_node) for final_node in self.final_nodes
+        )
 
     def _take_a_step(self, node):
         for node_to, edge_dict in dict(self.graph[node]).items():
