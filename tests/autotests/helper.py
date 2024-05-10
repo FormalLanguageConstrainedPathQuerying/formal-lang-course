@@ -14,7 +14,7 @@ def generate_rnd_graph(
     return cfpq_data.graphs.labeled_scale_free_graph(n_of_nodes, labels=labels)
 
 
-def generate_rnd_thick_graph(
+def generate_rnd_dense_graph(
     min_size: int, max_size: int, labels: list[str]
 ) -> MultiDiGraph:
     n_of_nodes = random.randint(min_size, max_size)

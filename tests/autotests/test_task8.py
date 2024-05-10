@@ -4,13 +4,7 @@
 # Otherwise, please report it
 from copy import deepcopy
 import pytest
-from grammars_constants import (
-    REGEXP_CFG,
-    GRAMMARS,
-    GRAMMARS_DIFFERENT,
-    CFG_EBNF,
-    CFG_EBNF_MANY,
-)
+from grammars_constants import REGEXP_CFG, GRAMMARS, GRAMMARS_DIFFERENT, CFG_EBNF
 from helper import generate_rnd_start_and_final
 from rpq_template_test import (
     rpq_cfpq_test,

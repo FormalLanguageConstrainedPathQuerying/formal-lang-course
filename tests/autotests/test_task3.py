@@ -7,7 +7,7 @@ from pyformlang.cfg import CFG
 import pytest
 import random
 import itertools
-from regex_constants import REGEXES
+from grammars_constants import REGEXES
 
 # Fix import statements in try block to run tests
 try:
