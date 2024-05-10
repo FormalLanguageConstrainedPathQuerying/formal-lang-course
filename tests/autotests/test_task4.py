@@ -5,7 +5,7 @@
 import random
 from copy import deepcopy
 import pytest
-from regex_constants import REGEXES
+from grammars_constants import REGEXES
 from helper import generate_rnd_start_and_final, rpq_dict_to_set
 from fixtures import graph
 

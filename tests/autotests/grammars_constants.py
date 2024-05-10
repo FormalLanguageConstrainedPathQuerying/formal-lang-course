@@ -3,7 +3,63 @@ from constants import *
 
 GRAMMARS_TABLE: list[dict[str, list[str | cfg.CFG]]] = [
     {
-        REGEXP: ["a"],
+        REGEXP: ["(a | b | c)*(d | e | f)*"],
+        CFG: [],
+        EBNF: ["S -> (a | b | c)*(d | e | f)*"],
+    },
+    {REGEXP: ["(a b) | (a c)"], CFG: [], EBNF: ["S -> (a b) | (a c)"]},
+    {REGEXP: ["a b c*"], CFG: [], EBNF: ["S -> a b c*"]},
+    {REGEXP: ["(a b d) | (a b c)"], CFG: [], EBNF: ["S -> (a b d) | (a b c)"]},
+    {
+        REGEXP: ["(a|b|c|d|e)(a|b|c|d|e)*"],
+        CFG: [],
+        EBNF: ["S -> (a|b|c|d|e)(a|b|c|d|e)*"],
+    },
+    {REGEXP: ["(a|b)*(c|d)*"], CFG: [], EBNF: ["S -> (a|b)*(c|d)*"]},
+    {REGEXP: ["(a|b|c|d|e)f*"], CFG: [], EBNF: ["S -> (a|b|c|d|e)f*"]},
+    {REGEXP: ["a a"], CFG: [], EBNF: ["S -> a a"]},
+    {REGEXP: ["a b*"], CFG: [], EBNF: ["S -> a b*"]},
+    {REGEXP: ["a b"], CFG: [], EBNF: ["S -> a b"]},
+    {REGEXP: ["(a b) | (a b c)"], CFG: [], EBNF: ["S -> (a b) | (a b c)"]},
+    {REGEXP: ["a|c"], CFG: [], EBNF: ["S -> a|c"]},
+    {REGEXP: ["(a|c)(b|d)"], CFG: [], EBNF: ["S -> (a|c)(b|d)"]},
+    {REGEXP: ["b"], CFG: [cfg.CFG.from_text("S -> b")], EBNF: ["S -> b"]},
+    {REGEXP: ["a*a*b"], CFG: [], EBNF: ["S -> a*a*b"]},
+    {
+        REGEXP: ["((a | b)*c)*((d | e)*f)*"],
+        CFG: [],
+        EBNF: ["S -> ((a | b)*c)*((d | e)*f)*"],
+    },
+    {REGEXP: ["((a b d) | (a b c))*"], CFG: [], EBNF: ["S -> ((a b d) | (a b c))*"]},
+    {REGEXP: ["(a|c)*"], CFG: [], EBNF: ["S -> (a|c)*"]},
+    {REGEXP: ["(a | c)*(a | b)*"], CFG: [], EBNF: ["S -> (a | c)*(a | b)*"]},
+    {
+        REGEXP: ["(a | b)*(c | d)*(e | f)*"],
+        CFG: [],
+        EBNF: ["S -> (a | b)*(c | d)*(e | f)*"],
+    },
+    {
+        REGEXP: ["a*(a | b)*", "(a|b)*", "a* | (a | b)*"],
+        CFG: [],
+        EBNF: ["S -> a*(a | b)*"],
+    },
+    {REGEXP: ["(a b d)* | (a b c)*"], CFG: [], EBNF: ["S -> (a b d)* | (a b c)*"]},
+    {REGEXP: ["a b* c"], CFG: [], EBNF: ["S -> a b* c"]},
+    {REGEXP: ["(a a)*"], CFG: [], EBNF: ["S -> (a a)*"]},
+    {REGEXP: ["((a|b)*c)*"], CFG: [], EBNF: ["S -> ((a|b)*c)*"]},
+    {REGEXP: ["a b c d"], CFG: [], EBNF: ["S -> a b c d"]},
+    {
+        REGEXP: [
+            "b b b",
+        ],
+        CFG: [],
+        EBNF: [
+            "S -> b b b",
+        ],
+    },
+    {REGEXP: ["(a b d*) | (a b c*)"], CFG: [], EBNF: ["S -> (a b d*) | (a b c*)"]},
+    {
+        REGEXP: ["a", "a | a"],
         CFG: [
             cfg.CFG.from_text("S -> a"),
             cfg.CFG.from_text(
@@ -17,7 +73,7 @@ GRAMMARS_TABLE: list[dict[str, list[str | cfg.CFG]]] = [
         EBNF: ["S -> a"],
     },
     {
-        REGEXP: ["a*"],
+        REGEXP: ["a*", "a* a*", "a* | a"],
         CFG: [
             cfg.CFG.from_text("S -> $ | a S"),
             cfg.CFG.from_text("S -> $ | S S | a"),
@@ -127,7 +183,7 @@ GRAMMARS_TABLE: list[dict[str, list[str | cfg.CFG]]] = [
         EBNF: ["S -> ((a | b) * c)*(d | e)"],
     },
     {
-        REGEXP: set(),
+        REGEXP: [],
         CFG: [
             cfg.CFG.from_text("S -> $ | a S b | S S"),
             cfg.CFG.from_text("S -> $ | a S b S"),
@@ -137,7 +193,7 @@ GRAMMARS_TABLE: list[dict[str, list[str | cfg.CFG]]] = [
         EBNF: ["S -> $ | a S b | S S"],
     },
     {
-        REGEXP: set(),
+        REGEXP: [],
         CFG: [
             cfg.CFG.from_text("S -> $ | a S b | c S d | S S"),
             cfg.CFG.from_text("S -> $ | a S b S | c S d S"),
@@ -147,7 +203,7 @@ GRAMMARS_TABLE: list[dict[str, list[str | cfg.CFG]]] = [
         EBNF: ["S -> $ | a S b | c S d | S S"],
     },
     {
-        REGEXP: set(),
+        REGEXP: [],
         CFG: [
             cfg.CFG.from_text(
                 """
@@ -175,7 +231,7 @@ GRAMMARS_TABLE: list[dict[str, list[str | cfg.CFG]]] = [
         EBNF: ["S -> $ | S a S b | S a S d | S c S d | S c S b"],
     },
     {
-        REGEXP: set(),
+        REGEXP: [],
         CFG: [
             cfg.CFG.from_text(
                 """
@@ -212,7 +268,7 @@ GRAMMARS_TABLE: list[dict[str, list[str | cfg.CFG]]] = [
         ],
     },
     {
-        REGEXP: set(),
+        REGEXP: [],
         CFG: [
             cfg.CFG.from_text("S -> a S | $"),
             cfg.CFG.from_text(
@@ -225,7 +281,7 @@ GRAMMARS_TABLE: list[dict[str, list[str | cfg.CFG]]] = [
         EBNF: ["S -> a S | $"],
     },
     {
-        REGEXP: set(),
+        REGEXP: [],
         CFG: [
             cfg.CFG.from_text(
                 """
@@ -246,12 +302,12 @@ GRAMMARS_TABLE: list[dict[str, list[str | cfg.CFG]]] = [
         ],
     },
     {
-        REGEXP: set(),
+        REGEXP: [],
         CFG: [cfg.CFG.from_text("S -> a | b | S c S | S d S | e S f | g S")],
         EBNF: ["S -> a | b | (S ( c | d ) S ) | ( e S f ) | ( g S )"],
     },
     {
-        REGEXP: set(),
+        REGEXP: [],
         CFG: [
             cfg.CFG.from_text(
                 "S -> $ | a S b | b S a | e S f | S S | c S d | d S c | f S e"
@@ -267,7 +323,10 @@ REGEXP_CFG: list[tuple[str, list[cfg.CFG]]] = [
     (regexp, ds[CFG]) for ds in GRAMMARS_TABLE for regexp in ds[REGEXP]
 ]
 GRAMMARS: list[list[cfg.CFG]] = [ds[CFG] for ds in GRAMMARS_TABLE if len(ds[CFG]) > 1]
-GRAMMARS_DIFFERENT: list[cfg.CFG] = [ds[CFG][0] for ds in GRAMMARS_TABLE]
+GRAMMARS_DIFFERENT: list[cfg.CFG] = [
+    ds[CFG][0] for ds in GRAMMARS_TABLE if len(ds[CFG]) >= 1
+]
 CFG_EBNF: list[tuple[list[cfg.CFG], list[str]]] = [
     (ds[CFG], ds[EBNF]) for ds in GRAMMARS_TABLE
 ]
+REGEXES = [regex_str for ds in GRAMMARS_TABLE for regex_str in ds[REGEXP]]
