@@ -1,8 +1,8 @@
-import itertools
 from copy import deepcopy
 from helper import generate_rnd_start_and_final, rpq_dict_to_set
 from networkx import MultiDiGraph
 from pyformlang.cfg import CFG
+from pyformlang.rsa import RecursiveAutomaton
 from typing import Callable, Iterable
 
 try:
@@ -46,14 +46,15 @@ def different_grammars_test(
     assert eq_cfpqs.count(eq_cfpqs[0]) == len(eq_cfpqs)
 
 
-# type any here is rsm
 def cfpq_algorithm_test(
     graph: MultiDiGraph,
     ebnf_list: Iterable[str],
     cfg_list: Iterable[CFG],
-    ebnf_to_rsm: Callable[[str], any],
-    cfg_to_rsm: Callable[[CFG], any],
-    function: Callable[[any, MultiDiGraph, set[int], set[int]], set[tuple[int, int]]],
+    ebnf_to_rsm: Callable[[str], RecursiveAutomaton],
+    cfg_to_rsm: Callable[[CFG], RecursiveAutomaton],
+    function: Callable[
+        [RecursiveAutomaton, MultiDiGraph, set[int], set[int]], set[tuple[int, int]]
+    ],
 ) -> None:
     start_nodes, final_nodes = generate_rnd_start_and_final(graph)
     rsm_list = []
