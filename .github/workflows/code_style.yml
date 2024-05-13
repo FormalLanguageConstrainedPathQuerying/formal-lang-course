@@ -58,4 +58,4 @@ jobs:
 
       - name : Run tests
         run: |
-          pytest tests/test_graph_utils.py
+          python ./scripts/run_tests.py
