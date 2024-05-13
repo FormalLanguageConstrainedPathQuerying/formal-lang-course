@@ -57,4 +57,4 @@ jobs:
 
       - name: Run test2
         run: |
-            pytest tests/autotests/test_task2.py
+          python ./scripts/run_tests.py
