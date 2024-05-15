@@ -9,7 +9,7 @@ prog = stmt*
 
 stmt = bind | add | remove | declare
 
-declare = VAR 'is' 'graph'
+declare = 'let' VAR 'is' 'graph'
 
 bind = 'let' VAR '=' expr
 
@@ -31,8 +31,8 @@ select = v_filter? v_filter? 'return' VAR (',' VAR)? 'where' VAR 'reachable' 'fr
 
 v_filter = 'for' VAR 'in' expr
 
-VAR = [a..z]+[a..z 0..1]*
-NUM = [1..9]+[0..9]*
+VAR = [a..z] [a..z 0..9]*
+NUM = 0 | ([1..9] [0..9]*)
 CHAR = '"' [a..z] '"'
 
 ```
@@ -45,15 +45,15 @@ let g is graph
 add edge (1, "a", 2) to g
 add edge (2, "a", 3) to g
 add edge (3, "a", 1) to g
-add edge (1, "c", 0) to g
-add edge (0, "b", 4) to g
-add edge (4, "b", 0) to g
+add edge (1, "c", 5) to g
+add edge (5, "b", 4) to g
+add edge (4, "b", 5) to g
 
 let q = "a"^[1..3] . q . "b"^[2..3] | "c"
 
 let r1 = for v in [2] return u where u reachable from v in g by q
 
-add edge (0, "d", 5) to g
+add edge (5, "d", 6) to g
 
 let r2 = for v in [2,3] return u,v where u reachable from v in g by (q . "d")
 
@@ -199,4 +199,20 @@ _____________________________________
 ## Задача
 - [ ] С использованием ANTLR реализовать синтаксический анализатор предложенного выше языка. А именно, реализовать функцию, которая принимает строку и возвращает дерево разбора.
 - [ ] Реализовать функцию, которая по дереву разбора возвращает количество узлов в нём.
-- [ ] Реализовать функцию, которая по дереву разбора строит строку, которая была разобрана.
+- [ ] Реализовать функцию, которая по дереву разбора строит ранее разобранную строку.
+- [ ] Расширить CI шагом генерации парсера по спецификации. Обратите внимание, что генерируемые по спецификации файлы не выкладываются в репозиторий.
+  - [Grammarinator](https://github.com/renatahodovan/grammarinator), используемый нами для генерации тестов, подтягивает вместе с собой [ANTLeRinator](https://github.com/renatahodovan/antlerinator), который можно использовать для получения исполняемого файла ANTLR
+  - Либо можно использовать более стандартные [antlr4-tools](https://github.com/antlr/antlr4-tools)
+
+Требуемые функции:
+```python
+# Второе поле показывает корректна ли строка (True, если корректна)
+def prog_to_tree(program: str) -> tuple[ParserRuleContext, bool]:
+    pass
+
+def nodes_count(tree: ParserRuleContext) -> int:
+    pass
+
+def tree_to_prog(tree: ParserRuleContext) -> str:
+    pass
+```
