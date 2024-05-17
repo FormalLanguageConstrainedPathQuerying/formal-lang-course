@@ -1,7 +1,7 @@
 import pytest
-from helper import generate_rnd_graph, generate_rnd_dense_graph
+from .helper import generate_rnd_graph, generate_rnd_dense_graph
 from networkx import MultiDiGraph
-from constants import LABELS
+from .constants import LABELS
 import random
 
 funcs = [generate_rnd_dense_graph, generate_rnd_graph]

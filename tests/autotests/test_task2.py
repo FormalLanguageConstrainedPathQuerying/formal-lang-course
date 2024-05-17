@@ -8,10 +8,10 @@ from pyformlang.regular_expression import Regex
 import pytest
 import random
 import itertools
-from helper import GraphWordsHelper, generate_rnd_start_and_final
-from constants import IS_FINAL, IS_START
-from fixtures import graph
-from grammars_constants import REGEXES
+from .helper import GraphWordsHelper, generate_rnd_start_and_final
+from .constants import IS_FINAL, IS_START
+from .fixtures import graph
+from .grammars_constants import REGEXES
 
 # Fix import statements in try block to run tests
 try:

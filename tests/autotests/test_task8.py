@@ -4,14 +4,14 @@
 # Otherwise, please report it
 from copy import deepcopy
 import pytest
-from grammars_constants import REGEXP_CFG, GRAMMARS, GRAMMARS_DIFFERENT, CFG_EBNF
-from helper import generate_rnd_start_and_final
-from rpq_template_test import (
+from .grammars_constants import REGEXP_CFG, GRAMMARS, GRAMMARS_DIFFERENT, CFG_EBNF
+from .helper import generate_rnd_start_and_final
+from .rpq_template_test import (
     rpq_cfpq_test,
     different_grammars_test,
     cfpq_algorithm_test,
 )
-from fixtures import graph
+from .fixtures import graph
 
 # Fix import statements in try block to run tests
 try:
