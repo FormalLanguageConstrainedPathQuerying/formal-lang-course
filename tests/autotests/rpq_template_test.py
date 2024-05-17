@@ -1,5 +1,5 @@
 from copy import deepcopy
-from helper import generate_rnd_start_and_final, rpq_dict_to_set
+from .helper import generate_rnd_start_and_final, rpq_dict_to_set
 from networkx import MultiDiGraph
 from pyformlang.cfg import CFG
 from pyformlang.rsa import RecursiveAutomaton

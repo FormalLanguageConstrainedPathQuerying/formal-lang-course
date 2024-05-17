@@ -16,7 +16,7 @@ from grammarinator.tool import (
     DefaultPopulation,
 )
 
-import ProgramGenerator
+from . import ProgramGenerator
 
 # Fix import statements in try block to run tests
 try:
