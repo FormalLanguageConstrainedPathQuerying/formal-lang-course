@@ -1,12 +1,14 @@
 from pyformlang.cfg import CFG, Variable, Terminal, Epsilon
 
 
-def cfg_to_weak_normal_form(grammar, start="S"):
-    emilination = grammar.eliminate_unit_productions().remove_useless_symbols()
-    productions = emilination._decompose_productions(
-        emilination._get_productions_with_only_single_terminals()
+def cfg_to_weak_normal_form(cfg: CFG) -> CFG:
+    cfg = cfg.eliminate_unit_productions().remove_useless_symbols()
+    return CFG(
+        start_symbol=cfg.start_symbol,
+        productions=cfg._decompose_productions(
+            cfg._get_productions_with_only_single_terminals()
+        ),
     )
-    return CFG(productions=set(productions), start_symbol=Variable(start))
 
 
 # https://jhellings.nl/files/icdt2014_paper.pdf
@@ -24,11 +26,10 @@ def cfpq_with_hellings(
     P_mult = {}
 
     for p in cfg_to_weak_normal_form(cfg).productions:
-        if len(p.body) == 1:
-            if isinstance(p.body[0], Terminal):
-                P_terminal.setdefault(p.head, set()).add(p.body[0])
-            elif isinstance(p.body[0], Epsilon):
-                P_epsilon.add(p.body[0])
+        if len(p.body) == 0:
+            P_epsilon.add(p.head)
+        elif len(p.body) == 1 and isinstance(p.body[0], Terminal):
+            P_terminal.setdefault(p.head, set()).add(p.body[0])
         elif len(p.body) == 2:
             P_mult.setdefault(p.head, set()).add((p.body[0], p.body[1]))
 
@@ -36,20 +37,21 @@ def cfpq_with_hellings(
         (N, n, m)
         for (n, m, tag) in graph.edges.data("label")
         for N in P_terminal
-        if tag in P_terminal[N]
+        if Terminal(tag) in P_terminal[N]
     }
 
     new = r.copy()
 
     while new:
         N, n, m = new.pop()
+        to_add = set()
         for M, np, n_ in r:
             if n == n_:
                 for Np in P_mult:
                     if (M, N) in P_mult[Np]:
-                        if (Np, np, n) not in r:
+                        if (Np, np, m) not in r:
                             new.add((Np, np, m))
-                            r |= {(Np, np, m)}
+                            to_add.add((Np, np, m))
 
         for M, m_, mp in r:
             if m == m_:
@@ -57,7 +59,8 @@ def cfpq_with_hellings(
                     if (N, M) in P_mult[Mp]:
                         if (Mp, n, mp) not in r:
                             new.add((Mp, n, mp))
-                            r |= {(Mp, n, mp)}
+                            to_add.add((Mp, n, mp))
+        r |= to_add
 
     return {
         (n, m)
