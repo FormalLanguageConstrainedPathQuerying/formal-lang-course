@@ -28,11 +28,13 @@ except ImportError:
 class TestReachabilityTensorAlgorithm:
     @pytest.mark.parametrize("regex_str, cfg_list", REGEXP_CFG)
     def test_rpq_cfpq_tensor(self, graph, regex_str, cfg_list) -> None:
-        rpq_cfpq_test(graph, regex_str, cfg_list, cfpq_with_tensor)
+        cfg_list_rsm = [cfg_to_rsm(grammar) for grammar in cfg_list]
+        rpq_cfpq_test(graph, regex_str, cfg_list_rsm, cfpq_with_tensor)
 
     @pytest.mark.parametrize("eq_grammars", GRAMMARS)
     def test_different_grammars(self, graph, eq_grammars):
-        different_grammars_test(graph, eq_grammars, cfpq_with_tensor)
+        eq_grammars_rsm = [cfg_to_rsm(grammar) for grammar in eq_grammars]
+        different_grammars_test(graph, eq_grammars_rsm, cfpq_with_tensor)
 
     @pytest.mark.parametrize("cfg_list, ebnf_list", CFG_EBNF)
     def test_cfpq_tensor(self, graph, cfg_list, ebnf_list):
