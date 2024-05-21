@@ -659,7 +659,6 @@ class ProgramGenerator(Generator):
         Generator._charset(
             (
                 (0x30, 0x3A),
-                (0x5F, 0x60),
                 (0x61, 0x7B),
             )
         ),  # 4
