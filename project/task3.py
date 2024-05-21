@@ -16,15 +16,15 @@ class FiniteAutomaton:
     matrix = None
 
     def __init__(
-            self,
-            fa: NondeterministicFiniteAutomaton = None,
-            *,
-            matrix=None,
-            start_states=None,
-            final_states=None,
-            states_to_states=None,
-            bad=False,
-            eps=None
+        self,
+        fa: NondeterministicFiniteAutomaton = None,
+        *,
+        matrix=None,
+        start_states=None,
+        final_states=None,
+        states_to_states=None,
+        bad=False,
+        eps=None
     ):
         if fa is None:
             self.matrix = matrix
@@ -153,7 +153,7 @@ def to_nfa(fa: FiniteAutomaton):
 
 
 def intersect_automata(
-        fa1: FiniteAutomaton, fa2: FiniteAutomaton, lbl=True
+    fa1: FiniteAutomaton, fa2: FiniteAutomaton, lbl=True
 ) -> FiniteAutomaton:
     fa1.lbl = fa2.lbl = not lbl
     labels = fa1.labels() & fa2.labels()
@@ -205,7 +205,7 @@ def transitive_closure(fa: FiniteAutomaton):
 
 
 def paths_ends(
-        graph: MultiDiGraph, start_nodes: set[int], final_nodes: set[int], regex: str
+    graph: MultiDiGraph, start_nodes: set[int], final_nodes: set[int], regex: str
 ) -> list[tuple[object, object]]:
     g_f = FiniteAutomaton(graph_to_nfa(graph, start_nodes, final_nodes))
     r_f = FiniteAutomaton(regex_to_dfa(regex))
