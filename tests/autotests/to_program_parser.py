@@ -144,9 +144,13 @@ WELL_TYPED = [
     let q = ("s" . "f") ^ [1..]
     let g = q & p""",
     """
-    let p = "a" . "b" | "c"
-    let q = ("s" . "f") ^ [1..]
-    let g = [q, p]
+    let a = ("a" . b) | "a" ^ [0]
+    let b = a . "b"
+    """,
+    """
+    let q = "a" . p
+    let p = "b" . r
+    let r = ("c" . r) | "c" ^ [0]
     """,
     """
     let p = (1,"a",2)
@@ -204,6 +208,11 @@ ILL_TYPED = [
     """,
     """
     let p = "a" . p . "b" | "c"
+    let q = ("s" . "f") ^ [1..]
+    let g = [q, p]
+    """,
+    """
+    let p = "a" . "b" | "c"
     let q = ("s" . "f") ^ [1..]
     let g = [q, p]
     """,
