@@ -1,0 +1,20 @@
+[tool.poetry]
+license = "Apache-2.0"
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.10"
+cfpq-data = "^4.0.3"
+networkx = "^3.2.0"
+pytest = "^8.2.1"
+antlr4-python3-runtime = "^4.13.1"
+pydot = "^2.0.0"
+scipy = "^1.13.1"
+grammarinator = { git = "https://github.com/renatahodovan/grammarinator.git", rev = "f3ffa713d8745404c44e7304f476b81cf4afe99b" }
+pre-commit = "^3.7.1"
+black = "^24.4.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
