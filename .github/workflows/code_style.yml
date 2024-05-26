@@ -1,57 +1,42 @@
-# This is a basic workflow to help you get started with Actions
-
 name: Check code style
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events
-  [ push, pull_request ]
+  push:
+    branches:
+      # PRs can only use caches from their target branch. We therefore need to
+      # make sure we run on 'main' too.
+      - main
+  pull_request:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-codestyle
+  cancel-in-progress: true
+
 jobs:
-
-  # This workflow contains a single job called "style"
   style:
-
-    # The type of runner that the job will run on
+    name: Check code style
     runs-on: ubuntu-latest
-
-    # A strategy creates a build matrix for your jobs
-    strategy:
-
-      # You can define a matrix of different job configurations
-      matrix:
-
-        # Each option you define in the matrix has a key and value
-        python-version: [ 3.9 ]
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Set up Git repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      # Setup Python with version from matrix
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+      - name: Install poetry
+        run: pipx install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          cache: poetry
+          python-version: 3.9
 
-      # Install requirements
       - name: Install requirements
-
-        # Runs command-line programs using the operating system's shell
         run: |
-          python -m pip install --upgrade pip wheel setuptools
-          python -m pip install -r requirements.txt
-          python -m pip list
+          poetry install
 
-      # Install pre-commit from .pre-commit-config.yaml
       - name: Install pre-commit
         run: |
-          pre-commit install
+          poetry run -- pre-commit install
 
-      # Run pre-commit on all the files in the repo
       - name: Run pre-commit
         run: |
-          pre-commit run --all-files --color always --verbose --show-diff-on-failure
+          poetry run -- pre-commit run --all-files --color always --verbose --show-diff-on-failure
