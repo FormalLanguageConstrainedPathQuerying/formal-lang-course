@@ -50,7 +50,7 @@ class GraphProgram:
         )
 
     def __str__(self):
-        program = f"let {self.graph.name} is graph"
+        program = f"\nlet {self.graph.name} is graph"
         for node_from, node_to, data in self.graph.edges(data=True):
             program += f'\nadd edge ({node_from}, "{data[LABEL]}", {node_to}) to {self.graph.name}'
         return program
@@ -126,7 +126,17 @@ class QueryProgram:
         self.start_nodes = start_nodes
         self.final_nodes = final_nodes
 
-    def __str__(self) -> str:
+    def get_graph(self):
+        return self.graph_program.graph
+
+    def get_grammar(self):
+        return self.grammar_program.grammar
+
+    def query_program(self) -> str:
+        """
+        if you want only want to get query
+        :return: just select expression
+        """
         query_name = self.grammar_program.start_nonterminal_name
         start_set_expr = (
             "["
@@ -156,42 +166,33 @@ class QueryProgram:
             f"reachable from v in {self.graph_program.name} by {query_name}"
         )
 
+    def full_program(self) -> str:
+        """
+        if you want to work with query as meaningful object
+        :return: fully query with predefined graph and grammar
+        """
+        return f"\n{self.graph_program}\n{self.grammar_program}\n{self.query_program()}"
 
-class Program:
-    EPS = '"a"^[0]'
-    nonterminal_names = {}
-    result_name = ""
 
-    def __init__(
-        self,
-        graph: nx.MultiDiGraph,
-        cfg: pl.cfg.CFG,
-        start_nodes: set[int],
-        final_nodes=None,
-    ):
-        self.graph = graph.copy()
-        self.graph.name = (
-            FreshVar.generate_fresh(graph.name)
-            if graph.name != ""
-            else FreshVar.generate_fresh("g")
-        )
-        self.grammar = copy(cfg)
-        self.start_nodes = start_nodes
-        self.final_nodes = final_nodes
-        self.result_name = FreshVar.generate_fresh("r")
-        for production in cfg.productions:
-            if production.head not in self.nonterminal_names.keys():
-                self.nonterminal_names[production.head] = FreshVar.generate_fresh(
-                    _nonterminal_to_string(production.head)
-                )
-
-    def __str__(self):
-        program = ""
-        program += self._graph_to_program()
-        cfg_pr = self._cfg_to_program()
-        program += cfg_pr
-        program += self._query_to_program()
-        return program
+def to_program_parser(
+    query_list: list[QueryProgram],
+) -> tuple[str, dict[str, QueryProgram]]:
+    result_program = ""
+    res_name_query = {}
+    grammar_set = set()
+    graph_set = set()
+    for query in query_list:
+        # if graph is already defined then it is not necessary to define it again
+        if query.graph_program not in graph_set:
+            result_program += str(query.graph_program)
+            graph_set.add(query.graph_program)
+        # same with grammar
+        if query.grammar_program not in grammar_set:
+            result_program += str(query.grammar_program)
+            grammar_set.add(query.grammar_program)
+        result_program += query.query_program()
+        res_name_query.update({query.result_name: query})
+    return result_program, res_name_query
 
 
 WELL_TYPED = [

@@ -1,10 +1,20 @@
+import random
+
 import pytest
-from to_program_parser import WELL_TYPED, ILL_TYPED, Program
+from to_program_parser import (
+    WELL_TYPED,
+    ILL_TYPED,
+    GraphProgram,
+    GrammarProgram,
+    QueryProgram,
+    to_program_parser,
+)
 from fixtures import graph
 from grammars_constants import GRAMMARS_DIFFERENT
 from networkx import MultiDiGraph
 from pyformlang.cfg import CFG
-from helper import generate_rnd_start_and_final
+from helper import generate_rnd_start_and_final, generate_rnd_dense_graph
+from constants import LABELS
 
 try:
     from project.task7 import cfpq_with_matrix
@@ -22,12 +32,53 @@ class TestTypeInference:
     def test_ill_typed(self, program: str) -> None:
         assert not typing_program(program)
 
-    @pytest.mark.skip("Has errors")
     @pytest.mark.parametrize("grammar", GRAMMARS_DIFFERENT)
     def test_exec_simple(self, graph: MultiDiGraph, grammar: CFG):
         start_nodes, final_nodes = generate_rnd_start_and_final(graph)
-        program = Program(graph, grammar, start_nodes, final_nodes)
+        graph_prog = GraphProgram(graph)
+        cfg_prog = GrammarProgram(grammar)
+        query = QueryProgram(graph_prog, cfg_prog, start_nodes, final_nodes)
+        program = query.full_program()
         assert typing_program(program)
-        cfpq_from_prog = exec_program(str(program))[program.result_name]
+        cfpq_from_prog = exec_program(program)[query.result_name]
         cfpq_from_algo = cfpq_with_matrix(grammar, graph, start_nodes, final_nodes)
         assert cfpq_from_prog == cfpq_from_algo
+
+    # @pytest.mark.parametrize("queries_count", [2, 3, 5])
+    # def test_exec_one_graph_many_queries(self, graph, queries_count):
+    #     start_nodes, final_nodes = generate_rnd_start_and_final(graph)
+    #     graph_prog = GraphProgram(graph)
+    #     query_list = []
+    #     for i in range(queries_count):
+    #         grammar_prog = GrammarProgram(random.choice(GRAMMARS_DIFFERENT))
+    #         query_list.append(QueryProgram(graph_prog, grammar_prog, start_nodes, final_nodes))
+    #     program, name_result = to_program_parser(query_list)
+    #     result_dict: dict = exec_program(program)
+    #     for var, res in result_dict.items():
+    #         query = name_result[var]
+    #         separate_res = exec_program(query.full_program())
+    #         assert separate_res == res
+    #         assert res == cfpq_with_matrix(query.get_grammar(), query.get_graph(), query.start_nodes, query.final_nodes)
+    @pytest.mark.parametrize("queries_count", [1, 3, 5])
+    def test_exec_many_graphs_many_queries(self, queries_count):
+        query_list = []
+        for i in range(queries_count):
+            graph = generate_rnd_dense_graph(1, 40, LABELS)
+            grammar_prog = GrammarProgram(random.choice(GRAMMARS_DIFFERENT))
+            graph_prog = GraphProgram(graph)
+            start_nodes, final_nodes = generate_rnd_start_and_final(graph)
+            query_list.append(
+                QueryProgram(graph_prog, grammar_prog, start_nodes, final_nodes)
+            )
+        program, name_result = to_program_parser(query_list)
+        result_dict: dict = exec_program(program)
+        for var, res in result_dict.items():
+            query = name_result[var]
+            separate_res = exec_program(query.full_program())
+            assert separate_res == res
+            assert res == cfpq_with_matrix(
+                query.get_grammar(),
+                query.get_graph(),
+                query.start_nodes,
+                query.final_nodes,
+            )
