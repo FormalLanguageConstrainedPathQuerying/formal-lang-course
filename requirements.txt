@@ -1,4 +1,5 @@
 antlr4-python3-runtime
+antlr4-tools
 black
 cfpq-data
 grammarinator @ git+https://github.com/renatahodovan/grammarinator.git@f3ffa71
