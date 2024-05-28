@@ -12,8 +12,7 @@ from fixtures import graph
 # Fix import statements in try block to run tests
 try:
     from project.task4.reachability import reachability_with_constraints
-    from project.task2.dfa_builder import regex_to_dfa
-    from project.task2.nfa_builder import graph_to_nfa
+    from project.task2.fa_builders import regex_to_dfa, graph_to_nfa
     from project.task3.finite_automaton import paths_ends, FiniteAutomaton
 except ImportError:
     pytestmark = pytest.mark.skip("Task 4 is not ready to test!")
