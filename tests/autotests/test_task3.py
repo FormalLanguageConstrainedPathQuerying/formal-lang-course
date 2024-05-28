@@ -12,7 +12,7 @@ from grammars_constants import REGEXES
 # Fix import statements in try block to run tests
 try:
     from project.task3.finite_automaton import intersect_automata, FiniteAutomaton
-    from project.task2.dfa_builder import regex_to_dfa
+    from project.task2.fa_builders import regex_to_dfa
 except ImportError:
     pytestmark = pytest.mark.skip("Task 3 is not ready to test!")
 

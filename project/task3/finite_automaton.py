@@ -4,8 +4,7 @@ from pyformlang.cfg import Epsilon
 from pyformlang.finite_automaton import Symbol, State, NondeterministicFiniteAutomaton
 from pyformlang.rsa import RecursiveAutomaton
 from scipy.sparse import dok_matrix, kron
-from project.task2.dfa_builder import regex_to_dfa
-from project.task2.nfa_builder import graph_to_nfa
+from project.task2.fa_builders import regex_to_dfa, graph_to_nfa
 
 
 class FiniteAutomaton:

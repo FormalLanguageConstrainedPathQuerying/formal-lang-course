@@ -6,9 +6,9 @@ from pyformlang.rsa import RecursiveAutomaton
 from typing import Callable, Iterable
 
 try:
-    from project.task2 import graph_to_nfa, regex_to_dfa
-    from project.task3 import FiniteAutomaton
-    from project.task4 import reachability_with_constraints
+    from project.task2.fa_builders import graph_to_nfa, regex_to_dfa
+    from project.task3.finite_automaton import FiniteAutomaton
+    from project.task4.reachability import reachability_with_constraints
 except ImportError:
     pass
 
