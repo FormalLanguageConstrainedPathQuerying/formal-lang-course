@@ -3,7 +3,7 @@ import pyformlang
 from pyformlang.cfg import Epsilon
 from pyformlang.finite_automaton import Symbol
 from pyformlang.regular_expression import Regex
-from pyformlang.rsa import (Box, RecursiveAutomaton)
+from pyformlang.rsa import Box, RecursiveAutomaton
 from pyformlang.cfg import CFG
 from scipy.sparse import dok_matrix, eye
 from project.task2 import graph_to_nfa
@@ -16,13 +16,15 @@ from project.task3 import (
 
 
 def cfpq_with_tensor(
-        rsm: RecursiveAutomaton,
-        graph: nx.MultiDiGraph,
-        final_nodes: set[int] = None,
-        start_nodes: set[int] = None,
+    rsm: RecursiveAutomaton,
+    graph: nx.MultiDiGraph,
+    final_nodes: set[int] = None,
+    start_nodes: set[int] = None,
 ) -> set[tuple[int, int]]:
     rsm_fa = rsm_to_fa(rsm)
-    graph_finite_automaton = FiniteAutomaton(graph_to_nfa(graph, start_nodes, final_nodes))
+    graph_finite_automaton = FiniteAutomaton(
+        graph_to_nfa(graph, start_nodes, final_nodes)
+    )
     matrix_indexes = rsm_fa.revert_mapping()
     graph_indexes = graph_finite_automaton.revert_mapping()
 
@@ -42,16 +44,19 @@ def cfpq_with_tensor(
         if frm in rsm_fa.start_states and to in rsm_fa.final_states:
             _symbol = frm.value[0]
             if _symbol not in graph_finite_automaton.matrix:
-                graph_finite_automaton.matrix[_symbol] = dok_matrix((_size, _size),
-                                                                    dtype=bool)
-            graph_finite_automaton.matrix[_symbol][_start % _size, _final % _size] = True
+                graph_finite_automaton.matrix[_symbol] = dok_matrix(
+                    (_size, _size), dtype=bool
+                )
+            graph_finite_automaton.matrix[_symbol][
+                _start % _size, _final % _size
+            ] = True
 
     result = set()
     for matrix in graph_finite_automaton.matrix.values():
         for _start, _final in zip(*matrix.nonzero()):
             if (
-                    graph_indexes[_start] in rsm_fa.start_states
-                    and graph_indexes[_final] in rsm_fa.final_states
+                graph_indexes[_start] in rsm_fa.start_states
+                and graph_indexes[_final] in rsm_fa.final_states
             ):
                 result.add((graph_indexes[_start], graph_indexes[_final]))
 
@@ -89,5 +94,5 @@ def ebnf_to_rsm(ebnf: str) -> pyformlang.rsa.RecursiveAutomaton:
     return pyformlang.rsa.RecursiveAutomaton.from_text(ebnf)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass
