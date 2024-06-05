@@ -1,6 +1,4 @@
 from copy import copy
-import functools
-import itertools
 
 import pyformlang as pl
 from pyformlang.cfg import Variable, Terminal
@@ -25,19 +23,10 @@ def _terminal_to_string(terminal: Terminal) -> str:
     """
     convert terminal symbol into char
     :param terminal: terminal symbol
-    :return:
+    :return: an object view of "x"
     """
     terminal_s = terminal.to_text().lower()
-    if len(terminal_s) == 1:
-        return f'"{terminal_s}"'
-    res = ""
-    for key, group in itertools.groupby(terminal_s):
-        dot = " . " if res != "" else ""
-        if len(group) > 1:
-            res += f'{dot}"{key}"^[{len(group)}]'
-        else:
-            res += f'{dot}"{key}"'
-    return res
+    return f'"{terminal_s}"'
 
 
 class GraphProgram:
@@ -58,7 +47,7 @@ class GraphProgram:
 
 class GrammarProgram:
     nonterminal_names = {}
-    EPS = '"a"^[0]'
+    EPS = '"a"^[0 .. 0]'
 
     def __init__(self, cfg: pl.cfg.CFG):
         self.grammar = copy(cfg)
@@ -82,18 +71,10 @@ class GrammarProgram:
     def _objs_to_expr(self, objects: list[pl.cfg.production.CFGObject]) -> str:
         if len(objects) == 0:
             return self.EPS
-        return functools.reduce(
-            lambda acc, obj: f"{acc}{' . ' if acc != '' else ''}{self._object_to_string(obj)}",
-            objects,
-            "",
-        )
+        return " . ".join(map(self._object_to_string, objects))
 
     def _objs_alts(self, objects: list[list[pl.cfg.production.CFGObject]]) -> str:
-        return functools.reduce(
-            lambda acc, objs: f"{acc}{' | ' if acc != '' else ''}{self._objs_to_expr(objs)}",
-            objects,
-            "",
-        )
+        return " | ".join(map(self._objs_to_expr, objects))
 
     def __str__(self) -> str:
         res = ""
@@ -138,29 +119,13 @@ class QueryProgram:
         :return: just select expression
         """
         query_name = self.grammar_program.start_nonterminal_name
-        start_set_expr = (
-            "["
-            + functools.reduce(
-                lambda acc, x: f"{acc}{', ' if acc != '' else ''}{str(x)}",
-                self.start_nodes,
-                "",
-            )
-            + "]"
-        )
+        start_set_expr = f"[{', '.join(map(str, self.start_nodes))}]"
         if len(self.final_nodes) == 0:
             return (
                 f"\nlet {self.result_name} = for v in {start_set_expr} return u, v where u reachable from v in "
                 f"{self.graph_program.name} by {query_name}"
             )
-        final_set_expr = (
-            "["
-            + functools.reduce(
-                lambda acc, x: f"{acc}{', ' if acc != '' else ''}{str(x)}",
-                self.final_nodes,
-                "",
-            )
-            + "]"
-        )
+        final_set_expr = f"[{', '.join(map(str, self.final_nodes))}]"
         return (
             f"\nlet {self.result_name} = for v in {start_set_expr} for u in {final_set_expr} return u, v where u "
             f"reachable from v in {self.graph_program.name} by {query_name}"
