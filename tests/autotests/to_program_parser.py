@@ -1,4 +1,4 @@
-from copy import copy
+from copy import copy, deepcopy
 
 import pyformlang as pl
 from pyformlang.cfg import Variable, Terminal
@@ -39,22 +39,24 @@ class GraphProgram:
         )
 
     def __str__(self):
-        program = f"\nlet {self.graph.name} is graph"
+        program = f"\nlet {self.name} is graph"
         for node_from, node_to, data in self.graph.edges(data=True):
-            program += f'\nadd edge ({node_from}, "{data[LABEL]}", {node_to}) to {self.graph.name}'
+            program += (
+                f'\nadd edge ({node_from}, "{data[LABEL]}", {node_to}) to {self.name}'
+            )
         return program
 
 
 class GrammarProgram:
-    nonterminal_names = {}
     EPS = '"a"^[0 .. 0]'
 
     def __init__(self, cfg: pl.cfg.CFG):
         self.grammar = copy(cfg)
+        self.nonterminal_names = {}
         for production in cfg.productions:
             if production.head not in self.nonterminal_names.keys():
                 self.nonterminal_names[production.head] = FreshVar.generate_fresh(
-                    _nonterminal_to_string(production.head)
+                    _nonterminal_to_string(deepcopy(production.head))
                 )
         self.start_nonterminal_name = self.nonterminal_names[cfg.start_symbol]
 

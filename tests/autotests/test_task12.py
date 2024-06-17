@@ -69,10 +69,13 @@ class TestTypeInference:
                 )
             )
         program, name_result = to_program_parser(query_list)
-        result_dict: dict = exec_program(program)
+        assert typing_program(deepcopy(program))
+        result_dict: dict = exec_program(deepcopy(program))
         for var, res in result_dict.items():
             query = name_result[var]
-            separate_res = exec_program(query.full_program())
+            query_full_program = query.full_program()
+            assert typing_program(deepcopy(query_full_program))
+            separate_res = exec_program(deepcopy(query_full_program))
             assert separate_res == res
             assert res == cfpq_with_matrix(
                 query.get_grammar(),
