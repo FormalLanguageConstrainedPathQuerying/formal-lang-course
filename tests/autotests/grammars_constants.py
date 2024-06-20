@@ -1,5 +1,6 @@
 from pyformlang.cfg import cfg
 from constants import *
+from random import sample
 
 GRAMMARS_TABLE: list[dict[str, list[str | cfg.CFG]]] = [
     {
@@ -326,7 +327,7 @@ GRAMMARS: list[list[cfg.CFG]] = [ds[CFG] for ds in GRAMMARS_TABLE if len(ds[CFG]
 GRAMMARS_DIFFERENT: list[cfg.CFG] = [
     ds[CFG][0] for ds in GRAMMARS_TABLE if len(ds[CFG]) >= 1
 ]
-CFG_EBNF: list[tuple[list[cfg.CFG], list[str]]] = [
-    (ds[CFG], ds[EBNF]) for ds in GRAMMARS_TABLE
-]
-REGEXES = [regex_str for ds in GRAMMARS_TABLE for regex_str in ds[REGEXP]]
+CFG_EBNF: list[tuple[list[cfg.CFG], list[str]]] = sample(
+    [(ds[CFG], ds[EBNF]) for ds in GRAMMARS_TABLE], 15
+)
+REGEXES = sample([regex_str for ds in GRAMMARS_TABLE for regex_str in ds[REGEXP]], 15)

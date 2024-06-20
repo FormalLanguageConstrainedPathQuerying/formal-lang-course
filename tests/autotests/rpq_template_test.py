@@ -16,8 +16,11 @@ except ImportError:
 def rpq_cfpq_test(
     graph: MultiDiGraph,
     regex_str: str,
-    cfg_list: Iterable[CFG],
-    function: Callable[[CFG, MultiDiGraph, set[int], set[int]], set[tuple[int, int]]],
+    cfg_list: Iterable[CFG | RecursiveAutomaton],
+    function: Callable[
+        [CFG | RecursiveAutomaton, MultiDiGraph, set[int], set[int]],
+        set[tuple[int, int]],
+    ],
 ) -> None:
     start_nodes, final_nodes = generate_rnd_start_and_final(graph)
     for cf_gram in cfg_list:
@@ -35,8 +38,11 @@ def rpq_cfpq_test(
 
 def different_grammars_test(
     graph: MultiDiGraph,
-    eq_grammars: Iterable[CFG],
-    function: Callable[[CFG, MultiDiGraph, set[int], set[int]], set[tuple[int, int]]],
+    eq_grammars: Iterable[CFG | RecursiveAutomaton],
+    function: Callable[
+        [CFG | RecursiveAutomaton, MultiDiGraph, set[int], set[int]],
+        set[tuple[int, int]],
+    ],
 ) -> None:
     start_nodes, final_nodes = generate_rnd_start_and_final(graph)
     eq_cfpqs = [
