@@ -20,8 +20,9 @@ class FiniteAutomaton:
         final_states: Set[State] = None,
         matrix: Dict[Symbol, dok_matrix] = None,
         states_to_states: Dict[State, int] = None,
-        lbl: bool = False,
-        eps: Set[Symbol] = None
+        is_from_rsm: bool = False,
+        eps: Set[Symbol] = None,
+        states: Set[State] = None
     ):
         """
         Аргументы:
@@ -41,13 +42,15 @@ class FiniteAutomaton:
         self.matrix = matrix
 
         if nfa is None:
-            if not lbl:
+            if not is_from_rsm:
                 self.nfa = to_nfa(self)
+            self.states = states
         else:
             self.states_to_states = {v: i for i, v in enumerate(nfa.states)}
             self.matrix = nfa_to_matrix(nfa, self.states_to_states)
             self.start_states = nfa.start_states
             self.final_states = nfa.final_states
+            self.states = list(nfa.states)
 
     def accepts(self, word: Iterable[Symbol]) -> bool:
         return self.nfa.accepts(word)
@@ -134,8 +137,9 @@ def rsm_to_fa(rsm: RecursiveAutomaton) -> FiniteAutomaton:
         start_states=start_states,
         final_states=final_states,
         states_to_states=states_to_int,
-        lbl=True,
+        is_from_rsm=True,
         eps=epsilons,
+        states=states,
     )
 
 
