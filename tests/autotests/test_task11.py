@@ -2,7 +2,6 @@
 # You MUST NOT touch anything here except ONE block below
 # You CAN modify this file IF AND ONLY IF you have found a bug and are willing to fix it
 # Otherwise, please report it
-import inspect
 import io
 from contextlib import redirect_stdout
 
