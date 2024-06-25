@@ -1,12 +1,10 @@
-antlr4-python3-runtime
-antlr4-tools
-black
-cfpq-data
+antlr4-python3-runtime==4.13.1
+black==24.4.2
+cfpq-data==4.0.3
 grammarinator @ git+https://github.com/renatahodovan/grammarinator.git@f3ffa71
 networkx==3.2.1
-pre-commit
-pydot~=2.0.0
-pyformlang~=1.0.1
-pytest~=8.0.1
-pytest-xdist
-scipy
+pre-commit==3.7.1
+pydot==2.0.0
+pyformlang==1.0.7
+pytest==8.2.1
+scipy==1.13.0

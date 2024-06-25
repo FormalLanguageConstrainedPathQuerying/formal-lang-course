@@ -1,11 +1,9 @@
 import copy
-
-from pyformlang.cfg import Variable
-
 from typing import Set
 import networkx as nx
 import pyformlang
-
+from pyformlang.cfg import Terminal
+from scipy.sparse import dok_matrix
 from project.task6 import cfg_to_weak_normal_form
 
 
@@ -15,46 +13,50 @@ def cfpq_with_matrix(
     start_nodes: Set[int] = None,
     final_nodes: Set[int] = None,
 ) -> set[tuple[int, int]]:
-    grammatics = cfg_to_weak_normal_form(cfg)
-    n = graph.number_of_nodes()
-    met_init = {}
+    if start_nodes is None:
+        start_nodes = graph.nodes
+    if final_nodes is None:
+        final_nodes = graph.nodes
 
-    for i, j, data in graph.edges(data=True):
-        for production in grammatics.productions:
-            if (
-                len(production.body) == 1
-                and isinstance(production.body[0], Variable)
-                and production.body[0].value == data["label"]
-            ):
-                if (i, j) not in met_init:
-                    met_init[(i, j)] = set()
-                met_init[(i, j)].add(production.head)
+    cfg = cfg_to_weak_normal_form(cfg)
 
-    _met = copy.deepcopy(met_init)
+    M = {}
+    eps = set()
+    terms = {}
+    nn = {}
 
-    for i in range(n):
-        for j in range(n):
-            for k in range(n):
-                if (i, k) in met_init and (k, j) in met_init:
-                    for production in grammatics.productions:
+    for p in cfg.productions:
+        if len(p.body) == 0:
+            eps.add(p.head.to_text())
+        if len(p.body) == 1 and isinstance(p.body[0], Terminal):
+            terms.setdefault(p.body[0].to_text(), set()).add(p.head.to_text())
+        M[p.head.to_text()] = dok_matrix(
+            (graph.number_of_nodes(), graph.number_of_nodes()), dtype=bool
+        )
+        if len(p.body) == 2:
+            nn.setdefault(p.head.to_text(), set()).add(
+                (p.body[0].to_text(), p.body[1].to_text())
+            )
 
-                        if len(production.body) == 2:
-                            mat_b, mat_c = production.body
-                            if mat_b in met_init[(i, k)] and mat_c in met_init[(k, j)]:
-                                if (i, j) not in _met:
-                                    _met[(i, j)] = set()
-                                if production.head not in _met[(i, j)]:
-                                    _met[(i, j)].add(production.head)
-        met_init = _met
+    for b, e, t in graph.edges(data="label"):
+        if t in terms:
+            for T in terms[t]:
+                M[T][b, e] = True
 
-    res = set()
+    for N in eps:
+        M[N].setdiag(True)
 
-    for i in range(n):
-        for j in range(n):
-            if (i, j) in met_init:
-                if (start_nodes is None or i in start_nodes) and (
-                    final_nodes is None or j in final_nodes
-                ):
-                    res.add((i, j))
+    M_new = copy.deepcopy(M)
+    for m in M_new.values():
+        m.clear()
 
-    return res
+    for i in range(graph.number_of_nodes() ** 2):
+        for N, NN in nn.items():
+            for Nl, Nr in NN:
+                M_new[N] += M[Nl] @ M[Nr]
+        for N, m in M_new.items():
+            M[N] += m
+
+    S = cfg.start_symbol.to_text()
+    ns, ms = M[S].nonzero()
+    return {(n, m) for n, m in zip(ns, ms) if n in start_nodes and m in final_nodes}

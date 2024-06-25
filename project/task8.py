@@ -1,98 +1,93 @@
-import networkx as nx
-import pyformlang
-from pyformlang.cfg import Epsilon
-from pyformlang.finite_automaton import Symbol
-from pyformlang.regular_expression import Regex
-from pyformlang.rsa import Box, RecursiveAutomaton
-from pyformlang.cfg import CFG
-from scipy.sparse import dok_matrix, eye
 from project.task2 import graph_to_nfa
-from project.task3 import (
-    FiniteAutomaton,
-    transitive_closure,
-    intersect_automata,
-    rsm_to_fa,
-)
+
+from pyformlang.finite_automaton import TransitionFunction, EpsilonNFA, Symbol, State
+from pyformlang.rsa import RecursiveAutomaton, Box
+from pyformlang.cfg import CFG
+
+import networkx as nx
+from itertools import *
+from scipy.sparse import *
+
+from project.task3 import FiniteAutomaton, rsm_to_fa
 
 
 def cfpq_with_tensor(
     rsm: RecursiveAutomaton,
     graph: nx.MultiDiGraph,
-    final_nodes: set[int] = None,
     start_nodes: set[int] = None,
+    final_nodes: set[int] = None,
 ) -> set[tuple[int, int]]:
+    if isinstance(rsm, CFG):
+        rsm = cfg_to_rsm(rsm)
+
+    if start_nodes is None:
+        start_nodes = graph.nodes
+    if final_nodes is None:
+        final_nodes = graph.nodes
+
     rsm_fa = rsm_to_fa(rsm)
-    graph_finite_automaton = FiniteAutomaton(
-        graph_to_nfa(graph, start_nodes, final_nodes)
-    )
-    matrix_indexes = rsm_fa.revert_mapping()
-    graph_indexes = graph_finite_automaton.revert_mapping()
+    rsm_n_states = len(rsm_fa.states)
+    graph_fa = FiniteAutomaton(graph_to_nfa(graph, start_nodes, final_nodes))
+    mapping = {
+        i: state for i, state in enumerate(product(graph_fa.states, rsm_fa.states))
+    }
 
-    _size = len(graph_finite_automaton.states_mapping)
-    for eps in rsm_fa.eps:
-        if eps not in graph_finite_automaton.matrix:
-            graph_finite_automaton.matrix[eps] = dok_matrix((_size, _size), dtype=bool)
-        graph_finite_automaton.matrix[eps] += eye(_size, dtype=bool)
+    graph_n_states = len(graph_fa.states)
 
-    closure = transitive_closure(intersect_automata(rsm_fa, graph_finite_automaton))
-    closure = list(zip(*closure.nonzero()))
+    zeros = 0
+    while True:
+        n = rsm_n_states * graph_n_states
+        symbols = rsm_fa.matrix.keys() & graph_fa.matrix.keys()
+        if len(symbols) != 0:
+            mat = {}
+            for symbol in symbols:
+                mat[symbol] = kron(graph_fa.matrix[symbol], rsm_fa.matrix[symbol])
+            m = sum(mat.values())
+        else:
+            m = dok_matrix((n, n), dtype=bool)
+        m += eye(n, dtype=bool)
 
-    for _start, _final in closure:
-        frm = matrix_indexes[_start // _size]
-        to = matrix_indexes[_final // _size]
+        for _ in range(n):
+            m += m @ m
 
-        if frm in rsm_fa.start_states and to in rsm_fa.final_states:
-            _symbol = frm.value[0]
-            if _symbol not in graph_finite_automaton.matrix:
-                graph_finite_automaton.matrix[_symbol] = dok_matrix(
-                    (_size, _size), dtype=bool
-                )
-            graph_finite_automaton.matrix[_symbol][
-                _start % _size, _final % _size
-            ] = True
+        new_zeros = m.count_nonzero()
+        if new_zeros <= zeros:
+            break
+        else:
+            zeros = new_zeros
 
-    result = set()
-    for matrix in graph_finite_automaton.matrix.values():
-        for _start, _final in zip(*matrix.nonzero()):
+        for fr, to in zip(*m.nonzero()):
+            from_state = mapping[fr]
+            to_state = mapping[to]
+            from_rsm_state = from_state[1]
+            to_rsm_state = to_state[1]
             if (
-                graph_indexes[_start] in rsm_fa.start_states
-                and graph_indexes[_final] in rsm_fa.final_states
+                from_rsm_state in rsm_fa.start_states
+                and to_rsm_state in rsm_fa.final_states
             ):
-                result.add((graph_indexes[_start], graph_indexes[_final]))
+                N = from_rsm_state[0]
+                graph_from = graph_fa.states_to_int[from_state[0]]
+                graph_to = graph_fa.states_to_int[to_state[0]]
+                graph_fa.matrix.setdefault(
+                    N, dok_matrix((graph_n_states, graph_n_states), dtype=bool)
+                )[graph_from, graph_to] = True
 
-    return result
+    S = rsm.initial_label.value
+    if S not in graph_fa.matrix:
+        return set()
+
+    res = set()
+    for graph_from_state, graph_to_state in product(start_nodes, final_nodes):
+        graph_from = graph_fa.states_to_int[graph_from_state]
+        graph_to = graph_fa.states_to_int[graph_to_state]
+        if graph_fa.matrix[S][graph_from, graph_to]:
+            res.add((graph_from_state, graph_to_state))
+    return res
 
 
 def cfg_to_rsm(cfg: CFG) -> RecursiveAutomaton:
-    productions = {}
-    boxes = set()
-    labels = set()
-    for production in cfg.productions:
-        if len(production.body) == 0:
-            regex = Regex(
-                " ".join(
-                    "$" if isinstance(var, Epsilon) else var.value
-                    for var in production.body
-                )
-            )
-        else:
-            regex = Regex("$")
-        head = Symbol(production.head)
-        labels.add(head)
-        if head not in productions:
-            productions[head] = regex
-        else:
-            productions[head] = productions[head].union(regex)
-
-    for head, body in productions.items():
-        boxes.add(Box(body.to_epsilon_nfa().minimize(), head))
-
-    return pyformlang.rsa.RecursiveAutomaton(labels, Symbol("S"), boxes)
+    return RecursiveAutomaton.from_text(cfg.to_text())
 
 
-def ebnf_to_rsm(ebnf: str) -> pyformlang.rsa.RecursiveAutomaton:
-    return pyformlang.rsa.RecursiveAutomaton.from_text(ebnf)
-
-
-if __name__ == "__main__":
-    pass
+def ebnf_to_rsm(ebnf: str) -> RecursiveAutomaton:
+    return RecursiveAutomaton.from_text(ebnf)

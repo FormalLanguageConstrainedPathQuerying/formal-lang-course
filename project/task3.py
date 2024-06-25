@@ -1,19 +1,19 @@
+from itertools import product
 from typing import Iterable
+from pyformlang.rsa import RecursiveAutomaton
 from networkx import MultiDiGraph
 from pyformlang.finite_automaton import *
-from pyformlang.rsa import RecursiveAutomaton
 from scipy.sparse import dok_matrix, kron
 from project.task2 import graph_to_nfa, regex_to_dfa
 
 
 class FiniteAutomaton:
+    matrix = None
     start_states = None
     final_states = None
+    states_to_int = None
     nfa = None
-    lbl = True
-    states_mapping = None
-    eps = None
-    matrix = None
+    states = None
 
     def __init__(
         self,
@@ -22,48 +22,31 @@ class FiniteAutomaton:
         matrix=None,
         start_states=None,
         final_states=None,
-        states_to_states=None,
-        bad=False,
-        eps=None
+        states_to_int=None,
+        states=None,
+        from_rsm=False,
     ):
         if fa is None:
             self.matrix = matrix
             self.start_states = start_states
             self.final_states = final_states
-            self.states_mapping = states_to_states
-            self.eps = eps
-            if not bad:
+            self.states_to_int = states_to_int
+            self.states = states
+            if not from_rsm:
                 self.nfa = to_nfa(self)
         else:
-            self.states_mapping = {v: i for i, v in enumerate(fa.states)}
+            self.states_to_int = {v: i for i, v in enumerate(fa.states)}
             self.nfa = fa
-            self.matrix = nfa_to_mat(fa, self.states_mapping)
+            self.matrix = nfa_to_mat(fa, self.states_to_int)
             self.start_states = fa.start_states
             self.final_states = fa.final_states
+            self.states = list(fa.states)
 
     def accepts(self, word: Iterable[Symbol]) -> bool:
         return self.nfa.accepts(word)
 
     def is_empty(self) -> bool:
         return self.nfa.is_empty()
-
-    def size(self):
-        return len(self.states_mapping)
-
-    def mapping_for(self, u) -> int:
-        return self.states_mapping[State(u)]
-
-    def start_inds(self):
-        return [self.mapping_for(t) for t in self.start_states]
-
-    def final_inds(self):
-        return [self.mapping_for(t) for t in self.final_states]
-
-    def labels(self):
-        return self.states_mapping.keys() if self.lbl else self.matrix.keys()
-
-    def revert_mapping(self):
-        return {i: v for v, i in self.states_mapping.items()}
 
 
 def to_set(state):
@@ -72,7 +55,7 @@ def to_set(state):
     return state
 
 
-def nfa_to_mat(fa: NondeterministicFiniteAutomaton, states=None):
+def nfa_to_mat(fa: NondeterministicFiniteAutomaton, states_to_int=None):
     len_states = len(fa.states)
     result = dict()
 
@@ -81,52 +64,52 @@ def nfa_to_mat(fa: NondeterministicFiniteAutomaton, states=None):
         for v, edges in fa.to_dict().items():
             if symbol in edges:
                 for u in to_set(edges[symbol]):
-                    result[symbol][states[v], states[u]] = True
+                    result[symbol][states_to_int[v], states_to_int[u]] = True
 
     return result
 
 
 def rsm_to_fa(rsm: RecursiveAutomaton) -> FiniteAutomaton:
-    states = set()
-    start_states = set()
-    final_states = set()
-    epsilons = set()
+    states = [
+        (N.value, state.value)
+        for N, box in rsm.boxes.items()
+        for state in box.dfa.states
+    ]
 
-    for label, enfa in rsm.boxes.items():
-        for state in enfa.dfa.states:
-            s = State((label, state.value))
-            states.add(s)
-            if state in enfa.dfa.start_states:
-                start_states.add(s)
-            if state in enfa.dfa.final_states:
-                final_states.add(s)
+    n_states = len(states)
 
-    len_states = len(states)
-    states_to_int = {s: i for i, s in enumerate(states)}
+    mapping = {state: i for i, state in enumerate(states)}
 
-    matrix = dict()
-    for label, enfa in rsm.boxes.items():
-        for frm, transition in enfa.dfa.to_dict().items():
-            for symbol, to in transition.items():
-                var = symbol.value
-                if symbol not in matrix:
-                    matrix[var] = dok_matrix((len_states, len_states), dtype=bool)
-                for target in to_set(to):
-                    matrix[var][
-                        states_to_int[State((label, frm.value))],
-                        states_to_int[State((label, target.value))],
-                    ] = True
-                if isinstance(to, Epsilon):
-                    epsilons.add(label)
+    start_states = {
+        (N.value, start_state.value)
+        for N, box in rsm.boxes.items()
+        for start_state in box.dfa.start_states
+    }
+
+    final_states = {
+        (N.value, final_state.value)
+        for N, box in rsm.boxes.items()
+        for final_state in box.dfa.final_states
+    }
+
+    matrix = {}
+    for N, box in rsm.boxes.items():
+        for from_state, transitions in box.dfa.to_dict().items():
+            for symbol, to_state in transitions.items():
+                from_idx = mapping[(N.value, from_state.value)]
+                to_idx = mapping[(N.value, to_state.value)]
+                matrix.setdefault(
+                    symbol.value, dok_matrix((n_states, n_states), dtype=bool)
+                )[from_idx, to_idx] = True
 
     return FiniteAutomaton(
         fa=None,
         matrix=matrix,
         start_states=start_states,
         final_states=final_states,
-        states_to_states=states_to_int,
-        bad=True,
-        eps=epsilons,
+        states_to_int=mapping,
+        states=states,
+        from_rsm=True,
     )
 
 
@@ -139,36 +122,32 @@ def to_nfa(fa: FiniteAutomaton):
             for v in range(matrix_size):
                 if fa.matrix[symbol][u, v]:
                     nfa.add_transition(
-                        State(fa.states_mapping[State(u)]),
+                        State(fa.states_to_int[State(u)]),
                         symbol,
-                        State(fa.states_mapping[State(v)]),
+                        State(fa.states_to_int[State(v)]),
                     )
 
     for state in fa.start_states:
-        nfa.add_start_state(State(fa.states_mapping[State(state)]))
+        nfa.add_start_state(State(fa.states_to_int[State(state)]))
     for state in fa.final_states:
-        nfa.add_final_state(State(fa.states_mapping[State(state)]))
+        nfa.add_final_state(State(fa.states_to_int[State(state)]))
 
     return nfa
 
 
-def intersect_automata(
-    fa1: FiniteAutomaton, fa2: FiniteAutomaton, lbl=True
-) -> FiniteAutomaton:
-    fa1.lbl = fa2.lbl = not lbl
-    labels = fa1.labels() & fa2.labels()
+def intersect_automata(fa1: FiniteAutomaton, fa2: FiniteAutomaton) -> FiniteAutomaton:
     matrix = dict()
     start_states = set()
     final_states = set()
     states_to_int = dict()
 
-    for label in labels:
+    for label in fa1.matrix.keys() & fa2.matrix.keys():
         matrix[label] = kron(fa1.matrix[label], fa2.matrix[label], "csr")
 
-    for u, i in fa1.states_mapping.items():
-        for v, j in fa2.states_mapping.items():
+    for u, i in fa1.states_to_int.items():
+        for v, j in fa2.states_to_int.items():
 
-            k = len(fa2.states_mapping) * i + j
+            k = len(fa2.states_to_int) * i + j
             states_to_int[k] = k
 
             if u in fa1.start_states and v in fa2.start_states:
@@ -182,7 +161,7 @@ def intersect_automata(
         matrix=matrix,
         start_states=start_states,
         final_states=final_states,
-        states_to_states=states_to_int,
+        states_to_int=states_to_int,
     )
 
 
@@ -207,19 +186,33 @@ def transitive_closure(fa: FiniteAutomaton):
 def paths_ends(
     graph: MultiDiGraph, start_nodes: set[int], final_nodes: set[int], regex: str
 ) -> list[tuple[object, object]]:
-    g_f = FiniteAutomaton(graph_to_nfa(graph, start_nodes, final_nodes))
-    r_f = FiniteAutomaton(regex_to_dfa(regex))
-    inters = intersect_automata(g_f, r_f, lbl=False)
-    close = transitive_closure(inters)
-    size = len(r_f.states_mapping)
-    r = list()
+    graph_fa = FiniteAutomaton(graph_to_nfa(graph, start_nodes, final_nodes))
+    regex_fa = FiniteAutomaton(regex_to_dfa(regex))
+    intersect = intersect_automata(graph_fa, regex_fa)
+    regex_fa_n = regex_fa.matrix.values().__iter__().__next__().shape[0]
 
-    for v, u in zip(*close.nonzero()):
-        if v in inters.start_states and u in inters.final_states:
-            r.append(
+    inter_start_states = {intersect.states_to_int[i] for i in intersect.start_states}
+    inter_final_states = {intersect.states_to_int[i] for i in intersect.final_states}
+
+    result = set()
+    for state in inter_start_states & inter_final_states:
+        n = graph_fa.states[state // regex_fa_n].value
+        result.add((n, n))
+
+    if len(intersect.matrix) == 0:
+        return list()
+
+    m = sum(intersect.matrix.values())
+    for _ in range(m.shape[0]):
+        m += m @ m
+
+    for s, f in product(inter_start_states, inter_final_states):
+        if m[s, f] != 0:
+            result.add(
                 (
-                    g_f.states_mapping[v // size],
-                    g_f.states_mapping[u // size],
+                    graph_fa.states[s // regex_fa_n].value,
+                    graph_fa.states[f // regex_fa_n].value,
                 )
             )
-    return r
+
+    return list(result)
