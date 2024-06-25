@@ -52,7 +52,7 @@ def cfpq_with_tensor(
     fa_rsm = rsm_to_fa(rsm)
     fa_graph = FiniteAutomaton(graph_to_nfa(graph, start_nodes, final_nodes))
 
-    state_mapping = initialize_state_mapping(fa_graph, fa_rsm)
+    state_mapping = _initialize_state_mapping(fa_graph, fa_rsm)
     num_rsm_states, num_graph_states = len(fa_rsm.states), len(fa_graph.states)
     num_states = num_rsm_states * num_graph_states
 
@@ -60,18 +60,18 @@ def cfpq_with_tensor(
     while True:
         common_symbols = fa_rsm.matrix.keys() & fa_graph.matrix.keys()
         if common_symbols:
-            matrix_sum = get_common_symbols_matrices(fa_graph, fa_rsm, common_symbols)
+            matrix_sum = _get_common_symbols_matrices(fa_graph, fa_rsm, common_symbols)
         else:
             matrix_sum = dok_matrix((num_states, num_states), dtype=bool)
 
-        matrix_sum = update_matrix(matrix_sum, num_states)
+        matrix_sum = _update_matrix(matrix_sum, num_states)
         current_non_zeros = matrix_sum.count_nonzero()
 
         if current_non_zeros <= previous_non_zeros:
             break
         previous_non_zeros = current_non_zeros
 
-        process_reachable_pairs(matrix_sum, state_mapping, fa_rsm, fa_graph)
+        _process_reachable_pairs(matrix_sum, state_mapping, fa_rsm, fa_graph)
 
     initial_symbol = rsm.initial_label.value
     if initial_symbol not in fa_graph.matrix:
@@ -87,14 +87,14 @@ def cfpq_with_tensor(
     return result
 
 
-def initialize_state_mapping(fa_graph, fa_rsm):
+def _initialize_state_mapping(fa_graph, fa_rsm):
     """
     Инициализирует отображение состояний графа и RSM.
     """
     return {i: state for i, state in enumerate(product(fa_graph.states, fa_rsm.states))}
 
 
-def get_common_symbols_matrices(fa_graph, fa_rsm, common_symbols):
+def _get_common_symbols_matrices(fa_graph, fa_rsm, common_symbols):
     """
     Вычисляет суммы кронекеровских произведений для общих символов.
     """
@@ -104,7 +104,7 @@ def get_common_symbols_matrices(fa_graph, fa_rsm, common_symbols):
     )
 
 
-def update_matrix(matrix_sum, num_states):
+def _update_matrix(matrix_sum, num_states):
     """
     Обновляет матрицу суммированием с её квадратом для вычисления транзитивного замыкания.
     """
@@ -114,7 +114,7 @@ def update_matrix(matrix_sum, num_states):
     return matrix_sum
 
 
-def process_reachable_pairs(matrix_sum, state_mapping, fa_rsm, fa_graph):
+def _process_reachable_pairs(matrix_sum, state_mapping, fa_rsm, fa_graph):
     """
     Обрабатывает пары достижимых состояний и обновляет конечный автомат графа.
     """
