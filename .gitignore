@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 .venv10
 .venv
+project/lang
 
 # C extensions
 *.so
