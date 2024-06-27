@@ -19,7 +19,7 @@ import ProgramGenerator
 
 # Fix import statements in try block to run tests
 try:
-    from project.task11 import prog_to_tree, nodes_count, tree_to_prog
+    from project.task11.language import prog_to_tree, nodes_count, tree_to_prog
 except ImportError:
     pytestmark = pytest.mark.skip("Task 11 is not ready to test!")
 

@@ -34,5 +34,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Install ANTLR
+        run: |
+          curl -O https://www.antlr.org/download/antlr-4.9.2-complete.jar
+          alias antlr4='java -Xmx500M -cp "./antlr-4.9.2-complete.jar:$CLASSPATH" org.antlr.v4.Tool'
+
+      - name: Generate Lexer and Parser
+        run: |
+          antlr4 -Dlanguage=Python3 -o ./gen progect/task11/Test.g4
+
       - name: Run unit tests
         run: python ./scripts/run_tests.py
