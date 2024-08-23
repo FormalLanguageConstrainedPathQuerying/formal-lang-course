@@ -1,20 +1,16 @@
-name: Check code style
+name: Code style & linting
 
 on:
   push:
-    branches:
-      # PRs can only use caches from their target branch. We therefore need to
-      # make sure we run on 'main' too.
-      - main
   pull_request:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-codestyle
+  group: ${{ github.workflow }}-${{ github.ref }}-codestyle-lint
   cancel-in-progress: true
 
 jobs:
   style:
-    name: Check code style
+    name: Code style & linting
     runs-on: ubuntu-latest
     steps:
       - name: Set up Git repository
@@ -30,8 +26,14 @@ jobs:
 
       - name: Install pre-commit
         run: |
-          pre-commit install
+          rye run -- pre-commit install
 
       - name: Run pre-commit
         run: |
-          pre-commit run --all-files --color always --verbose --show-diff-on-failure
+          rye run -- pre-commit run --all-files --color always --verbose --show-diff-on-failure
+
+      - name: Run ruff format
+        run: rye fmt --check
+
+      - name: Run ruff linter
+        run: rye lint -- --output-format=github
