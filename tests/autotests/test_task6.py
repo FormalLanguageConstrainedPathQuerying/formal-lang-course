@@ -8,9 +8,6 @@ from rpq_template_test import rpq_cfpq_test, different_grammars_test
 
 # Fix import statements in try block to run tests
 try:
-    from project.task2 import graph_to_nfa, regex_to_dfa
-    from project.task3 import FiniteAutomaton
-    from project.task4 import reachability_with_constraints
     from project.task6 import cfpq_with_hellings
 except ImportError:
     pytestmark = pytest.mark.skip("Task 6 is not ready to test!")
