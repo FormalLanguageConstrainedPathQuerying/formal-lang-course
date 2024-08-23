@@ -4,7 +4,7 @@ import copy
 from networkx import MultiDiGraph
 import itertools
 import networkx as nx
-from constants import *
+from constants import IS_START, IS_FINAL, LABEL
 
 
 def generate_rnd_graph(

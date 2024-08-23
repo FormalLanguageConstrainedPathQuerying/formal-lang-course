@@ -1,5 +1,5 @@
 from pyformlang.cfg import cfg
-from constants import *
+from constants import REGEXP, CFG, EBNF
 from random import sample
 
 GRAMMARS_TABLE: list[dict[str, list[str | cfg.CFG]]] = [
