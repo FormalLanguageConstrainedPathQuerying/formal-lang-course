@@ -26,7 +26,6 @@ KEYWORDS = {
 
 
 class ProgramGenerator(Generator):
-
     def prog(self, parent=None):
         with UnparserRuleContext(self, "prog", parent) as rule:
             current = rule.current
