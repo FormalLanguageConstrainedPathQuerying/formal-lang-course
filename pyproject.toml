@@ -1,0 +1,37 @@
+[project]
+name = "formal-lang-course"
+version = "0.1.0"
+description = "Course on formal language constrained path querying"
+authors = [
+    { name = "Semyon Grigorev", email = "rsdpisuy@gmail.com" },
+    { name = "Efim Kubishkin", email = "efimkub@mail.ru" },
+    { name = "Nikolai Ponomarev", email = "wowasterdev@gmail.com" },
+]
+dependencies = [
+    "antlr4-python3-runtime>=4.13.1",
+    "cfpq-data>=4.0.3",
+    "networkx>=3.2.1",
+    "pre-commit>=3.8.0",
+    "pydot>=3.0.1",
+    "pytest>=8.3.2",
+    "scipy>=1.14.1",
+    "grammarinator @ git+https://github.com/renatahodovan/grammarinator.git@f3ffa71",
+]
+readme = "README.md"
+requires-python = ">= 3.10"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = []
+universal = true      # Solve dependencies for all platforms
+virtual = true
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/formal_lang_course"]
