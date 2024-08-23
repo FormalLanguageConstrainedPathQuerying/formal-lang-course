@@ -10,7 +10,6 @@ from to_program_parser import (
     QueryProgram,
     to_program_parser,
 )
-from fixtures import graph
 from grammars_constants import GRAMMARS_DIFFERENT
 from networkx import MultiDiGraph
 from pyformlang.cfg import CFG

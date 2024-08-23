@@ -7,7 +7,6 @@ from copy import deepcopy
 import pytest
 from grammars_constants import REGEXES
 from helper import generate_rnd_start_and_final, rpq_dict_to_set
-from fixtures import graph
 
 # Fix import statements in try block to run tests
 try:
