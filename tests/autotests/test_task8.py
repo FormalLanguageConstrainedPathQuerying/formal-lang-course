@@ -11,7 +11,6 @@ from rpq_template_test import (
     different_grammars_test,
     cfpq_algorithm_test,
 )
-from fixtures import graph
 
 # Fix import statements in try block to run tests
 try:

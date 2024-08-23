@@ -5,7 +5,6 @@
 import pytest
 from grammars_constants import REGEXP_CFG, GRAMMARS
 from rpq_template_test import rpq_cfpq_test, different_grammars_test
-from fixtures import graph
 
 # Fix import statements in try block to run tests
 try:
