@@ -16,6 +16,7 @@ dependencies = [
     "pytest>=8.3.2",
     "scipy>=1.14.1",
     "grammarinator @ git+https://github.com/renatahodovan/grammarinator.git@f3ffa71",
+    "pyformlang>=1.0.7",
 ]
 readme = "README.md"
 requires-python = ">= 3.10"
