@@ -39,6 +39,7 @@
   - [Эксперименты](#эксперименты)
   - [Структура репозитория](#структура-репозитория)
   - [Разработчики курса](#разработчики-курса)
+  - [Вместо введения](#вместо-введения)
 
 ## Из чего складывается оценка за курс
 
@@ -88,12 +89,12 @@
 
 У всех задач есть дедлайн (как правило --- неделя с момента, когда она была задана) после которого максимальный балл за задачу падает в два раза.
 
-У задач второго типа может добавляться **мягкий дедлайн**: если проверка запрошена до него, то есть шансы получить отзыв от преподавателя и исправить замечания до **жёсткого дедлайна**.
-
 Количество проверок ограничено тремя. Единица проверки --- запрос ревью на ПР. После трёх попыток баллы за задачу сгорают.
 Первый запрос ревью должен быть ДО дедлайна. Но если после запроса есть ещё коммиты, то баллы за задачу уменьшаются в два раза.
 
 При сдачи задач второго типа внимательно проверьте, ответили ли вы на все поставленные вопросы, а также соблюли все требования к отчёту, учли ли все пункты из постановки задачи. Если задача решена не полностью, не все требования выполнены, то она не проверяется, а попытка сдачи сгорает.
+
+Обратите внимание, что если проверка запрошена, но выполнены не все требования к решению (не проходит CI, не все пункты задачи выполнены), то детальной проверки задачи не проводится, а попытка сдачи сгорает. Скорее всего, в таком случае единственным результатом проверки будет что-то в духе "задача решена не полностью".
 
 ## Работа с проектом
 
@@ -117,12 +118,14 @@
 ### Выполнение домашнего задания
 
 - Каждое домашнее задание выполняется в отдельной ветке. Ветка должна иметь осмысленное консистентное название.
+- Ветка должна содержать только те коммиты, которые непосредственно относятся к решению задачи.
+- Текст коммитов (commit message) должен быть адекватным и отражать суть происходящего.
 - При выполнении домашнего задания в новой ветке необходимо открыть соответствующий `pull-request` в `main` вашего `fork`.
+- Обратите внимание, что проходить должны все тесты, а не только для той задачи, которая сдается в данном реквесте.
 - `Pull-request` снабдить понятным названием и описанием с соответствующими пунктами прогресса.
 - Проверка заданий осуществляется посредством `review` вашего `pull-request`. Даже если сдаётся задача, не требующая проверки преподавателем, необходимо запросить ревью.
 - Как только вы считаете, что задание выполнено, вы можете запросить `review` у проверяющего.
-  - Если `review` запрошено **до мягкого дедлайна**, то вам гарантированна дополнительная проверка (до жёсткого дедлайна), позволяющая исправить замечания до наступления жёсткого дедлайна.
-  - Если `review` запрошено **после мягкого дедлайна**, но **до жесткого дедлайна**, задание будет проверено, но нет гарантий, что вы успеете его исправить.
+  - Если `review` запрошено **до дедлайна**, задание будет проверено, но нет гарантий, что вы успеете его исправить. Потому качественно сделать задание --- ответственность обучающегося.
 - Когда проверка будет пройдена, и задание **зачтено**, его необходимо `merge` в `main` вашего `fork`.
 - Результаты выполненных заданий будут повторно использоваться в последующих домашних работах.
 
@@ -169,13 +172,13 @@
 
 ## Эксперименты
 
-- Для выполнения экспериментов потребуется не только код, но окружение и некоторая его настройка.
+Эксперимент (настройка, замеры, результаты, анализ результатов) оформляется как Python-ноутбук, который публикуется на GitHub.
+
+- Для выполнения экспериментов потребуется не только код, но окружение и некоторая его настройка. Соответственно, сдаваемое решение должно сопровождаться инструкциями по настройке окружения и воспроизведению экспериментов. В идеале, это всё должно содержаться в ноутбуке.
 - Эксперименты должны быть воспроизводимыми (например, проверяющими).
-- Эксперимент (настройка, замеры, результаты, анализ результатов) оформляется как Python-ноутбук, который публикуется на GitHub.
-  - В качестве окружения для экспериментов с GPGPU (опциональные задачи) можно использовать [`Google Colab`](https://research.google.com/colaboratory/) ноутбуки. Для его создания требуется только учетная запись `Google`.
-  - В ноутбуке выполняется вся настройка, пишется код для экспериментов, подготовки отчетов и графиков.
-  - Ноутбук является связанным текстом, описывающим цели эксперимента, методику их проведения, анализ результатов, ответы на поставленные вопросы.
-    - Ответы на вопросы должны быть обоснованы (экспериментами), наблюдаемое поведение проанализировано и обосновано.
+- В ноутбуке выполняется вся настройка, пишется код для экспериментов, подготовки отчетов и графиков.
+- Ноутбук является связанным текстом, описывающим цели эксперимента, методику их проведения, анализ результатов, ответы на поставленные вопросы.
+  - Ответы на вопросы должны быть обоснованы (экспериментами), наблюдаемое поведение проанализировано и обосновано.
 
 ## Структура репозитория
 
@@ -201,3 +204,59 @@
 - Вадим Абзалов [@vdshk](https://github.com/vdshk)
 - Рустам Азимов [@rustam-azimov](https://github.com/rustam-azimov)
 - Екатерина Шеметова [@katyacyfra](https://github.com/katyacyfra)
+
+## Вместо введения
+
+Данный курс является прикладным. Основная задача --- показать, что формальные языки возникают и могут применяться в разных областях. Примеры таких областей:
+
+- Синтаксический анализ языков программирования: в компиляторах, интерпертаторах, средах разработки, других инстументах.
+- Анализ естественных языков. Активность в этой области несколько спала, так как на передний план сейчас вышли различные методы машинного обучения.
+  Однако и в этой области ведуться работы.Например, [International Conference on Parsing Technologies](http://www.wikicfp.com/cfp/program?id=1853).
+- Статический анализ кода.
+  - Различные задачи межпроцедурного анализа. Основной подход --- language reachability. Основоположник --- Томас Репс. Примеры работ.
+    - Thomas Reps. 1997. Program analysis via graph reachability. In Proceedings of the 1997 international symposium on Logic programming (ILPS ’97). MIT Press, Cambridge, MA, USA, 5–19.
+    - Qirun Zhang and Zhendong Su. 2017. Context-sensitive data-dependence analysis via linear conjunctive language reachability. In Proceedings of the 44th ACM SIGPLAN Symposium on Principles of Programming Languages (POPL 2017). Association for Computing Machinery, New York, NY, USA, 344–358. DOI:https://doi.org/10.1145/3009837.3009848
+    - Kai Wang, Aftab Hussain, Zhiqiang Zuo, Guoqing Xu, and Ardalan Amiri Sani. 2017. Graspan: A Single-machine Disk-based Graph System for Interprocedural Static Analyses of Large-scale Systems Code. In Proceedings of the Twenty-Second International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS ’17). Association for Computing Machinery, New York, NY, USA, 389–404. DOI:https://doi.org/10.1145/3037697.3037744
+    - Lu Y., Shang L., Xie X., Xue J. (2013) An Incremental Points-to Analysis with CFL-Reachability. In: Jhala R., De Bosschere K. (eds) Compiler Construction. CC 2013. Lecture Notes in Computer Science, vol 7791. Springer, Berlin, Heidelberg
+  - Интерливинг (или шафл) языков для верификаци многопоточных программ.
+    - [Approximating the Shuffle of Context-free Languages to Find Bugs in Concurrent Recursive Programs](http://uu.diva-portal.org/smash/get/diva2:442518/FULLTEXT01.pdf)
+    - Flick N.E. (2015) Quotients of Unbounded Parallelism. In: Leucker M., Rueda C., Valencia F. (eds) Theoretical Aspects of Computing - ICTAC 2015. ICTAC 2015. Lecture Notes in Computer Science, vol 9399. Springer, Cham
+
+  - Система типов Java: [Radu Grigore, Java Generics are Turing Complete](https://arxiv.org/abs/1605.05274).
+
+- Графовые базы данных. Поиск путей с ограничениями.
+    - Maurizio Nolé and Carlo Sartiani. 2016. Regular Path Queries on Massive Graphs. In Proceedings of the 28th International Conference on Scientific and Statistical Database Management (SSDBM ’16). Association for Computing Machinery, New York, NY, USA, Article 13, 1–12. DOI:https://doi.org/10.1145/2949689.2949711
+    - Jochem Kuijpers, George Fletcher, Nikolay Yakovets, and Tobias Lindaaker. 2019. An Experimental Study of Context-Free Path Query Evaluation Methods. In Proceedings of the 31st International Conference on Scientific and Statistical Database Management (SSDBM ’19). Association for Computing Machinery, New York, NY, USA, 121–132. DOI:https://doi.org/10.1145/3335783.3335791
+    - [Jelle Hellings. Querying for Paths in Graphs using Context-Free Path Queries.](https://arxiv.org/abs/1502.02242)
+
+- Биоинформатика. В основном это анализ геномных и белковых последовательностей.
+    - [Witold Dyrka, Mateusz Pyzik, Francois Coste, and Hugo Talibart. Estimating probabilistic context-free grammars for proteins using contact map constraints.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6428041/)
+    - [James WJ Anderson, Paula Tataru, Joe Staines, Jotun Hein, and Rune Lyngso. Evolving stochastic context-free grammars for RNA secondary structure prediction.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3464655/)
+    - [Ryan Zier-Vogel. Predicting RNA secondary structure using a stochastic conjunctive grammar.](https://www.semanticscholar.org/paper/Predicting-RNA-secondary-structure-using-a-grammar-Zier-Vogel/90bb312cb1a0f61eddb7a8b5b782bb40630894dd).
+
+- Машинное обучение.
+   - [Matt J. Kusner, Brooks Paige, José Miguel Hernández-Lobato. Grammar Variational Autoencoder](https://arxiv.org/abs/1703.01925). Опубликована в 2017 году и уже [больше 950 цитирований.](https://scholar.google.com/scholar?cites=4080460899049502885&as_sdt=2005&sciodt=0,5&hl=ru)
+   - [TAG Parsing with Neural Networks and Vector Representations of Supertags](https://www.aclweb.org/anthology/D17-1180.pdf). К разговору об оброаботке естественных языков.
+   - [Jungo Kasai, Robert Frank, Pauli Xu, William Merrill, Owen Rambow. End-to-end Graph-based TAG Parsing with Neural Networks.](https://arxiv.org/abs/1804.06610)
+
+- Языки --- это не только про строки.
+  - Языки деревьев: [Tree Automata Techniques and Applications](http://tata.gforge.inria.fr/).
+  - Языки графов:
+     - [Graph Grammars](http://www.its.caltech.edu/~matilde/GraphGrammarsLing.pdf)
+     - [HYPEREDGE REPLACEMENT GRAPH GRAMMARS](https://people.cs.umu.se/drewes/biblio/ps-files/hrg.pdf)
+     - [(Re)introducing Regular Graph Languages](https://www.aclweb.org/anthology/W17-3410.pdf)
+     - [Hyperedge Replacement: Grammars and Languages](https://www.springer.com/gp/book/9783540560050)
+  - $\ldots$
+- Теория групп. Как правило, это проблема слов группы или дополнение к ней.
+   - Anisimov, A.V. Group languages. Cybern Syst Anal (1971) 7: 594.
+   - David E. Muller, Paul E. Schupp, Groups, the Theory of ends, and context-free languages, Journal of Computer and System Sciences, Volume 26, Issue 3, 1983, Pages 295-310, ISSN 0022-0000
+   - HOLT, D., REES, S., ROVER, C., \& THOMAS, R. (2005). GROUPS WITH CONTEXT-FREE CO-WORD PROBLEM. Journal of the London Mathematical Society, 71(3), 643-657. doi:10.1112/S002461070500654X
+   - [Groups with Context-Free Co-Word Problem and Embeddings into Thompson's Group V](https://arxiv.org/abs/1407.7745)
+   - [Kropholler, R. \& Spriano, D. (2019). Closure properties in the class of multiple context-free groups. Groups Complexity Cryptology, 11(1), pp. 1-15. Retrieved 13 Feb. 2020, from doi:10.1515/gcc-2019-2004](https://www.degruyter.com/view/j/gcc.2019.11.issue-1/gcc-2019-2004/gcc-2019-2004.xml)
+   - [Word problems of groups, formal languages and decidability](https://personalpages.manchester.ac.uk/staff/Mark.Kambites/events/nbsan/nbsan17_thomas.pdf)
+
+- Прочая интересная математика.
+  - Немного топологии в теории формальных языков: [Salvati S. On is an n-MCFL. – 2018.](https://hal.archives-ouvertes.fr/hal-01771670/)
+  - Salvati S. MIX is a 2-MCFL and the word problem in Z2 is captured by the IO and the OI hierarchies //Journal of Computer and System Sciences. -- 2015. -- Т. 81. -- \textnumero. 7. -- С. 1252-1277.
+  - О том, как задачи из теории графов связаны с теорией формальных языков: Abboud, Amir \& Backurs, Arturs \& Williams, Virginia. (2015). If the Current Clique Algorithms are Optimal, So is Valiant's Parser. 98-117. 10.1109/FOCS.2015.16.
+  - [A context-free grammar for the Ramanujan-Shor polynomials](https://www.sciencedirect.com/science/article/abs/pii/S0196885819300739)
