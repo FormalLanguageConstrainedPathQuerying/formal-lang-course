@@ -1,0 +1,28 @@
+name: Run tests
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-tests
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v4
+
+      - name: Install rye
+        uses: eifinger/setup-rye@v4
+        with:
+          enable-cache: true
+
+      - name: Sync dependencies
+        run: rye sync
+
+      - name: Run tests
+        run: python scripts/run_tests.py
