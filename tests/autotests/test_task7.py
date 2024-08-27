@@ -10,8 +10,8 @@ from rpq_template_test import rpq_cfpq_test, different_grammars_test
 
 # Fix import statements in try block to run tests
 try:
-    from project.task7 import cfpq_with_matrix
-    from project.task6 import cfpq_with_hellings
+    from project.task7 import matrix_based_cfpq
+    from project.task6 import hellings_based_cfpq
 except ImportError:
     pytestmark = pytest.mark.skip("Task 7 is not ready to test!")
 
@@ -19,19 +19,19 @@ except ImportError:
 class TestReachabilityMatrixAlgorithm:
     @pytest.mark.parametrize("regex_str, cfg_list", REGEXP_CFG)
     def test_rpq_cfpq_matrix(self, graph, regex_str, cfg_list) -> None:
-        rpq_cfpq_test(graph, regex_str, cfg_list, cfpq_with_matrix)
+        rpq_cfpq_test(graph, regex_str, cfg_list, matrix_based_cfpq)
 
     @pytest.mark.parametrize("eq_grammars", GRAMMARS)
     def test_different_grammars_matrix(self, graph, eq_grammars):
-        different_grammars_test(graph, eq_grammars, cfpq_with_matrix)
+        different_grammars_test(graph, eq_grammars, matrix_based_cfpq)
 
     @pytest.mark.parametrize("grammar", GRAMMARS_DIFFERENT)
     def test_hellings_matrix(self, graph, grammar):
         start_nodes, final_nodes = generate_rnd_start_and_final(graph)
-        hellings = cfpq_with_hellings(
+        hellings = hellings_based_cfpq(
             deepcopy(grammar), deepcopy(graph), start_nodes, final_nodes
         )
-        matrix = cfpq_with_matrix(
+        matrix = matrix_based_cfpq(
             deepcopy(grammar), deepcopy(graph), start_nodes, final_nodes
         )
         assert hellings == matrix

@@ -17,7 +17,7 @@ from helper import generate_rnd_start_and_final, generate_rnd_dense_graph
 from constants import LABELS
 
 try:
-    from project.task7 import cfpq_with_matrix
+    from project.task7 import matrix_based_cfpq
     from project.task12 import typing_program, exec_program
 except ImportError:
     pytestmark = pytest.mark.skip("Task 12 is not ready to test!")
@@ -43,7 +43,7 @@ class TestTypeInference:
         program = query.full_program()
         assert typing_program(deepcopy(program))
         cfpq_from_prog = exec_program(deepcopy(program))[query.result_name]
-        cfpq_from_algo = cfpq_with_matrix(
+        cfpq_from_algo = matrix_based_cfpq(
             deepcopy(grammar),
             deepcopy(graph),
             deepcopy(start_nodes),
@@ -76,7 +76,7 @@ class TestTypeInference:
             assert typing_program(deepcopy(query_full_program))
             separate_res = exec_program(deepcopy(query_full_program))
             assert separate_res == res
-            assert res == cfpq_with_matrix(
+            assert res == matrix_based_cfpq(
                 query.get_grammar(),
                 query.get_graph(),
                 query.start_nodes,

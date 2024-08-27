@@ -11,7 +11,7 @@ from grammars_constants import REGEXES
 
 # Fix import statements in try block to run tests
 try:
-    from project.task3 import intersect_automata, FiniteAutomaton
+    from project.task3 import intersect_automata, AdjacencyMatrixFA
     from project.task2 import regex_to_dfa
 except ImportError:
     pytestmark = pytest.mark.skip("Task 3 is not ready to test!")
@@ -22,8 +22,8 @@ class TestIntersect:
         "regex_str1, regex_str2", itertools.combinations(REGEXES, 2)
     )
     def test(self, regex_str1: str, regex_str2: str) -> None:
-        dfa1 = FiniteAutomaton(regex_to_dfa(regex_str1))
-        dfa2 = FiniteAutomaton(regex_to_dfa(regex_str2))
+        dfa1 = AdjacencyMatrixFA(regex_to_dfa(regex_str1))
+        dfa2 = AdjacencyMatrixFA(regex_to_dfa(regex_str2))
         intersect_fa = intersect_automata(dfa1, dfa2)
 
         regex1: Regex = Regex(regex_str1)

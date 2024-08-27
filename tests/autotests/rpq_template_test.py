@@ -7,8 +7,8 @@ from typing import Callable, Iterable
 
 try:
     from project.task2 import graph_to_nfa, regex_to_dfa
-    from project.task3 import FiniteAutomaton
-    from project.task4 import reachability_with_constraints
+    from project.task3 import AdjacencyMatrixFA
+    from project.task4 import ms_bfs_based_rpq
 except ImportError:
     pass
 
@@ -28,9 +28,9 @@ def rpq_cfpq_test(
             cf_gram, deepcopy(graph), start_nodes, final_nodes
         )
         rpq: set[tuple[int, int]] = rpq_dict_to_set(
-            reachability_with_constraints(
-                FiniteAutomaton(graph_to_nfa(graph, start_nodes, final_nodes)),
-                FiniteAutomaton(regex_to_dfa(regex_str)),
+            ms_bfs_based_rpq(
+                AdjacencyMatrixFA(graph_to_nfa(graph, start_nodes, final_nodes)),
+                AdjacencyMatrixFA(regex_to_dfa(regex_str)),
             )
         )
         assert cfpq == rpq

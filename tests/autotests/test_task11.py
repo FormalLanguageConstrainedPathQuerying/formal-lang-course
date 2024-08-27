@@ -19,7 +19,7 @@ import ProgramGenerator
 
 # Fix import statements in try block to run tests
 try:
-    from project.task11 import prog_to_tree, nodes_count, tree_to_prog
+    from project.task11 import program_to_tree, nodes_count, tree_to_program
 except ImportError:
     pytestmark = pytest.mark.skip("Task 11 is not ready to test!")
 
@@ -72,10 +72,10 @@ def program(generator, request) -> str:
 
 class TestParser:
     def test_id(self, program: str):
-        tree_before, is_valid = prog_to_tree(program)
+        tree_before, is_valid = program_to_tree(program)
         assert is_valid
-        program_after = tree_to_prog(tree_before)
-        tree_after, is_valid_after = prog_to_tree(program_after)
+        program_after = tree_to_program(tree_before)
+        tree_after, is_valid_after = program_to_tree(program_after)
         assert is_valid_after
         assert nodes_count(tree_before) == nodes_count(tree_after)
 
@@ -83,5 +83,5 @@ class TestParser:
         reg = re.compile("[=,]", re.X)
         if reg.search(program):
             program_bad = reg.sub("", program)
-            _, is_valid_bad = prog_to_tree(program_bad)
+            _, is_valid_bad = program_to_tree(program_bad)
             assert not is_valid_bad
