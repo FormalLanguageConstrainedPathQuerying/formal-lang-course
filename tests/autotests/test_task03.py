@@ -44,3 +44,12 @@ class TestAdjacencyMatrixFAIntersection:
         word = map(lambda x: x.value, word_parts)
 
         assert intersect_fa.accepts(word)
+
+
+def test_tensor_based_rpq_exists():
+    try:
+        import project.task3
+
+        assert "tensor_based_rpq" in dir(project.task3)
+    except NameError:
+        assert False
