@@ -10,9 +10,9 @@ from helper import generate_rnd_start_and_final, rpq_dict_to_set
 
 # Fix import statements in try block to run tests
 try:
-    from project.task4 import reachability_with_constraints
+    from project.task4 import ms_bfs_based_rpq
     from project.task2 import regex_to_dfa, graph_to_nfa
-    from project.task3 import paths_ends, FiniteAutomaton
+    from project.task3 import tensor_based_rpq, AdjacencyMatrixFA
 except ImportError:
     pytestmark = pytest.mark.skip("Task 4 is not ready to test!")
 
@@ -25,14 +25,14 @@ def query(request) -> str:
 class TestReachability:
     def test(self, graph, query) -> None:
         start_nodes, final_nodes = generate_rnd_start_and_final(graph.copy())
-        fa = FiniteAutomaton(
+        fa = AdjacencyMatrixFA(
             graph_to_nfa(deepcopy(graph), deepcopy(start_nodes), deepcopy(final_nodes))
         )
-        constraint_fa = FiniteAutomaton(regex_to_dfa(query))
+        constraint_fa = AdjacencyMatrixFA(regex_to_dfa(query))
         reachable = rpq_dict_to_set(
-            reachability_with_constraints(deepcopy(fa), deepcopy(constraint_fa))
+            ms_bfs_based_rpq(deepcopy(fa), deepcopy(constraint_fa))
         )
-        ends = paths_ends(
+        ends = tensor_based_rpq(
             deepcopy(graph), deepcopy(start_nodes), deepcopy(final_nodes), query
         )
 

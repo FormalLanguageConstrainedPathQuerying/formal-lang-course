@@ -8,7 +8,7 @@ from rpq_template_test import rpq_cfpq_test, different_grammars_test
 
 # Fix import statements in try block to run tests
 try:
-    from project.task6 import cfpq_with_hellings
+    from project.task6 import hellings_based_cfpq
 except ImportError:
     pytestmark = pytest.mark.skip("Task 6 is not ready to test!")
 
@@ -16,11 +16,11 @@ except ImportError:
 class TestReachability:
     @pytest.mark.parametrize("regex_str, cfg_list", REGEXP_CFG)
     def test_rpq_cfpq_hellings(self, graph, regex_str, cfg_list):
-        rpq_cfpq_test(graph, regex_str, cfg_list, cfpq_with_hellings)
+        rpq_cfpq_test(graph, regex_str, cfg_list, hellings_based_cfpq)
 
     @pytest.mark.parametrize("eq_grammars", GRAMMARS)
     def test_different_grammars_hellings(self, graph, eq_grammars):
-        different_grammars_test(graph, eq_grammars, cfpq_with_hellings)
+        different_grammars_test(graph, eq_grammars, hellings_based_cfpq)
 
 
 def test_cfg_to_weak_normal_form_exists():
