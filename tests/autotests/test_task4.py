@@ -10,9 +10,9 @@ from helper import generate_rnd_start_and_final, rpq_dict_to_set
 
 # Fix import statements in try block to run tests
 try:
-    from project.task4 import ms_bfs_based_rpq
     from project.task2 import regex_to_dfa, graph_to_nfa
     from project.task3 import tensor_based_rpq, AdjacencyMatrixFA
+    from project.task4 import ms_bfs_based_rpq
 except ImportError:
     pytestmark = pytest.mark.skip("Task 4 is not ready to test!")
 
@@ -22,7 +22,7 @@ def query(request) -> str:
     return random.choice(REGEXES)
 
 
-class TestReachability:
+class TestRPQ:
     def test(self, graph, query) -> None:
         start_nodes, final_nodes = generate_rnd_start_and_final(graph.copy())
         fa = AdjacencyMatrixFA(

@@ -11,13 +11,13 @@ from grammars_constants import REGEXES
 
 # Fix import statements in try block to run tests
 try:
-    from project.task3 import intersect_automata, AdjacencyMatrixFA
     from project.task2 import regex_to_dfa
+    from project.task3 import intersect_automata, AdjacencyMatrixFA
 except ImportError:
     pytestmark = pytest.mark.skip("Task 3 is not ready to test!")
 
 
-class TestIntersect:
+class TestAdjacencyMatrixFAIntersection:
     @pytest.mark.parametrize(
         "regex_str1, regex_str2", itertools.combinations(REGEXES, 2)
     )

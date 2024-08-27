@@ -10,13 +10,13 @@ from rpq_template_test import rpq_cfpq_test, different_grammars_test
 
 # Fix import statements in try block to run tests
 try:
-    from project.task7 import matrix_based_cfpq
     from project.task6 import hellings_based_cfpq
+    from project.task7 import matrix_based_cfpq
 except ImportError:
     pytestmark = pytest.mark.skip("Task 7 is not ready to test!")
 
 
-class TestReachabilityMatrixAlgorithm:
+class TestMatrixBasedCFPQ:
     @pytest.mark.parametrize("regex_str, cfg_list", REGEXP_CFG)
     def test_rpq_cfpq_matrix(self, graph, regex_str, cfg_list) -> None:
         rpq_cfpq_test(graph, regex_str, cfg_list, matrix_based_cfpq)
