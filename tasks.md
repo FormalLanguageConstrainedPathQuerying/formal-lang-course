@@ -57,8 +57,8 @@
 
 Полный балл: 5
 
-- [ ] Реализовать тип (FiniteAutomaton), представляющий конечный автомат в виде разреженной матрицы смежности из [sciPy](https://docs.scipy.org/doc/scipy/reference/sparse.html) (или сразу её булевой декомпозиции) и информации о стартовых и финальных вершинах. У типа должны быть конструкторы от ```DeterministicFiniteAutomaton``` и ```NondeterministicFiniteAutomaton``` из [Задачи 2](#задача-2-построение-детерминированного-конечного-автомата-по-регулярному-выражению-и-недетерминированного-конечного-автомата-по-графу).
-- [ ] Реализовать функцию-интерпретатор для типа ```FiniteAutomaton```, выясняющую, принимает ли автомат заданную строку и является ли язык, задающийся автоматом, пустым. Для реализации последней функции рекомендуется использовать транзитивное замыкание матрицы смежности.
+- [ ] Реализовать тип (`AdjacencyMatrixFA`), представляющий конечный автомат в виде разреженной матрицы смежности из [sciPy](https://docs.scipy.org/doc/scipy/reference/sparse.html) (или сразу её булевой декомпозиции) и информации о стартовых и финальных вершинах. У типа должны быть конструкторы от `DeterministicFiniteAutomaton` и `NondeterministicFiniteAutomaton` из [Задачи 2](#задача-2-построение-детерминированного-конечного-автомата-по-регулярному-выражению-и-недетерминированного-конечного-автомата-по-графу).
+- [ ] Реализовать функцию-интерпретатор для типа `AdjacencyMatrixFA`, выясняющую, принимает ли автомат заданную строку и является ли язык, задающийся автоматом, пустым. Для реализации последней функции рекомендуется использовать транзитивное замыкание матрицы смежности.
   - Требуемые функции:
      ```python
     def accepts(self, word: Iterable[Symbol]) -> bool:
@@ -69,14 +69,14 @@
 - [ ] Используя [разреженные матрицы из sciPy](https://docs.scipy.org/doc/scipy/reference/sparse.html) реализовать **функцию** пересечения двух конечных автоматов через тензорное произведение.
   - Требуемая функция:
      ```python
-    def intersect_automata(automaton1: FiniteAutomaton,
-             automaton2: FiniteAutomaton) -> FiniteAutomaton:
+    def intersect_automata(automaton1: AdjacencyMatrixFA,
+             automaton2: AdjacencyMatrixFA) -> AdjacencyMatrixFA:
         pass
     ```
 - [ ] На основе предыдущей функции реализовать **функцию** выполнения регулярных запросов к графам: по графу с заданными стартовыми и финальными вершинами и регулярному выражению вернуть те пары вершин из заданных стартовых и финальных, которые связанны путём, формирующем слово из языка, задаваемого регулярным выражением.
   - Требуемая функция:
      ```python
-    def paths_ends(graph: MultiDiGraph, start_nodes: set[int],
+    def tensor_based_rpq(graph: MultiDiGraph, start_nodes: set[int],
            final_nodes: set[int], regex:str) -> list[tuple[NodeView, NodeView]]:
         pass
     ```
@@ -93,8 +93,8 @@
   - Для каждой из стартовых вывести множество достижимых из неё.
   - Требуемая функция:
   ```python
-  def reachability_with_constraints(fa: FiniteAutomaton,
-                           constraints_fa: FiniteAutomaton) -> dict[int, set[int]]:
+  def ms_bfs_based_rpq(fa: AdjacencyMatrixFA,
+                           constraints_fa: AdjacencyMatrixFA) -> dict[int, set[int]]:
     pass
   ```
 - [ ] Добавить собственные тесты при необходимости.
@@ -168,7 +168,7 @@
 - [ ] Реализовать **функцию**, основанную на алгоритме Хеллингса, решающую задачу достижимости между всеми парами вершин для заданного графа и заданной КС грамматики (не обязательно в ОНФХ).
   - Для работы с графом использовать функции из предыдущих задач.
   ```python
-  def cfpq_with_hellings(
+  def hellings_based_cfpq(
     cfg: pyformlang.cfg.CFG,
     graph: nx.DiGraph,
     start_nodes: set[int] = None,
@@ -186,7 +186,7 @@
   - Для преобразования грамматики в ОНФХ использовать результаты предыдущих работ.
   - Для реализации матричных операций использовать [sciPy](https://docs.scipy.org/doc/scipy/reference/sparse.html).
     ```python
-    def cfpq_with_matrix(
+    def matrix_based_cfpq(
         cfg: pyformlang.cfg.CFG,
         graph: nx.DiGraph,
         start_nodes: Set[int] = None,
@@ -205,7 +205,7 @@
   - Для реализации матричных операций использовать [sciPy](https://docs.scipy.org/doc/scipy/reference/sparse.html).
   - Необходимые функции:
   ```python
-  def cfpq_with_tensor(
+  def tensor_based_cfpq(
     rsm: pyformlang.rsa.RecursiveAutomaton,
     graph: nx.DiGraph,
     final_nodes: set[int] = None,
@@ -231,7 +231,7 @@
   - Для работы с графами и RSM использовать функции из предыдущих задач.
   - Требуемая функция:
   ```python
-  def cfpq_with_gll(
+  def gll_based_cfpq(
         rsm: pyformlang.rsa.RecursiveAutomaton,
         graph: nx.DiGraph,
         start_nodes: set[int] = None,
@@ -487,13 +487,13 @@ _____________________________________
 Требуемые функции:
 ```python
 # Второе поле показывает корректна ли строка (True, если корректна)
-def prog_to_tree(program: str) -> tuple[ParserRuleContext, bool]:
+def program_to_tree(program: str) -> tuple[ParserRuleContext, bool]:
     pass
 
 def nodes_count(tree: ParserRuleContext) -> int:
     pass
 
-def tree_to_prog(tree: ParserRuleContext) -> str:
+def tree_to_program(tree: ParserRuleContext) -> str:
     pass
 ```
 
