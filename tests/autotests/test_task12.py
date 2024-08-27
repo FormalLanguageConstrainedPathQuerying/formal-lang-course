@@ -32,6 +32,8 @@ class TestTypeInference:
     def test_ill_typed(self, program: str) -> None:
         assert not typing_program(program)
 
+
+class TestProgramInterpreter:
     @pytest.mark.parametrize("grammar", GRAMMARS_DIFFERENT)
     def test_exec_simple(self, graph: MultiDiGraph, grammar: CFG):
         start_nodes, final_nodes = generate_rnd_start_and_final(graph)

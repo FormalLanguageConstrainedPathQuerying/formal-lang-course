@@ -13,7 +13,7 @@ except ImportError:
     pytestmark = pytest.mark.skip("Task 6 is not ready to test!")
 
 
-class TestReachability:
+class TestHellingBasedCFPQ:
     @pytest.mark.parametrize("regex_str, cfg_list", REGEXP_CFG)
     def test_rpq_cfpq_hellings(self, graph, regex_str, cfg_list):
         rpq_cfpq_test(graph, regex_str, cfg_list, hellings_based_cfpq)
