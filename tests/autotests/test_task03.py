@@ -8,11 +8,12 @@ import pytest
 import random
 import itertools
 from grammars_constants import REGEXES
+from rpq_concrete_cases import CASES_RPQ, CaseRPQ
 
 # Fix import statements in try block to run tests
 try:
     from project.task2 import regex_to_dfa
-    from project.task3 import intersect_automata, AdjacencyMatrixFA
+    from project.task3 import intersect_automata, AdjacencyMatrixFA, tensor_based_rpq
 except ImportError:
     pytestmark = pytest.mark.skip("Task 3 is not ready to test!")
 
@@ -38,7 +39,7 @@ class TestAdjacencyMatrixFAIntersection:
                 return
             word_parts = random.choice(all_word_parts)
         else:
-            index = random.randint(0, 2**9)
+            index = random.randint(0, 2 ** 9)
             word_parts = next(itertools.islice(words, index, None))
 
         word = map(lambda x: x.value, word_parts)
@@ -46,10 +47,7 @@ class TestAdjacencyMatrixFAIntersection:
         assert intersect_fa.accepts(word)
 
 
-def test_tensor_based_rpq_exists():
-    try:
-        import project.task3
-
-        assert "tensor_based_rpq" in dir(project.task3)
-    except NameError:
-        assert False
+class TestTensorBasedRPQ:
+    @pytest.mark.parametrize('case', CASES_RPQ)
+    def test_concrete_cases(self, case: CaseRPQ):
+        case.check_answer_regex(tensor_based_rpq)

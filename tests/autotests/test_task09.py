@@ -11,7 +11,7 @@ from rpq_template_test import (
     different_grammars_test,
     cfpq_algorithm_test,
 )
-from cfpq_concrete_cases import TestCaseCFPQ, CASES_CFPQ
+from cfpq_concrete_cases import CaseCFPQ, CASES_CFPQ
 
 # Fix import statements in try block to run tests
 try:
@@ -25,7 +25,7 @@ except ImportError:
 
 class TestGLLBasedCFPQ:
     @pytest.mark.parametrize("case", CASES_CFPQ)
-    def test_concrete_cases(self, case: TestCaseCFPQ):
+    def test_concrete_cases(self, case: CaseCFPQ):
         case.check_answer_rsm(gll_based_cfpq, cfg_to_rsm)
 
     @pytest.mark.parametrize("regex_str, cfg_list", REGEXP_CFG)

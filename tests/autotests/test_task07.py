@@ -7,7 +7,7 @@ import pytest
 from grammars_constants import REGEXP_CFG, GRAMMARS, GRAMMARS_DIFFERENT
 from helper import generate_rnd_start_and_final
 from rpq_template_test import rpq_cfpq_test, different_grammars_test
-from cfpq_concrete_cases import CASES_CFPQ, TestCaseCFPQ
+from cfpq_concrete_cases import CASES_CFPQ, CaseCFPQ
 
 # Fix import statements in try block to run tests
 try:
@@ -19,7 +19,7 @@ except ImportError:
 
 class TestMatrixBasedCFPQ:
     @pytest.mark.parametrize("case", CASES_CFPQ)
-    def test_concrete_cases(self, case: TestCaseCFPQ):
+    def test_concrete_cases(self, case: CaseCFPQ):
         case.check_answer_cfg(matrix_based_cfpq)
 
     @pytest.mark.parametrize("regex_str, cfg_list", REGEXP_CFG)

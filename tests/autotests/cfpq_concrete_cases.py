@@ -5,9 +5,9 @@ from graphs import *
 from pyformlang.rsa import RecursiveAutomaton
 
 
-class TestCaseCFPQ:
+class CaseCFPQ:
     """
-    class that contains all information about test case
+    class that contains all information about test case for cfpq algorithms
     """
 
     def __init__(self, graph: MultiDiGraph, query: CFG, actual_answer: set[tuple[int, int]],
@@ -23,8 +23,8 @@ class TestCaseCFPQ:
         set[tuple[int, int]],
     ]):
         """
-        assertion function to algorithms with cfg
-        :param function: testing function (*hellings_based_cfpq* or *matrix_based_cfpq*)
+        assertion function for algorithms with cfg
+        :param function: the function under test (*hellings_based_cfpq* or *matrix_based_cfpq*)
         :return: assertion
         """
         actual_res = function(self.query, self.graph, self.start_nodes, self.final_nodes)
@@ -34,8 +34,8 @@ class TestCaseCFPQ:
         [RecursiveAutomaton, MultiDiGraph, set[int], set[int]], set[tuple[int, int]]
     ], cfg_to_rsm: Callable[[CFG], RecursiveAutomaton]):
         """
-        assertion function to algorithms with rsm
-        :param function: testing function (*tensor_based_cfpq* or *gll_based_cfpq*)
+        assertion function for algorithms with rsm
+        :param function: the function under test (*tensor_based_cfpq* or *gll_based_cfpq*)
         :param cfg_to_rsm: function that convert CFG to RecursiveAutomaton
         :return: assertion
         """
@@ -49,62 +49,62 @@ class TestCaseCFPQ:
 
 
 CASES_CFPQ = [
-    TestCaseCFPQ(
+    CaseCFPQ(
         point_graph,
         CFG.from_text("S -> a"),
         set()
     ),
-    TestCaseCFPQ(
+    CaseCFPQ(
         point_graph,
         CFG.from_text("S -> S a | $"),
         {(1, 1)}
     ),
-    TestCaseCFPQ(
+    CaseCFPQ(
         set_of_vertices_without_edges,
         CFG.from_text("S -> S a | $"),
         {(0, 0), (2, 2), (1, 1)}
     ),
-    TestCaseCFPQ(
+    CaseCFPQ(
         b_graph,
         CFG.from_text("S -> a"),
         set()
     ),
-    TestCaseCFPQ(
+    CaseCFPQ(
         b_graph,
         CFG.from_text("S -> b"),
         {(0, 1)}
     ),
-    TestCaseCFPQ(
+    CaseCFPQ(
         b_graph,
         CFG.from_text("S -> S b | $"),
         {(0, 1), (0, 0), (1, 1)}
     ),
-    TestCaseCFPQ(
+    CaseCFPQ(
         bbb_graph,
         CFG.from_text("S -> S b b | $"),
         {(0, 1), (0, 0), (0, 2), (1, 1), (1, 2), (1, 0), (2, 2), (2, 1), (2, 0)}
     ),
-    TestCaseCFPQ(
+    CaseCFPQ(
         bab_graph,
         CFG.from_text("S -> S a | S b | $"),
         {(0, 1), (0, 0), (0, 2), (1, 1), (1, 2), (1, 0), (2, 2), (2, 1), (2, 0)}
     ),
-    TestCaseCFPQ(
+    CaseCFPQ(
         baa_graph,
         CFG.from_text("S -> a S b | $"),
         {(0, 0), (1, 1), (1, 0)}
     ),
-    TestCaseCFPQ(
+    CaseCFPQ(
         baa_graph,
         CFG.from_text("S -> a S b | a b"),
         {(0, 0), (1, 0)}
     ),
-    TestCaseCFPQ(
+    CaseCFPQ(
         set_of_vertices_without_edges,
         CFG.from_text("S -> $"),
         {(0, 0), (2, 2), (1, 1)}
     ),
-    TestCaseCFPQ(
+    CaseCFPQ(
         aaa_graph,
         CFG.from_text("S -> a | S S"),
         {(0, 1), (0, 0), (0, 2), (1, 1), (1, 2), (1, 0), (2, 2), (2, 1), (2, 0)}
