@@ -24,9 +24,11 @@ def query(request) -> str:
 
 
 class TestRPQ:
-    @pytest.mark.parametrize('case', CASES_RPQ)
+    @pytest.mark.parametrize("case", CASES_RPQ)
     def test_concrete_cases(self, case: CaseRPQ):
-        fa = AdjacencyMatrixFA(graph_to_nfa(case.graph, case.start_nodes, case.final_nodes))
+        fa = AdjacencyMatrixFA(
+            graph_to_nfa(case.graph, case.start_nodes, case.final_nodes)
+        )
         constraint_fa = AdjacencyMatrixFA(regex_to_dfa(case.regex))
         case.check_answer_automata(ms_bfs_based_rpq, fa, constraint_fa)
 

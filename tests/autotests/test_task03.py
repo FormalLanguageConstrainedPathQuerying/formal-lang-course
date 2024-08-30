@@ -39,7 +39,7 @@ class TestAdjacencyMatrixFAIntersection:
                 return
             word_parts = random.choice(all_word_parts)
         else:
-            index = random.randint(0, 2 ** 9)
+            index = random.randint(0, 2**9)
             word_parts = next(itertools.islice(words, index, None))
 
         word = map(lambda x: x.value, word_parts)
@@ -48,6 +48,6 @@ class TestAdjacencyMatrixFAIntersection:
 
 
 class TestTensorBasedRPQ:
-    @pytest.mark.parametrize('case', CASES_RPQ)
+    @pytest.mark.parametrize("case", CASES_RPQ)
     def test_concrete_cases(self, case: CaseRPQ):
         case.check_answer_regex(tensor_based_rpq)
