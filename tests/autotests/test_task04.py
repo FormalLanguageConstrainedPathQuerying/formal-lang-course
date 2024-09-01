@@ -7,6 +7,7 @@ from copy import deepcopy
 import pytest
 from grammars_constants import REGEXES
 from helper import generate_rnd_start_and_final, rpq_dict_to_set
+from rpq_concrete_cases import CASES_RPQ, CaseRPQ
 
 # Fix import statements in try block to run tests
 try:
@@ -23,6 +24,14 @@ def query(request) -> str:
 
 
 class TestRPQ:
+    @pytest.mark.parametrize("case", CASES_RPQ)
+    def test_concrete_cases(self, case: CaseRPQ):
+        fa = AdjacencyMatrixFA(
+            graph_to_nfa(case.graph, case.start_nodes, case.final_nodes)
+        )
+        constraint_fa = AdjacencyMatrixFA(regex_to_dfa(case.regex))
+        case.check_answer_automata(ms_bfs_based_rpq, fa, constraint_fa)
+
     def test(self, graph, query) -> None:
         start_nodes, final_nodes = generate_rnd_start_and_final(graph.copy())
         fa = AdjacencyMatrixFA(

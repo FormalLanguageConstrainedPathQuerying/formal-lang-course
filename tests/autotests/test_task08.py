@@ -11,6 +11,7 @@ from rpq_template_test import (
     different_grammars_test,
     cfpq_algorithm_test,
 )
+from cfpq_concrete_cases import CASES_CFPQ, CaseCFPQ
 
 # Fix import statements in try block to run tests
 try:
@@ -22,6 +23,10 @@ except ImportError:
 
 
 class TestTensorBasedCFPQ:
+    @pytest.mark.parametrize("case", CASES_CFPQ)
+    def test_concrete_cases(self, case: CaseCFPQ):
+        case.check_answer_rsm(tensor_based_cfpq, cfg_to_rsm)
+
     @pytest.mark.parametrize("regex_str, cfg_list", REGEXP_CFG)
     def test_rpq_cfpq_tensor(self, graph, regex_str, cfg_list) -> None:
         cfg_list_rsm = [cfg_to_rsm(grammar) for grammar in cfg_list]
