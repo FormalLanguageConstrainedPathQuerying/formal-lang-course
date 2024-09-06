@@ -25,12 +25,9 @@ class Graph:
                              label: Tuple[str, str],
                              path: str) -> None:
         graph = cfpq_data.labeled_two_cycles_graph(n=count_of_nodes, m=count_of_edges, labels=label)
-        Graph.save_graph(graph, path)
+        Graph.save_graph_dot(graph, path)
 
     @staticmethod
-    def save_graph(graph: nx.MultiDiGraph, path: str) -> None:
+    def save_graph_dot(graph: nx.MultiDiGraph, path: str) -> None:
         grph = nx_pydot.to_pydot(graph)
         grph.write(path)
-
-
-Graph.create_labeled_graph(5, 12, ("11", "12"), "../tests/test_create_graph_expected.dot")

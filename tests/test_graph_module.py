@@ -1,4 +1,6 @@
 import os
+
+import cfpq_data
 import pytest
 from networkx.drawing import nx_pydot
 
@@ -23,10 +25,8 @@ class TestGraph:
                              'inverseOf', 'versionInfo', 'minCardinality', 'oneOf'])
         assert Graph.graph_info("pizza") == graph_info_pizza
 
-    def test_graph_create(self):
+    def test_create_labeled_graph(self):
         path_to_file: str = "test_create.dot"
         Graph.create_labeled_graph(5, 12, ("11", "12"), path_to_file)
-        graph = nx_pydot.read_dot(path_to_file)
+        assert (open(path_to_file, "r").read() == open("test_create_graph_expected.dot", "r").read())
         os.remove(path_to_file)
-        expected_graph = nx_pydot.read_dot("test_create_graph_expected.dot")
-        assert graph.graph == expected_graph.graph
