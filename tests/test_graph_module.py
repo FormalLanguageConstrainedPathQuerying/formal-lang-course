@@ -1,8 +1,6 @@
 import os
 
-import cfpq_data
 import pytest
-from networkx.drawing import nx_pydot
 
 from project.graph_module import Graph
 
