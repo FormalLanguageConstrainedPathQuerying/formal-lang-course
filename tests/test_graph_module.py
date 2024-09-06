@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import pytest
 
@@ -50,7 +51,7 @@ class TestGraph:
         path_to_file: str = "test_create.dot"
         Graph.create_labeled_graph(5, 12, ("11", "12"), path_to_file)
         assert (
-            open(path_to_file, "r").read()
-            == open("test_create_graph_expected.dot", "r").read()
+                open(path_to_file, "r").read()
+                == open(Path("tests/test_create_graph_expected.dot"), "r").read()
         )
         os.remove(path_to_file)
