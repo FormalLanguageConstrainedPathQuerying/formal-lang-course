@@ -28,6 +28,9 @@ class TestGraphUtils:
         graph_utils.create_two_cycles_graph_and_write_to_dot(*graph_info, graph_path)
         assert (
             open(graph_path, "r").read()
-            == open(os.path.join(root_dir, 'test_graphs/test_write_file_is_correct.dot'), "r").read()
+            == open(
+                os.path.join(root_dir, "test_graphs/test_write_file_is_correct.dot"),
+                "r",
+            ).read()
         )
         os.remove(graph_path)
