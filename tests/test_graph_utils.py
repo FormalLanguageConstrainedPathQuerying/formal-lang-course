@@ -22,11 +22,12 @@ class TestGraphUtils:
         os.remove(file_name)
 
     def test_write_file_is_correct(self):
+        root_dir = os.path.dirname(os.path.abspath(__file__))
         graph_path = "52.dot"
         graph_info = (52, 52, ("5", "2"))
         graph_utils.create_two_cycles_graph_and_write_to_dot(*graph_info, graph_path)
         assert (
             open(graph_path, "r").read()
-            == open("test_graphs/test_write_file_is_correct.dot", "r").read()
+            == open(os.path.join(root_dir, 'test_graphs/test_write_file_is_correct.dot'), "r").read()
         )
         os.remove(graph_path)
