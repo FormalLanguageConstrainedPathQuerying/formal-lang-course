@@ -4,7 +4,6 @@ from project import graph_utils
 
 
 class TestGraphUtils:
-
     def test_info_file_not_found(self):
         with pytest.raises(FileNotFoundError):
             graph_utils.get_info_from_graph_name("no_such_file")
@@ -26,5 +25,8 @@ class TestGraphUtils:
         graph_path = "52.dot"
         graph_info = (52, 52, ("5", "2"))
         graph_utils.create_two_cycles_graph_and_write_to_dot(*graph_info, graph_path)
-        assert open(graph_path, "r").read() == open("test_graphs/test_write_file_is_correct.dot", "r").read()
+        assert (
+            open(graph_path, "r").read()
+            == open("test_graphs/test_write_file_is_correct.dot", "r").read()
+        )
         os.remove(graph_path)
