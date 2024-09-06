@@ -17,12 +17,14 @@ class TestGraphUtils:
 
     def test_write_file_exists(self):
         file_name = "52.dot"
-        graph_utils.create_two_cycles_graph_and_write_to_dot(52, 52, ("5", "2"), file_name)
+        graph_info = (52, 52, ("5", "2"))
+        graph_utils.create_two_cycles_graph_and_write_to_dot(*graph_info, file_name)
         assert os.path.isfile(file_name)
         os.remove(file_name)
 
     def test_write_file_is_correct(self):
         graph_path = "52.dot"
-        graph_utils.create_two_cycles_graph_and_write_to_dot(5, 2, ("5", "2"), graph_path)
+        graph_info = (52, 52, ("5", "2"))
+        graph_utils.create_two_cycles_graph_and_write_to_dot(*graph_info, graph_path)
         assert open(graph_path, "r").read() == open("test_graphs/test_write_file_is_correct.dot", "r").read()
         os.remove(graph_path)
