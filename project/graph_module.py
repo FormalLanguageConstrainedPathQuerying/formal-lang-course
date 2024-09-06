@@ -17,14 +17,19 @@ class Graph:
     @staticmethod
     def graph_info(name: str):
         graph = Graph.load_graph(name)
-        return graph.number_of_nodes(), graph.number_of_edges(), cfpq_data.get_sorted_labels(graph)
+        return (
+            graph.number_of_nodes(),
+            graph.number_of_edges(),
+            cfpq_data.get_sorted_labels(graph),
+        )
 
     @staticmethod
-    def create_labeled_graph(count_of_nodes: int,
-                             count_of_edges: int,
-                             label: Tuple[str, str],
-                             path: str) -> None:
-        graph = cfpq_data.labeled_two_cycles_graph(n=count_of_nodes, m=count_of_edges, labels=label)
+    def create_labeled_graph(
+        count_of_nodes: int, count_of_edges: int, label: Tuple[str, str], path: str
+    ) -> None:
+        graph = cfpq_data.labeled_two_cycles_graph(
+            n=count_of_nodes, m=count_of_edges, labels=label
+        )
         Graph.save_graph_dot(graph, path)
 
     @staticmethod
