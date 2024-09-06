@@ -1,0 +1,19 @@
+digraph  {
+1;
+2;
+3;
+4;
+5;
+0;
+6;
+7;
+1 -> 2 [key=0, label=5];
+2 -> 3 [key=0, label=5];
+3 -> 4 [key=0, label=5];
+4 -> 5 [key=0, label=5];
+5 -> 0 [key=0, label=5];
+0 -> 1 [key=0, label=5];
+0 -> 6 [key=0, label=2];
+6 -> 7 [key=0, label=2];
+7 -> 0 [key=0, label=2];
+}
