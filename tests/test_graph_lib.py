@@ -40,5 +40,5 @@ def test_create_labeled_two_cycles_graph():
     graph_lib.create_labeled_two_cycles_graph(
         [0, 1, 2, 3, 4, 5], [5, 6, 7], 5, ("fst", "snd"), "test_graph.dot"
     )
-    assert filecmp.cmp("expected_graph.dot", "test_graph.dot", shallow=False)
+    assert filecmp.cmp("test_files/expected_graph.dot", "test_graph.dot", shallow=False)
     os.remove("test_graph.dot")
