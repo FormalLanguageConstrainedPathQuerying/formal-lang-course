@@ -11,7 +11,6 @@ from rpq_concrete_cases import CASES_RPQ, CaseRPQ
 
 # Fix import statements in try block to run tests
 try:
-    # from project.task2 import regex_to_dfa, graph_to_nfa
     from project.task3 import tensor_based_rpq
     from project.task4 import ms_bfs_based_rpq
 except ImportError:
