@@ -41,14 +41,6 @@ def generate_rnd_start_and_final(graph: nx.MultiDiGraph) -> tuple[set[int], set[
     return start_nodes, final_nodes
 
 
-def rpq_dict_to_set(rpq: dict[int, set[int]]) -> set[tuple[int, int]]:
-    rpq_set = set()
-    for node_from, nodes_to in rpq.items():
-        for node_to in nodes_to:
-            rpq_set.add((node_from, node_to))
-    return rpq_set
-
-
 class GraphWordsHelper:
     graph = None
     final_nodes = None
