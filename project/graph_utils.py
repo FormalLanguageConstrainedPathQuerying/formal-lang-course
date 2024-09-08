@@ -43,3 +43,33 @@ def load_graph_properties_by_name(name: str) -> GraphProperties:
     labels = set(cfpq_data.get_sorted_labels(graph))
 
     return GraphProperties(node_count=node_count, edge_count=edge_count, labels=labels)
+
+
+def make_labeled_two_cycles(
+    first_cycle_size: int,
+    second_cycle_size: int,
+    labels: tuple[str, str],
+    dot_file_path: Path,
+) -> None:
+    """
+    Creates a labeled graph composed of two cycles and saves it to a DOT file.
+
+    Args:
+        first_cycle_size (int): The number of nodes in the first cycle.
+        second_cycle_size (int): The number of nodes in the second cycle.
+        labels (tuple[str, str]): A tuple containing two labels for the edges in the cycles.
+        dot_file_path (Path): The path where the DOT file will be saved.
+
+    Returns:
+        None
+
+    Example:
+        make_labeled_two_cycles(3, 4, ("label1", "label2"), Path("output.dot"))
+    """
+    graph = cfpq_data.labeled_two_cycles_graph(
+        n=first_cycle_size, m=second_cycle_size, labels=labels
+    )
+    data = nx.drawing.nx_pydot.to_pydot(graph).to_string()
+
+    with open(dot_file_path, "w") as f:
+        f.write(data)
