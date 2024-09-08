@@ -16,7 +16,9 @@ class TestGraphUtils:
     def test_writing_to_file(self):
         file_name = "graph.dot"
         graph_info = (12, 65, ("a", "b"))
-        task1_graph.create_labeled_two_cycles_graph(graph_info[0], graph_info[1], graph_info[2], file_name)
+        task1_graph.create_labeled_two_cycles_graph(
+            graph_info[0], graph_info[1], graph_info[2], file_name
+        )
 
         file_path = Path(file_name)
         assert file_path.is_file()
