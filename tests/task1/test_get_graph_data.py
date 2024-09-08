@@ -1,6 +1,4 @@
-import pytest
 from project.grapher import GraphData
-import cfpq_data as cfpq
 
 
 def test_get_graph_data():

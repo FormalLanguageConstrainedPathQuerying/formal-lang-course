@@ -1,5 +1,4 @@
 from project.grapher import create_graph_with_cycles
-import cfpq_data as cfpq
 from pydot import graph_from_dot_file
 import networkx as nx
 import os
