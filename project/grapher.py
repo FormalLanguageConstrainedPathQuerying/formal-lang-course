@@ -29,7 +29,7 @@ class GraphData:
 # Graph saver
 def save_graph_pydot(path: str, graph: nx.MultiDiGraph):
     pydot_graph = nx.nx_pydot.to_pydot(graph)
-    pydot_graph.write_dot(path)
+    pydot_graph.write_raw(path)
 
 
 # Function 2 from task 1
@@ -42,4 +42,4 @@ def create_graph_with_cycles(path: str, n: int, m: int, labels: Tuple[str, str])
     """
 
     graph = cfpq.labeled_two_cycles_graph(n, m, labels=labels)
-    save_graph_pydot(graph)
+    save_graph_pydot(path, graph)
