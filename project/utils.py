@@ -12,7 +12,7 @@ class Graph:
     edge_labels: Set[str]
 
 
-def load_graph(graph_name: str):
+def load_graph(graph_name: str) -> nx.MultiDiGraph:
     path = cfpq_data.download(graph_name)
     graph = cfpq_data.graph_from_csv(path)
 
@@ -25,20 +25,18 @@ def get_graph(graph_name: str) -> Graph:
     return Graph(
         node_count=graph.number_of_nodes(),
         edge_count=graph.number_of_edges(),
-        edge_labels=set(cfpq_data.get_sorted_labels(graph))
+        edge_labels=set(cfpq_data.get_sorted_labels(graph)),
     )
 
 
 def create_labeled_two_cycles_graph(
-        first_cycle_node_count: int,
-        second_cycle_node_count: int,
-        labels: Tuple[str, str],
-        save_path: str = "",
+    first_cycle_node_count: int,
+    second_cycle_node_count: int,
+    labels: Tuple[str, str],
+    save_path: str = "",
 ) -> nx.MultiDiGraph:
     graph = cfpq_data.labeled_two_cycles_graph(
-        first_cycle_node_count,
-        second_cycle_node_count,
-        labels=labels
+        first_cycle_node_count, second_cycle_node_count, labels=labels
     )
     if save_path:
         save_graph_to_dot(graph, save_path)
