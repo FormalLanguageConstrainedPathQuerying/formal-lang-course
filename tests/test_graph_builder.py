@@ -1,5 +1,4 @@
 import filecmp
-import unittest
 import cfpq_data
 from project.hw1.graph_builder import Graph, load_graph, build_two_cycle_graph
 
@@ -12,11 +11,9 @@ def test_load_graph():
 
     expected_graph = Graph(expected_edges_cnt, expected_nodes_cnt, expected_labels)
     actual = load_graph("travel")
-
-    test_case = unittest.TestCase()
-    test_case.assertEqual(expected_graph, actual)
+    assert expected_graph == actual
 
 
-def test_build_graph(tmp_path):
-    build_two_cycle_graph(2, 2, ("a", "b"), tmp_path / "expected.dot")
-    assert filecmp.cmp("tests/test1.dot", tmp_path / "expected.dot")
+def test_build_graph():
+    build_two_cycle_graph(2, 2, ("a", "b"), "tests/actual.dot")
+    assert filecmp.cmp("tests/actual.dot", "tests/expected.dot")
