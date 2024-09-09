@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import *
 from dataclasses import dataclass
 import cfpq_data
 import networkx as nx
