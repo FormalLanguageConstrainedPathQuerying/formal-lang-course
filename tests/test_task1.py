@@ -23,7 +23,7 @@ def test_get_graph_info_via_name(graph_name: str, graph_info_expected: GraphInfo
     [
         (
             "bzip",
-            "bzip_expected_LTCG.dot",
+            "tests/static/task1/bzip_expected_LTCG.dot",
         )
     ],
 )
