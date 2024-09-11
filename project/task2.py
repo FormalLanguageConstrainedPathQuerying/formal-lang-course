@@ -23,9 +23,9 @@ def graph_to_nfa(
 
     if not start_states:
         start_states = map(int, graph)
-
     if not final_states:
         final_states = map(int, graph)
+
     for state in start_states:
         nfa.add_start_state(State(state))
     for state in final_states:
