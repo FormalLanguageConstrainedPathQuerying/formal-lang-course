@@ -10,6 +10,3 @@ def get_graph_info(name: str):
 def create_two_cycle_graph(n, m, labels, path):
     graph = cfpq_data.labeled_two_cycles_graph(n, m, labels=labels)
     networkx.drawing.nx_pydot.write_dot(graph, path)
-
-# get_graph_info("bzip")
-# create_two_cycle_graph(3, 2, ["a", "b"], "a.dot")
