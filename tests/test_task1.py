@@ -1,11 +1,12 @@
+from typing import Any, Iterable, Tuple
 import networkx as nx
 from networkx.utils.misc import graphs_equal
 import pytest
 
 from project.task1 import (
     GraphInfo,
-    download_and_save_labeled_two_cycles_graph,
     get_graph_info_via_name,
+    save_labeled_two_cycles_graph,
 )
 
 
@@ -19,20 +20,20 @@ def test_get_graph_info_via_name(graph_name: str, graph_info_expected: GraphInfo
 
 
 @pytest.mark.parametrize(
-    "graph_name,path_to_expected_LTCG",
-    [
-        (
-            "bzip",
-            "tests/static/task1/bzip_expected_LTCG.dot",
-        )
-    ],
+    "n,m,labels,path_to_expected_LTCG",
+    [(5, 2, ("a", "b"), "tests/static/task1/5_2_ab.dot")],
 )
 def test_download_and_save_labeled_two_cycles_graph(
-    graph_name: str, path_to_expected_LTCG: str
+    n: int | Iterable[Any],
+    m: int | Iterable[Any],
+    labels: Tuple[str, str],
+    path_to_expected_LTCG: str,
 ):
     PATH_TO_SAVE = "test_download_and_save_labeled_two_cycles_graph.dot"
     try:
-        download_and_save_labeled_two_cycles_graph(graph_name, PATH_TO_SAVE)
+        save_labeled_two_cycles_graph(
+            n=n, m=m, labels=labels, path_to_save=PATH_TO_SAVE
+        )
         LTCG = nx.nx_pydot.read_dot(PATH_TO_SAVE)
         LTCG_expected = nx.nx_pydot.read_dot(path_to_expected_LTCG)
         assert graphs_equal(LTCG, LTCG_expected)

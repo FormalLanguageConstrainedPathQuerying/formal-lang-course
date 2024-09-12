@@ -1,8 +1,7 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Iterable, Tuple
 import cfpq_data
 from cfpq_data.graphs.generators import labeled_two_cycles_graph
-from networkx import MultiDiGraph
 import networkx as nx
 
 
@@ -11,12 +10,6 @@ class GraphInfo:
     node_count: int
     edge_count: int
     edge_labels: list[Any]
-
-    def create_labeled_two_cycles_graph(self) -> MultiDiGraph:
-        G = labeled_two_cycles_graph(
-            self.node_count, self.edge_count, labels=self.edge_labels
-        )
-        return G
 
 
 def get_graph_info_via_name(name: str) -> GraphInfo:
@@ -32,7 +25,11 @@ def get_graph_info_via_name(name: str) -> GraphInfo:
     )
 
 
-def download_and_save_labeled_two_cycles_graph(name: str, path_to_save: str):
-    graph_info = get_graph_info_via_name(name)
-    LTCG = graph_info.create_labeled_two_cycles_graph()
+def save_labeled_two_cycles_graph(
+    n: int | Iterable[Any],
+    m: int | Iterable[Any],
+    labels: Tuple[str, str],
+    path_to_save: str,
+):
+    LTCG = labeled_two_cycles_graph(n=n, m=m, labels=labels)
     nx.drawing.nx_pydot.write_dot(LTCG, path_to_save)
