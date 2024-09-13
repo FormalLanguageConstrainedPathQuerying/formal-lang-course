@@ -10,8 +10,10 @@ class GraphInfo:
     edges_count: int
     edge_labels: set
 
+
 def get_graph_by_name(graph_name: str) -> nx.MultiDiGraph:
     return cfpq_data.graph_from_csv(cfpq_data.download(graph_name))
+
 
 def get_graph_info_by_name(graph_name: str) -> GraphInfo:
     graph = get_graph_by_name(graph_name)
