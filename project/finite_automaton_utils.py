@@ -13,21 +13,22 @@ def regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton:
     return regex.to_epsilon_nfa().to_deterministic().minimize()
 
 
+def get_actual_states(
+    states: Set[int], nfa: NondeterministicFiniteAutomaton
+) -> list[State]:
+    return (
+        [state for state in nfa.states]
+        if len(states) == 0
+        else [State(state) for state in states]
+    )
+
+
 def graph_to_nfa(
-    graph: MultiDiGraph, start_states: Set[int] = None, final_states: Set[int] = None
+    graph: MultiDiGraph, start_states: Set[int], final_states: Set[int]
 ) -> NondeterministicFiniteAutomaton:
     nfa = NondeterministicFiniteAutomaton().from_networkx(graph)
-    for state in (
-        [state for state in nfa.states]
-        if start_states is None
-        else [State(state) for state in start_states]
-    ):
+    for state in get_actual_states(start_states, nfa):
         nfa.add_start_state(state)
-    for state in (
-        [state for state in nfa.states]
-        if final_states is None
-        else [State(state) for state in start_states]
-    ):
+    for state in get_actual_states(final_states, nfa):
         nfa.add_final_state(state)
-
     return nfa
