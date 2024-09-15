@@ -14,6 +14,7 @@
 - Классика по алгоритмам синтаксического анализа: [Dick Grune, Ceriel J. H. Jacobs, "Parsing Techniques A Practical Guide"](https://link.springer.com/book/10.1007/978-0-387-68954-8#bibliographic-information)
 - Классика по теории формальных языков: [M. A. Harrison. 1978. "Introduction to Formal Language Theory"](https://dl.acm.org/doi/book/10.5555/578595)
 - Свежее по теории автоматов и их применению в различных областях: [Editors: Jean-Éric Pin. 2021. "Handbook of Automata Theory"](https://ems.press/books/standalone/172)
+- [Инструмент для конструирования и симуляции различных распознователей](https://github.com/spbu-se/KotlinAutomataConstructor)
 
 Технологии:
 - Python 3.12
@@ -165,7 +166,7 @@
 К вашим собственным тестам применяются следующие правила:
 - Тесты для домашних заданий размещайте в папке `tests`.
 - Формат именования файлов с тестами `test_[какой модуль\класс\функцию тестирует].py`.
-- Для работы с тестами рекомендуется использовать [`pytest`](https://docs.pytest.org/en/6.2.x/).
+- Для работы с тестами использовать [`pytest`](https://docs.pytest.org/en/6.2.x/).
 - Для запуска тестов необходимо из корня проекта выполнить следующую команду:
   ```shell
   python ./scripts/run_tests.py
