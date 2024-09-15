@@ -2,7 +2,6 @@ from networkx import MultiDiGraph
 from pyformlang.finite_automaton import (
     DeterministicFiniteAutomaton,
     NondeterministicFiniteAutomaton,
-    EpsilonNFA,
     State,
 )
 from pyformlang.regular_expression import Regex
@@ -23,8 +22,7 @@ def graph_to_nfa(
     nodes = graph.nodes
 
     # https://pyformlang.readthedocs.io/en/latest/modules/finite_automaton.html#pyformlang.finite_automaton.FiniteAutomaton.from_networkx
-    enfa = EpsilonNFA.from_networkx(graph)
-    nfa = enfa.remove_epsilon_transitions()
+    nfa = NondeterministicFiniteAutomaton.from_networkx(graph)
 
     if start_states:
         nfa.add_start_state(State(i) for i in start_states)
