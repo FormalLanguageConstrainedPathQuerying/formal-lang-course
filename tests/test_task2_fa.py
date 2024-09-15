@@ -19,3 +19,4 @@ class TestRegexToDfa:
         assert dfa.accepts([Symbol("abc")])
         assert dfa.accepts([Symbol("d")])
         assert not dfa.accepts([Symbol("b")])
+        assert not dfa.accepts("")
