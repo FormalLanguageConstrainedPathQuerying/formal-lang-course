@@ -9,7 +9,7 @@ from dataclasses import dataclass
 class Graph:
     edges_cnt: int
     nodes_cnt: int
-    labels: list
+    labels: set
 
 
 def load_graph(graph_name: str):
@@ -17,7 +17,7 @@ def load_graph(graph_name: str):
     graph = cfpq_data.graph_from_csv(path)
     edges_cnt = graph.number_of_edges()
     nodes_cnt = graph.number_of_nodes()
-    labels = cfpq_data.get_sorted_labels(graph)
+    labels = set(cfpq_data.get_sorted_labels(graph))
     return Graph(edges_cnt, nodes_cnt, labels)
 
 
