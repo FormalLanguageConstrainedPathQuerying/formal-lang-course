@@ -2,7 +2,7 @@ import os
 import random
 
 import networkx as nx
-from pyformlang.finite_automaton import Symbol, DeterministicFiniteAutomaton
+from pyformlang.finite_automaton import Symbol
 
 from project.finite_automaton_utils import regex_to_dfa, graph_to_nfa
 from project.graph_utils import create_two_cycles_graph_and_write_to_dot
