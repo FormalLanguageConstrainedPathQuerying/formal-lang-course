@@ -2,7 +2,12 @@ import pytest
 import cfpq_data
 import networkx as nx
 
-from project.utils import get_graph, create_labeled_two_cycles_graph, Graph
+from project.graph_utils import (
+    get_graph,
+    create_labeled_two_cycles_graph,
+    Graph,
+    graph_to_nfa,
+)
 
 available_graphs_name = cfpq_data.DATASET
 
@@ -49,3 +54,26 @@ def test_create_labeled_two_cycles_graph(
     expected_graph = nx.nx_pydot.read_dot(expected_graph_path)
 
     assert nx.utils.graphs_equal(expected_graph, actual_graph)
+
+
+def test_two_cycles_graph_to_nfa():
+    first_cycle_node_count = 3
+    second_cycle_node_count = 2
+    first_label = "a"
+    second_label = "b"
+    graph = create_labeled_two_cycles_graph(
+        first_cycle_node_count,
+        second_cycle_node_count,
+        labels=(first_label, second_label),
+    )
+    nfa = graph_to_nfa(graph, set(), set())
+
+    start_states = set(int(st.value) for st in nfa.start_states)
+    final_states = set(int(st.value) for st in nfa.final_states)
+
+    assert (
+        len(start_states)
+        == len(final_states)
+        == first_cycle_node_count + second_cycle_node_count + 1
+    )
+    assert nfa.symbols == {first_label, second_label}
