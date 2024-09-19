@@ -21,8 +21,8 @@ class AdjacencyMatrixFA:
         transitions: list[tuple] = list(transitions_dict.items())
 
         # set start / final nodes
-        self.start_nodes: set[int] = set(int(x) for x in fa.start_states)
-        self.final_nodes: set[int] = set(int(x) for x in fa.final_states)
+        self.start_nodes: set[int] = set(int(x._value) for x in fa.start_states)
+        self.final_nodes: set[int] = set(int(x._value) for x in fa.final_states)
 
         # dictionary for bool decomposition
         matrices_dict: dict[Symbol, NDArray[np.bool_]] = {}
@@ -61,9 +61,54 @@ class AdjacencyMatrixFA:
         for key in list(matrices_dict.keys()):
             self.sparse_matrices[key] = csr_array(matrices_dict[key], dtype=np.bool_)
 
+    def accepts(self, word: Iterable[Symbol]) -> bool:
+        # list with FA configurations
+        confs: list[(int, Iterable[Symbol])] = []
+
+        # add start configurations
+        for start_state in self.start_nodes:
+            confs.append((start_state, word))
+
+        while True:
+            print(confs)
+
+            # if we can't find accept state
+            if not confs:
+                return False
+
+            cur_conf = confs.pop()
+
+            cur_state = cur_conf[0]
+            cur_word = cur_conf[1]
+
+            # accept word
+            if (not cur_word) and (cur_state in self.final_nodes):
+                return True
+
+            cur_sym = cur_word[0]
+
+            if cur_sym not in self.sparse_matrices:
+                # can't find matrix for this symbol
+                continue
+            else:
+                matrix = self.sparse_matrices[cur_sym]
+
+                # add new confs (by matrix row)
+                row_states = range(matrix.shape[0])
+                next_states = [
+                    next_state
+                    for next_state in row_states
+                    if matrix[cur_state, next_state]
+                ]
+
+                for next_state in next_states:
+                    confs.append((next_state, cur_word[1:]))
+
 
 fa = NondeterministicFiniteAutomaton()
 fa.add_transitions([(0, "a", 1), (0, "b", 2), (1, "c", 2), (1, "a", 0)])
+fa.add_start_state(0)
+fa.add_final_state(2)
 
 amf = AdjacencyMatrixFA(fa)
-print(amf.sparse_matrices)
+print(amf.accepts([Symbol("a"), Symbol("a"), Symbol("c")]))
