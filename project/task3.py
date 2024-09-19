@@ -70,8 +70,6 @@ class AdjacencyMatrixFA:
             confs.append((start_state, word))
 
         while True:
-            print(confs)
-
             # if we can't find accept state
             if not confs:
                 return False
@@ -104,11 +102,41 @@ class AdjacencyMatrixFA:
                 for next_state in next_states:
                     confs.append((next_state, cur_word[1:]))
 
+    def transitive_сlosure(self) -> NDArray[np.bool_]:
+        # get adjacency matrix from bool decomposition
+        bool_matrices: list[csr_array] = list(self.sparse_matrices.values())
 
-fa = NondeterministicFiniteAutomaton()
-fa.add_transitions([(0, "a", 1), (0, "b", 2), (1, "c", 2), (1, "a", 0)])
-fa.add_start_state(0)
-fa.add_final_state(2)
+        adj_matrix: NDArray[np.bool_] = np.zeros(
+            shape=(self.states_count, self.states_count), dtype=np.bool_
+        )
 
-amf = AdjacencyMatrixFA(fa)
-print(amf.accepts([Symbol("a"), Symbol("a"), Symbol("c")]))
+        for matrix in self.sparse_matrices.values():
+            adj_matrix = adj_matrix | matrix.toarray()
+
+        for k in range(self.states_count):
+            for i in range(self.states_count):
+                for j in range(self.states_count):
+                    adj_matrix[i][j] = adj_matrix[i][j] or (
+                        adj_matrix[i][k] and adj_matrix[k][j]
+                    )
+
+        return adj_matrix
+
+    def is_empty(self) -> bool:
+        matrix: NDArray[np.bool_] = self.transitive_сlosure()
+
+        for start_node in self.start_nodes:
+            for final_node in self.final_nodes:
+                if matrix[start_node, final_node]:
+                    return True  # if FA graph have path from start to finish
+
+        return False
+
+
+fa_1 = NondeterministicFiniteAutomaton()
+fa_1.add_transitions([(0, "a", 1), (0, "b", 2), (1, "c", 2), (1, "a", 0)])
+fa_1.add_start_state(0)
+fa_1.add_final_state(2)
+
+amf_1 = AdjacencyMatrixFA(fa_1)
+amf_1.transitive_сlosure()
