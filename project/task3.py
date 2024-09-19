@@ -11,7 +11,11 @@ from typing import Iterable
 
 
 class AdjacencyMatrixFA:
-    def __init__(self, fa: NondeterministicFiniteAutomaton):
+    def __init__(
+        self, fa: (NondeterministicFiniteAutomaton | DeterministicFiniteAutomaton)
+    ):
+        isDeterministic = isinstance(fa, DeterministicFiniteAutomaton)
+
         # get FA transitions
         transitions_dict = fa.to_dict()
         transitions: list[tuple] = list(transitions_dict.items())
@@ -27,26 +31,25 @@ class AdjacencyMatrixFA:
         matrix_shape = (self.states_count, self.states_count)
         # ^ there may be an error, since there may be states that are not in order
 
-        for trans in transitions:
-            # trans = (source_node, {sym: dest_node , ...})
-            source_node: int = int(trans[0]._value)
-            dests = trans[1].items()
+        for source_node, dests in transitions:
+            # (source_node, {sym: dest_node , ...})
+            source_node: int = int(source_node._value)
 
-            for dest in dests:
-                # DFA: dest = (sym, dest_node)
-                # NFA: dest = (sym, {dest_node})
-                sym: Symbol = dest[0]._value
+            for sym, dest in dests.items():
+                # DFA: (sym, dest_node)
+                # NFA: (sym, {dest_node})
+                sym: Symbol = sym._value
 
-                if matrices_dict.get(sym) is None:
+                if sym not in matrices_dict:
                     matrices_dict[sym] = np.zeros(shape=matrix_shape, dtype=np.bool_)
 
-                if isinstance(fa, DeterministicFiniteAutomaton):
-                    dest_node: int = dest[1]._value
+                if isDeterministic:
+                    dest_node: int = dest._value
 
                     matrices_dict[sym][source_node, dest_node] = True
 
-                elif isinstance(fa, NondeterministicFiniteAutomaton):
-                    dest_nodes: dict[int] = dest[1]
+                else:
+                    dest_nodes: dict[int] = dest
 
                     for dest_node in dest_nodes:
                         dest_node = dest_node._value
@@ -63,3 +66,4 @@ fa = NondeterministicFiniteAutomaton()
 fa.add_transitions([(0, "a", 1), (0, "b", 2), (1, "c", 2), (1, "a", 0)])
 
 amf = AdjacencyMatrixFA(fa)
+print(amf.sparse_matrices)
