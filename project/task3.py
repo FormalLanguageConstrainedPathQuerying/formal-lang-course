@@ -127,16 +127,15 @@ class AdjacencyMatrixFA:
 
         for start_node in self.start_nodes:
             for final_node in self.final_nodes:
-                if matrix[start_node, final_node]:
-                    return True  # if FA graph have path from start to finish
+                if start_node != final_node and matrix[start_node, final_node]:
+                    return False  # if FA graph have path from start to finish
 
-        return False
+        return True
 
 
-fa_1 = NondeterministicFiniteAutomaton()
-fa_1.add_transitions([(0, "a", 1), (0, "b", 2), (1, "c", 2), (1, "a", 0)])
-fa_1.add_start_state(0)
-fa_1.add_final_state(2)
+fa = NondeterministicFiniteAutomaton()
+fa.add_transitions([(0, "a", 1), (0, "b", 2), (1, "c", 2), (1, "a", 0)])
+fa.add_start_state(2)
+fa.add_final_state(2)
 
-amf_1 = AdjacencyMatrixFA(fa_1)
-amf_1.transitive_сlosure()
+amf = AdjacencyMatrixFA(fa)
