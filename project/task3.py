@@ -2,50 +2,64 @@ from pyformlang.finite_automaton import (
     NondeterministicFiniteAutomaton,
     DeterministicFiniteAutomaton,
     State,
+    Symbol,
 )
 import numpy as np
+from numpy.typing import NDArray
 from scipy.sparse import csr_array
+from typing import Iterable
 
 
 class AdjacencyMatrixFA:
-    def __init__(self, dfa: NondeterministicFiniteAutomaton):
+    def __init__(self, fa: NondeterministicFiniteAutomaton):
         # get FA transitions
-        transitions_dict = dfa.to_dict()
+        transitions_dict = fa.to_dict()
         transitions: list[tuple] = list(transitions_dict.items())
 
-        matrix_length = len(transitions)
+        # set start / final nodes
+        self.start_nodes: set[int] = set(int(x) for x in fa.start_states)
+        self.final_nodes: set[int] = set(int(x) for x in fa.final_states)
 
-        row: list[int] = []
-        col: list[int] = []
-        data: list[int] = []
+        # dictionary for bool decomposition
+        matrices_dict: dict[Symbol, NDArray[np.bool_]] = {}
 
-        self.start_nodes: set[int] = set(int(x) for x in dfa.start_states)
-        self.final_nodes: set[int] = set(int(x) for x in dfa.final_states)
+        self.states_count = len(fa.states)
+        matrix_shape = (self.states_count, self.states_count)
+        # ^ there may be an error, since there may be states that are not in order
 
         for trans in transitions:
-            source_node: int = trans[0]._value
-            ways = trans[1].items()
+            # trans = (source_node, {sym: dest_node , ...})
+            source_node: int = int(trans[0]._value)
+            dests = trans[1].items()
 
-            for way in ways:
-                sym: int = int(way[0]._value)
-                dest_node: int = way[1]._value
+            for dest in dests:
+                # DFA: dest = (sym, dest_node)
+                # NFA: dest = (sym, {dest_node})
+                sym: Symbol = dest[0]._value
 
-                row.append(source_node)
-                col.append(dest_node)
-                data.append(sym)
+                if matrices_dict.get(sym) is None:
+                    matrices_dict[sym] = np.zeros(shape=matrix_shape, dtype=np.bool_)
 
-        # convert it to matrix
-        np_row = np.array(row)
-        np_col = np.array(col)
-        np_data = np.array(data)
+                if isinstance(fa, DeterministicFiniteAutomaton):
+                    dest_node: int = dest[1]._value
 
-        self.sparse_matrix = csr_array(
-            (np_data, (np_row, np_col)), shape=(max(row) + 1, max(col) + 1)
-        )
+                    matrices_dict[sym][source_node, dest_node] = True
+
+                elif isinstance(fa, NondeterministicFiniteAutomaton):
+                    dest_nodes: dict[int] = dest[1]
+
+                    for dest_node in dest_nodes:
+                        dest_node = dest_node._value
+                        matrices_dict[sym][source_node, dest_node] = True
+
+        # transform to sparse matrices
+        self.sparse_matrices: dict[Symbol, csr_array] = {}
+
+        for key in list(matrices_dict.keys()):
+            self.sparse_matrices[key] = csr_array(matrices_dict[key], dtype=np.bool_)
 
 
-fa = DeterministicFiniteAutomaton()
-fa.add_transitions([(0, 1, 4), (0, 2, 3), (1, 3, 5)])
+fa = NondeterministicFiniteAutomaton()
+fa.add_transitions([(0, "a", 1), (0, "b", 2), (1, "c", 2), (1, "a", 0)])
 
 amf = AdjacencyMatrixFA(fa)
-print(amf.sparse_matrix)
