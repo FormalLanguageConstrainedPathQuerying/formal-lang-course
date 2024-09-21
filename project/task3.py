@@ -5,10 +5,11 @@ from pyformlang.finite_automaton import (
     Symbol,
 )
 import numpy as np
+from networkx import MultiDiGraph
 from numpy.typing import NDArray
 from scipy.sparse import csr_array, kron
 from typing import Iterable
-from networkx import MultiDiGraph
+from project.task2 import graph_to_nfa, regex_to_dfa
 
 
 class AdjacencyMatrixFA:
@@ -17,7 +18,7 @@ class AdjacencyMatrixFA:
         fa: (NondeterministicFiniteAutomaton | DeterministicFiniteAutomaton | None),
     ):
         self.states_count: int = 0
-        self.states: list[State] = set()
+        self.states: list[State] = []
         self.start_states_is: set[int] = set()  # indexes of states
         self.final_states_is: set[int] = set()  # indexes of states
         self.sparse_matrices: dict[Symbol, csr_array] = {}
@@ -40,7 +41,7 @@ class AdjacencyMatrixFA:
 
             if state in fa.start_states:
                 self.start_states_is.add(i)
-            elif state in fa.final_states:
+            if state in fa.final_states:
                 self.final_states_is.add(i)
 
         # dictionary for bool decomposition
@@ -81,11 +82,11 @@ class AdjacencyMatrixFA:
 
     def accepts(self, word: Iterable[Symbol]) -> bool:
         # list with FA configurations
-        confs: list[(int, Iterable[Symbol])] = []
+        confs: list[(int, list[Symbol])] = []
 
         # add start configurations
         for start_state_i in self.start_states_is:
-            confs.append((start_state_i, word))  # indexes of states + words
+            confs.append((start_state_i, list(word)))  # indexes of states + words
 
         while True:
             # if we can't find accept state
@@ -110,11 +111,11 @@ class AdjacencyMatrixFA:
                 matrix = self.sparse_matrices[cur_sym]
 
                 # add new confs (by matrix row)
-                row_states = range(matrix.shape[0])
+                row_states_is = range(matrix.shape[0])
                 next_states_is = [
-                    next_state
-                    for next_state in row_states
-                    if matrix[cur_state_i, next_state]
+                    next_state_i
+                    for next_state_i in row_states_is
+                    if matrix[cur_state_i, next_state_i]
                 ]
 
                 for next_state_i in next_states_is:
@@ -145,7 +146,7 @@ class AdjacencyMatrixFA:
 
         for start_node in self.start_states_is:
             for final_node in self.final_states_is:
-                if start_node != final_node and matrix[start_node, final_node]:
+                if matrix[start_node, final_node]:
                     return False  # if FA graph have path from start to finish
 
         return True
@@ -159,6 +160,7 @@ def intersect_automata(
     new_a = AdjacencyMatrixFA(None)
     new_a.states_count = a1.states_count * a2.states_count
 
+    # kron prod
     for sym, m1 in a1.sparse_matrices.items():
         if sym in a2.sparse_matrices:
             m2 = a2.sparse_matrices[sym]
@@ -169,6 +171,9 @@ def intersect_automata(
     for s1 in range(a1.states_count):
         for s2 in range(a2.states_count):
             new_index = a2.states_count * s1 + s2
+            new_state = (a1.states[s1], a2.states[s2])
+
+            new_a.states.append(State(new_state))
 
             if (s1 in a1.start_states_is) and (s2 in a2.start_states_is):
                 new_a.start_states_is.add(new_index)
@@ -183,8 +188,6 @@ def tensor_based_rpq(
 ) -> list[tuple]:
     nfa = graph_to_nfa(graph, start_nodes, final_nodes)
     dfa = regex_to_dfa(regex)
-
-    print(dfa.states)
 
     mfa1 = AdjacencyMatrixFA(nfa)
     mfa2 = AdjacencyMatrixFA(dfa)
