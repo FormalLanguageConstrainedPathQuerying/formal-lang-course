@@ -196,14 +196,19 @@ def tensor_based_rpq(
 
     # complementation of languages
     adj_matrix = new_mfa.transitive_сlosure()
+
     pairs: set[tuple[int, int]] = set()
 
+    # [!] start_nodes & final_nodes not indexes
     for graph_start in start_nodes:
         for graph_final in final_nodes:
-            for regex_start in mfa2.start_states_is:
-                for regex_final in mfa2.final_states_is:
-                    start_index = mfa2.states_count * graph_start + regex_start
-                    final_index = mfa2.states_count * graph_final + regex_final
+            for regex_start_i in mfa2.start_states_is:
+                for regex_final_i in mfa2.final_states_is:
+                    graph_start_i = mfa1.states.index(graph_start)
+                    graph_final_i = mfa1.states.index(graph_final)
+
+                    start_index = mfa2.states_count * graph_start_i + regex_start_i
+                    final_index = mfa2.states_count * graph_final_i + regex_final_i
 
                     if adj_matrix[start_index, final_index]:
                         pairs.add((graph_start, graph_final))
