@@ -91,7 +91,7 @@ class AdjacencyMatrixFA:
         previous_matrix = None
         while not np.array_equal(previous_matrix, adj_matrix):
             previous_matrix = adj_matrix
-            adj_matrix = adj_matrix @ adj_matrix
+            adj_matrix = np.dot(adj_matrix, adj_matrix)
 
         return adj_matrix
 
