@@ -12,7 +12,7 @@ from rpq_concrete_cases import CASES_RPQ, CaseRPQ
 
 # Fix import statements in try block to run tests
 try:
-    from project.AdjacencyMatrixFA import regex_to_dfa
+    from project.finite_automaton_utils import regex_to_dfa
     from project.AdjacencyMatrixFA import (
         intersect_automata,
         AdjacencyMatrixFA,

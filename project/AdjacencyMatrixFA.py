@@ -92,9 +92,11 @@ class AdjacencyMatrixFA:
         if not self._symbol_matrices:
             return True
 
+        transitive_closure_matrix = self.transitive_closure()
+
         return not any(
-            self.transitive_closure()[s, f]
-            for s, f in product(self._start_states, self._final_states)
+            transitive_closure_matrix[st, final]
+            for st, final in product(self._start_states, self._final_states)
         )
 
     @classmethod
@@ -113,7 +115,7 @@ class AdjacencyMatrixFA:
         }
 
         instance._states_to_int = {
-            State((st1[0], st2[0])): st1 * automaton2._states_number + st2
+            State((st1[0], st2[0])): st1[1] * automaton2._states_number + st2[1]
             for st1, st2 in product(
                 automaton1._states_to_int.items(), automaton2._states_to_int.items()
             )
@@ -164,16 +166,16 @@ def tensor_based_rpq(
 ) -> set[tuple[int, int]]:
     regex_dfa = regex_to_dfa(regex)
     graph_nfa = graph_to_nfa(graph, start_nodes, final_nodes)
-    intersect = AdjacencyMatrixFA.intersect(
+    intersection = AdjacencyMatrixFA.intersect(
         AdjacencyMatrixFA(graph_nfa), AdjacencyMatrixFA(regex_dfa)
     )
 
-    closure = intersect.transitive_closure()
+    closure = intersection.transitive_closure()
 
-    def get_int_from_state(state1, state2):
-        return intersect.states_to_int[State((state1, state2))]
+    def get_int_from_state(state1: State, state2: State):
+        return intersection.states_to_int[State((state1, state2))]
 
-    if intersect.is_empty():
+    if intersection.is_empty():
         result = set()
     else:
         result = set(
@@ -186,11 +188,11 @@ def tensor_based_rpq(
             )
             if closure[
                 get_int_from_state(graph_states_pair[0], dfa_states_pair[0]),
-                get_int_from_state(graph_states_pair[1], dfa_states_pair[1]),
+                get_int_from_state(graph_states_pair[1], dfa_states_pair[1])
             ]
         )
 
-    if intersect.accepts([]):
+    if intersection.accepts([]):
         result = result.union(
             set(
                 state_pair
