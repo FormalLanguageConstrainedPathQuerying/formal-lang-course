@@ -188,7 +188,7 @@ def tensor_based_rpq(
             )
             if closure[
                 get_int_from_state(graph_states_pair[0], dfa_states_pair[0]),
-                get_int_from_state(graph_states_pair[1], dfa_states_pair[1])
+                get_int_from_state(graph_states_pair[1], dfa_states_pair[1]),
             ]
         )
 
