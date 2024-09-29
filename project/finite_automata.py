@@ -1,4 +1,3 @@
-from functools import reduce
 from itertools import product
 from typing import Iterable, cast
 from networkx import MultiDiGraph
