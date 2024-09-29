@@ -44,55 +44,34 @@ class AdjacencyMatrixFA:
 
             self.adj_matrix[label][self.states[st], self.states[end]] = True
 
-    # def accepts(self, word: Iterable[Symbol]) -> bool:
-    #     configs_stack = [(list(word), start_state_name) for start_state_name in self.start_states]
-
-    #     while len(configs_stack) > 0:
-    #         config = configs_stack.pop()
-    #         word = config[0]
-    #         current_state_name = config[1]
-
-    #         if len(word) == 0:
-    #             if current_state_name in self.final_states:
-    #                 return True
-    #             continue
-
-    #         adj_row = self.adj_matrix.get(word[0], None)
-    #         if adj_row is None:
-    #             continue
-
-    #         for applicant_next_state in self.states.values():
-    #             if adj_row[current_state_name, applicant_next_state]:
-    #                 configs_stack.append((word[1:], applicant_next_state))
-
-    #     return False
-
     def accepts(self, word: Iterable[Symbol]) -> bool:
-        final_states = [self.states[x] for x in self.final_states]
-        start_states = [self.states[x] for x in self.start_states]
+        configs_stack = [
+            (list(word), start_state_name) for start_state_name in self.start_states
+        ]
 
-        def helper(state: int, current_input: list[Symbol]) -> bool:
-            if len(current_input) == 0:
-                return state in final_states
-            sym = current_input[0]
+        while len(configs_stack) > 0:
+            config = configs_stack.pop()
+            word = config[0]
+            current_state_name = config[1]
 
-            matrix = self.adj_matrix.get(sym)
+            if len(word) == 0:
+                if current_state_name in self.final_states:
+                    return True
+                continue
+
+            matrix = self.adj_matrix.get(word[0], None)
             if matrix is None:
-                return False
+                continue
 
-            flag = False
-            for next_state in range(self.count_states):
-                if matrix[state, next_state]:
-                    flag = flag or helper(next_state, current_input[1:])
+            current_state_index = self.states[current_state_name]
+            for next_state_name, next_state_index in self.states.items():
+                if matrix[current_state_index, next_state_index]:
+                    configs_stack.append((word[1:], next_state_name))
 
-            return flag
-
-        arr = list(map(lambda x: helper(x, list(word)), start_states))
-        return any(arr)
+        return False
 
     def transitive_closure(self) -> np_type.NDArray[np.bool_]:
-        E_matrix = np.eye(self.count_states, dtype=bool)
-        result = E_matrix
+        result = np.eye(self.count_states, dtype=bool)
 
         for adj_matrix in self.adj_matrix.values():
             result = result | adj_matrix.toarray()
@@ -152,7 +131,9 @@ def kronecker_product(adj_matrix1: dict, adj_matrix2: dict) -> dict:
 
         matrix1 = adj_matrix1[sym]
         matrix2 = adj_matrix2[sym]
-        kron_dict[sym]: scpy.csr_matrix = scpy.kron(matrix1, matrix2, format("csr"))
+        kron_dict[sym] = cast(
+            scpy.csr_matrix, scpy.kron(matrix1, matrix2, format("csr"))
+        )
 
     return kron_dict
 
@@ -163,10 +144,10 @@ def tensor_based_rpq(
     nfa1 = graph_to_nfa(graph, start_nodes, final_nodes)
     dfa2 = regex_to_dfa(regex)
 
-    adj_matrix1 = AdjacencyMatrixFA(nfa1)
-    adj_matrix2 = AdjacencyMatrixFA(dfa2)
+    graph_AMFA = AdjacencyMatrixFA(nfa1)
+    regex_AMFA = AdjacencyMatrixFA(dfa2)
 
-    intersect_fa = intersect_automata(adj_matrix1, adj_matrix2)
+    intersect_fa = intersect_automata(graph_AMFA, regex_AMFA)
     tr_closure = intersect_fa.transitive_closure()
 
     result = set()
