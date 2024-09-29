@@ -1,15 +1,15 @@
 import os
 import pytest
-from project import graph_utils
+from project import task1
 
 
 class TestGraphUtils:
     def test_info_file_not_found(self):
         with pytest.raises(FileNotFoundError):
-            graph_utils.get_info_from_graph_name("no_such_file")
+            task1.get_info_from_graph_name("no_such_file")
 
     def test_info_bzip(self):
-        info = graph_utils.get_info_from_graph_name("bzip")
+        info = task1.get_info_from_graph_name("bzip")
         # https://formallanguageconstrainedpathquerying.github.io/CFPQ_Data/graphs/data/bzip.html#bzip
         bzip = (632, 556, ["d", "a"])
         assert info == bzip
@@ -17,7 +17,7 @@ class TestGraphUtils:
     def test_write_file_exists(self):
         file_name = "52.dot"
         graph_info = (52, 52, ("5", "2"))
-        graph_utils.create_two_cycles_graph_and_write_to_dot(*graph_info, file_name)
+        task1.create_two_cycles_graph_and_write_to_dot(*graph_info, file_name)
         assert os.path.isfile(file_name)
         os.remove(file_name)
 
@@ -25,7 +25,7 @@ class TestGraphUtils:
         root_dir = os.path.dirname(os.path.abspath(__file__))
         graph_path = "52.dot"
         graph_info = (52, 52, ("5", "2"))
-        graph_utils.create_two_cycles_graph_and_write_to_dot(*graph_info, graph_path)
+        task1.create_two_cycles_graph_and_write_to_dot(*graph_info, graph_path)
         assert (
             open(graph_path, "r").read()
             == open(

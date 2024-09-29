@@ -2,13 +2,12 @@ from collections import defaultdict
 from itertools import product
 from networkx import MultiDiGraph
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, State, Symbol
-from typing import Iterable, Optional, Any
+from typing import Iterable, Optional, Any, Self
 
 import scipy.sparse as sp
 import numpy as np
-from typing_extensions import Self
 
-from project.finite_automaton_utils import regex_to_dfa, graph_to_nfa
+from project.task2 import regex_to_dfa, graph_to_nfa
 
 
 class AdjacencyMatrixFA:
