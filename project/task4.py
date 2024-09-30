@@ -1,12 +1,7 @@
 import scipy.sparse as sp
-
 from collections import defaultdict
-from functools import reduce
-
 from itertools import product
-
 from networkx.classes import MultiDiGraph
-
 from project.task2 import regex_to_dfa, graph_to_nfa
 from project.task3 import AdjacencyMatrixFA, intersect_automata
 
