@@ -16,6 +16,7 @@ try:
     from project.adjacency_matrix import (
         intersect_automata,
         AdjacencyMatrixFA,
+        tensor_based_rpq,
     )
 except ImportError:
     pytestmark = pytest.mark.skip("Task 3 is not ready to test!")
@@ -50,7 +51,7 @@ class TestAdjacencyMatrixFAIntersection:
         assert intersect_fa.accepts(word)
 
 
-# class TestTensorBasedRPQ:
-#     @pytest.mark.parametrize("case", CASES_RPQ)
-#     def test_concrete_cases(self, case: CaseRPQ):
-#         case.check_answer_regex(tensor_based_rpq)
+class TestTensorBasedRPQ:
+    @pytest.mark.parametrize("case", CASES_RPQ)
+    def test_concrete_cases(self, case: CaseRPQ):
+        case.check_answer_regex(tensor_based_rpq)
