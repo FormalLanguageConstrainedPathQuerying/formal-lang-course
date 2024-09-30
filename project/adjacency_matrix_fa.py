@@ -14,11 +14,13 @@ class AdjacencyMatrixFA:
             self.final_states_id = set()
             self.states_count = 0
             self.state_id = {}
+            self.id_state = {}
             self.bool_decomposition = {}
             return
         self.start_states = nfa.start_states
         self.final_states = nfa.final_states
 
+        self.id_state = {state: index for state, index in enumerate(nfa.states)}
         self.state_id = {state: index for index, state in enumerate(nfa.states)}
         self.start_states_id = {
             self.state_id[st] for st in nfa.states if st in nfa.start_states
