@@ -1,16 +1,15 @@
 import itertools
 from collections import defaultdict
 from functools import reduce
-from typing import Any, Iterable, Optional, cast
+from typing import Any, Iterable, cast
 
-from networkx import MultiDiGraph
 import numpy as np
+from networkx import MultiDiGraph
 from numpy.typing import NDArray
 from pyformlang.finite_automaton import (
     DeterministicFiniteAutomaton,
-    NondeterministicFiniteAutomaton,
-    Symbol,
     FiniteAutomaton,
+    Symbol,
 )
 from scipy.sparse import csr_array, csr_matrix, kron
 
@@ -90,7 +89,6 @@ class AdjacencyMatrixFA:
 def intersect_automata(
     amf1: AdjacencyMatrixFA, amf2: AdjacencyMatrixFA
 ) -> AdjacencyMatrixFA:
-
     new_amf = AdjacencyMatrixFA(DeterministicFiniteAutomaton())
     new_amf.states_count = amf1.states_count * amf2.states_count
 
@@ -119,26 +117,15 @@ def tensor_based_rpq(
     graph_amf = AdjacencyMatrixFA(graph_to_nfa(graph, start_nodes, final_nodes))
     inter = intersect_automata(regex_amf, graph_amf)
     closure = inter.transitive_closure()
-    regex_start_states = [
-        key
-        for key in regex_amf.states
-        if regex_amf.states[key] in regex_amf.start_states
-    ]
-    regex_final_states = [
-        key
-        for key in regex_amf.states
-        if regex_amf.states[key] in regex_amf.final_states
-    ]
-    graph_start_states = [
-        key
-        for key in graph_amf.states
-        if graph_amf.states[key] in graph_amf.start_states
-    ]
-    graph_final_states = [
-        key
-        for key in graph_amf.states
-        if graph_amf.states[key] in graph_amf.final_states
-    ]
+
+    def get_raw_states(states_dict: dict[Any, int], states: set[int]):
+        return [key for key, val in states_dict.items() if val in states]
+
+    regex_start_states = get_raw_states(regex_amf.states, regex_amf.start_states)
+    regex_final_states = get_raw_states(regex_amf.states, regex_amf.final_states)
+    graph_start_states = get_raw_states(graph_amf.states, graph_amf.start_states)
+    graph_final_states = get_raw_states(graph_amf.states, graph_amf.final_states)
+
     all_states = itertools.product(
         graph_start_states,
         graph_final_states,
