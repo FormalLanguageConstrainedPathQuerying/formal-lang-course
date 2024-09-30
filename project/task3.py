@@ -83,7 +83,7 @@ class AdjacencyMatrixFA:
             for i in range(size):
                 for j in range(size):
                     sum_matrix[i, j] = sum_matrix[i, j] or (
-                            sum_matrix[i, k] and sum_matrix[k, j]
+                        sum_matrix[i, k] and sum_matrix[k, j]
                     )
 
         return sum_matrix
@@ -160,13 +160,13 @@ class AdjacencyMatrixFA:
 
 
 def intersect_automata(
-        automaton1: AdjacencyMatrixFA, automaton2: AdjacencyMatrixFA
+    automaton1: AdjacencyMatrixFA, automaton2: AdjacencyMatrixFA
 ) -> AdjacencyMatrixFA:
     return AdjacencyMatrixFA.intersect(automaton1, automaton2)
 
 
 def tensor_based_rpq(
-        regex: str, graph: MultiDiGraph, start_nodes: set[int], final_nodes: set[int]
+    regex: str, graph: MultiDiGraph, start_nodes: set[int], final_nodes: set[int]
 ) -> set[tuple[int, int]]:
     regex_dfa = regex_to_dfa(regex)
     graph_nfa = graph_to_nfa(graph, start_nodes, final_nodes)
