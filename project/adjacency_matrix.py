@@ -1,20 +1,20 @@
-from collections import defaultdict
 import itertools
-from typing import Any, Iterable, Optional
-from networkx.classes.reportviews import NodeView
-from numpy.typing import NDArray
+from collections import defaultdict
+from functools import reduce
+from typing import Any, Iterable, Optional, cast
+
 import numpy as np
+from numpy.typing import NDArray
 from pyformlang.finite_automaton import (
     NondeterministicFiniteAutomaton,
-    DeterministicFiniteAutomaton,
     Symbol,
+    FiniteAutomaton,
 )
-from scipy.sparse import csr_array, kron, csr_matrix
-from functools import reduce
+from scipy.sparse import csr_array, csr_matrix, kron
 
 
 class AdjacencyMatrixFA:
-    def __init__(self, nfa: NondeterministicFiniteAutomaton):
+    def __init__(self, nfa: FiniteAutomaton):
         graph = nfa.to_networkx()
         self.states_count = graph.number_of_nodes()
         self.states = {state: i for i, state in enumerate(nfa.states)}
@@ -29,6 +29,7 @@ class AdjacencyMatrixFA:
         transit = (
             (self.states[st1], self.states[st2], Symbol(lable))
             for st1, st2, lable in edges
+            if lable
         )
         for idx1, idx2, symbol in transit:
             transitions[symbol][idx1, idx2] = True
@@ -41,16 +42,19 @@ class AdjacencyMatrixFA:
         chars = list(word)
         inits = [(state, chars) for state in self.start_states]
 
-        while len(inits) > 0:
+        while inits:
             state, tail = inits.pop()
 
-            if not tail and state in self.final_states:
-                return True
+            if not tail:
+                if state in self.final_states:
+                    return True
+                continue
 
             first_ch, *rem = tail
+
             for follow in self.states.values():
                 if self.matrices[first_ch][state, follow]:
-                    inits.append((state, rem))
+                    inits.append((follow, rem))
 
         return False
 
@@ -77,3 +81,28 @@ class AdjacencyMatrixFA:
             if closure[start_state, final_state]:
                 return False
         return True
+
+
+def intersect_automata(
+    amf1: AdjacencyMatrixFA, amf2: AdjacencyMatrixFA
+) -> AdjacencyMatrixFA:
+
+    new_amf = AdjacencyMatrixFA(FiniteAutomaton())
+    new_amf.states_count = amf1.states_count * amf2.states_count
+
+    for sym, adj1 in amf1.matrices.items():
+        if (adj2 := amf2.matrices.get(sym)) is None:
+            continue
+        new_amf.matrices[sym] = cast(csr_array, kron(adj1, adj2, format="csr"))
+
+    for state1, state2 in itertools.product(amf1.states.keys(), amf2.states.keys()):
+        i1, i2 = amf1.states[state1], amf2.states[state2]
+        new_i = amf2.states_count * i1 + i2
+        new_amf.states[(state1, state2)] = new_i
+
+        if i1 in amf1.start_states and i2 in amf2.start_states:
+            new_amf.start_states.add(new_i)
+        if i1 in amf1.final_states and i2 in amf2.final_states:
+            new_amf.final_states.add(new_i)
+
+    return new_amf
