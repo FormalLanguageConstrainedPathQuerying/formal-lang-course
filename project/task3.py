@@ -26,6 +26,7 @@ class AdjacencyMatrixFA:
         graph = automaton.to_networkx()
         self.total_states = graph.number_of_nodes()
         self.state_index = {state: idx for idx, state in enumerate(graph.nodes)}
+        self.index_state = {idx: state for state, idx in self.state_index.items()}
 
         for node, attributes in graph.nodes(data=True):
             if attributes.get("is_start", False):
