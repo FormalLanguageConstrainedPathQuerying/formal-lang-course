@@ -9,7 +9,7 @@ from networkx import MultiDiGraph
 from numpy.typing import NDArray
 from scipy.sparse import csr_array, kron
 from typing import Iterable
-from project.task2 import graph_to_nfa, regex_to_dfa
+from task2 import graph_to_nfa, regex_to_dfa
 
 
 class AdjacencyMatrixFA:
@@ -19,8 +19,8 @@ class AdjacencyMatrixFA:
     ):
         self.states_count: int = 0
         self.states: list[State] = []
-        self.start_states_is: set[int] = set()  # indexes of states
-        self.final_states_is: set[int] = set()  # indexes of states
+        self.start_states_is: list[int] = []  # indexes of states
+        self.final_states_is: list[int] = []  # indexes of states
         self.sparse_matrices: dict[Symbol, csr_array] = {}
 
         if fa is None:
@@ -40,9 +40,9 @@ class AdjacencyMatrixFA:
             state: State = self.states[i]
 
             if state in fa.start_states:
-                self.start_states_is.add(i)
+                self.start_states_is.append(i)
             if state in fa.final_states:
-                self.final_states_is.add(i)
+                self.final_states_is.append(i)
 
         # dictionary for bool decomposition
         matrices_dict: dict[Symbol, NDArray[np.bool_]] = {}
@@ -176,9 +176,9 @@ def intersect_automata(
             new_a.states.append(State(new_state))
 
             if (s1 in a1.start_states_is) and (s2 in a2.start_states_is):
-                new_a.start_states_is.add(new_index)
+                new_a.start_states_is.append(new_index)
             if (s1 in a1.final_states_is) and (s2 in a2.final_states_is):
-                new_a.final_states_is.add(new_index)
+                new_a.final_states_is.append(new_index)
 
     return new_a
 
