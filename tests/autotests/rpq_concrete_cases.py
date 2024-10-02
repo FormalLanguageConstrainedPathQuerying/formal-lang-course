@@ -15,8 +15,8 @@ class CaseRPQ:
         graph: MultiDiGraph,
         regex: str,
         actual_answer: set[tuple[int, int]],
-        start_nodes: set[int] = None,
-        final_nodes: set[int] = None,
+        start_nodes: set[int] = set(),
+        final_nodes: set[int] = set(),
     ):
         self.graph = copy(graph)
         self.regex = copy(regex)

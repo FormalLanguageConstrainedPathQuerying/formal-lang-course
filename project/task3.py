@@ -9,7 +9,7 @@ from networkx import MultiDiGraph
 from numpy.typing import NDArray
 from scipy.sparse import csr_array, kron
 from typing import Iterable
-from task2 import graph_to_nfa, regex_to_dfa
+from project.task2 import graph_to_nfa, regex_to_dfa
 
 
 class AdjacencyMatrixFA:
@@ -184,8 +184,8 @@ def intersect_automata(
 
 
 def tensor_based_rpq(
-    graph: MultiDiGraph, start_nodes: set[int], final_nodes: set[int], regex: str
-) -> list[tuple]:
+    regex: str, graph: MultiDiGraph, start_nodes: set[int], final_nodes: set[int]
+) -> set[tuple]:
     nfa = graph_to_nfa(graph, start_nodes, final_nodes)
     dfa = regex_to_dfa(regex)
 
@@ -213,4 +213,4 @@ def tensor_based_rpq(
                     if adj_matrix[start_index, final_index]:
                         pairs.add((graph_start, graph_final))
 
-    return list(pairs)
+    return set(pairs)
