@@ -22,7 +22,7 @@ class AdjacencyMatrixFA:
     start_states: set
     final_states: set
     adjacency_matrixes_boolean_decomposition: dict[Transition, csr_matrix]
-    index_of_states: dict[State, Any]
+    index_of_states: dict[State, int]
 
     @property
     def state_count(self):
@@ -32,8 +32,12 @@ class AdjacencyMatrixFA:
     def states(self):
         return self.index_of_states.keys()
 
+    @property
+    def state_of_indexes(self):
+        return {idx: state for state, idx in self.index_of_states.items()}
+
     def __init__(self, automaton: Optional[NondeterministicFiniteAutomaton]):
-        if not automaton:
+        if automaton is None:
             return
         graph = automaton.to_networkx()
         self.index_of_states = {state: idx for idx, state in enumerate(graph.nodes)}
@@ -52,9 +56,11 @@ class AdjacencyMatrixFA:
             )
         )
         for state, destination_state, transition in graph.edges(data="label"):
-            adjacency_matrixes_boolean_decomposition[transition][
-                self.index_of_states[state], self.index_of_states[destination_state]
-            ] = True
+            if transition:
+                adjacency_matrixes_boolean_decomposition[transition][
+                    self.index_of_states[state],
+                    self.index_of_states[destination_state],
+                ] = True
         self.adjacency_matrixes_boolean_decomposition = {
             transition: csr_matrix(adjacency_matrix)
             for transition, adjacency_matrix in adjacency_matrixes_boolean_decomposition.items()
@@ -103,7 +109,7 @@ class AdjacencyMatrixFA:
             else:
                 transitions: csr_matrix = adjacency_matrixes[0]
         else:
-            return csr_matrix(np.zeros((self.state_count, self.state_count)))
+            return csr_matrix(np.eye(self.state_count, dtype=np.bool_))
         transitions.setdiag(True)
         res: csr_matrix = transitions.copy()
         for _ in range(2, self.state_count + 1):
