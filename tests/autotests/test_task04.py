@@ -30,16 +30,10 @@ class TestRPQ:
     def test(self, graph, query) -> None:
         start_nodes, final_nodes = generate_rnd_start_and_final(graph.copy())
         ms_bfs = ms_bfs_based_rpq(
-            regex=query,
-            graph=deepcopy(graph),
-            start_nodes=deepcopy(start_nodes),
-            final_nodes=deepcopy(final_nodes),
+            query, deepcopy(graph), deepcopy(start_nodes), deepcopy(final_nodes)
         )
         tensor = tensor_based_rpq(
-            regex=query,
-            graph=deepcopy(graph),
-            start_nodes=deepcopy(start_nodes),
-            final_nodes=deepcopy(final_nodes),
+            query, deepcopy(graph), deepcopy(start_nodes), deepcopy(final_nodes)
         )
 
         assert tensor == ms_bfs
