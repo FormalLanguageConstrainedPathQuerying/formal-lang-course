@@ -22,9 +22,9 @@ def graph_to_nfa(
     nfa: NondeterministicFiniteAutomaton = enfa.remove_epsilon_transitions()
 
     if not start_states:
-        start_states = map(int, graph)
+        start_states = graph
     if not final_states:
-        final_states = map(int, graph)
+        final_states = graph
 
     for state in start_states:
         nfa.add_start_state(State(state))
