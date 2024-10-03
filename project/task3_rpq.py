@@ -5,9 +5,9 @@ from scipy.sparse import csr_matrix
 
 import numpy as np
 
+
 class AdjacencyMatrixFA:
     def __init__(self, fa: NondeterministicFiniteAutomaton):
-
         graph = fa.to_networkx()
 
         self.states = {st: i for i, st in fa.states}
@@ -17,8 +17,10 @@ class AdjacencyMatrixFA:
 
         transitions = {}
         for symbol in fa.symbols:
-            transitions[symbol] = np.zeros((self.number_of_states, self.number_of_states))
-        
+            transitions[symbol] = np.zeros(
+                (self.number_of_states, self.number_of_states)
+            )
+
         for u, v, label in graph.edges(data="label"):
             if label:
                 transitions[label][self.states[u], self.states[v]] = 1
@@ -40,11 +42,11 @@ class AdjacencyMatrixFA:
             first_symb, *rest_symb = rest
 
         for next_state in self.states.values():
-                if self.adj_decomposition[first_symb][state, next_state]:
-                    configs.append((next_state, rest_symb))
+            if self.adj_decomposition[first_symb][state, next_state]:
+                configs.append((next_state, rest_symb))
 
         return False
-    
+
     def transitive_closure(self):
         init = csr_matrix((self.number_of_states, self.number_of_states), dtype=bool)
         init.setdiag(True)
@@ -62,7 +64,7 @@ class AdjacencyMatrixFA:
                     reach[i, j] = reach[i, j] or (reach[i, k] and reach[k, j])
 
         return reach
-    
+
     def is_empty(self) -> bool:
         tc = self.transitive_closure()
         for start in self.start_states:
@@ -71,4 +73,3 @@ class AdjacencyMatrixFA:
                     return False
 
         return True
-
