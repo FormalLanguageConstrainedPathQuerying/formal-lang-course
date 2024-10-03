@@ -13,6 +13,7 @@ class AdjacencyMatrixFA:
         self.states = {st: i for i, st in fa.states}
         self.start_states = {self.states[st] for st in fa.start_states}
         self.final_states = {self.states[st] for st in fa.final_states}
+        self.number_of_states = len(self.states)
 
         transitions = {}
         for symbol in fa.symbols:
@@ -45,7 +46,7 @@ class AdjacencyMatrixFA:
         return False
     
     def transitive_closure(self):
-        init = csr_matrix((self.states_count, self.states_count), dtype=bool)
+        init = csr_matrix((self.number_of_states, self.number_of_states), dtype=bool)
         init.setdiag(True)
 
         if not self.adj_decomposition:
@@ -55,15 +56,15 @@ class AdjacencyMatrixFA:
             lambda x, y: x + y, self.adj_decomposition.values()
         )
 
-        for k in range(self.states_count):
-            for i in range(self.states_count):
-                for j in range(self.states_count):
+        for k in range(self.number_of_states):
+            for i in range(self.number_of_states):
+                for j in range(self.number_of_states):
                     reach[i, j] = reach[i, j] or (reach[i, k] and reach[k, j])
 
         return reach
     
     def is_empty(self) -> bool:
-        tc = self.transitive_сlosure()
+        tc = self.transitive_closure()
         for start in self.start_states:
             for final in self.final_states:
                 if tc[self.states[start], self.states[final]]:
