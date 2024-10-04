@@ -19,8 +19,8 @@ class AdjacencyMatrixFA:
     ):
         self.states_count: int = 0
         self.states: list[State] = []
-        self.start_states_is: set[int] = set()  # indexes of states
-        self.final_states_is: set[int] = set()  # indexes of states
+        self.start_states_is: list[int] = []  # indexes of states
+        self.final_states_is: list[int] = []  # indexes of states
         self.sparse_matrices: dict[Symbol, csr_array] = {}
 
         if fa is None:
@@ -40,9 +40,9 @@ class AdjacencyMatrixFA:
             state: State = self.states[i]
 
             if state in fa.start_states:
-                self.start_states_is.add(i)
+                self.start_states_is.append(i)
             if state in fa.final_states:
-                self.final_states_is.add(i)
+                self.final_states_is.append(i)
 
         # dictionary for bool decomposition
         matrices_dict: dict[Symbol, NDArray[np.bool_]] = {}
@@ -176,16 +176,16 @@ def intersect_automata(
             new_a.states.append(State(new_state))
 
             if (s1 in a1.start_states_is) and (s2 in a2.start_states_is):
-                new_a.start_states_is.add(new_index)
+                new_a.start_states_is.append(new_index)
             if (s1 in a1.final_states_is) and (s2 in a2.final_states_is):
-                new_a.final_states_is.add(new_index)
+                new_a.final_states_is.append(new_index)
 
     return new_a
 
 
 def tensor_based_rpq(
-    graph: MultiDiGraph, start_nodes: set[int], final_nodes: set[int], regex: str
-) -> list[tuple]:
+    regex: str, graph: MultiDiGraph, start_nodes: set[int], final_nodes: set[int]
+) -> set[tuple]:
     nfa = graph_to_nfa(graph, start_nodes, final_nodes)
     dfa = regex_to_dfa(regex)
 
@@ -213,4 +213,4 @@ def tensor_based_rpq(
                     if adj_matrix[start_index, final_index]:
                         pairs.add((graph_start, graph_final))
 
-    return list(pairs)
+    return set(pairs)
