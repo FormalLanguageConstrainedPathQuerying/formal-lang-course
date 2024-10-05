@@ -16,7 +16,9 @@ class AdjacencyMatrixFA:
 
         self.adj_matrix = {}
         for sym in fa.symbols:
-            self.adj_matrix[sym] = csr_matrix((self.number_of_states, self.number_of_states), dtype=bool)
+            self.adj_matrix[sym] = csr_matrix(
+                (self.number_of_states, self.number_of_states), dtype=bool
+            )
 
         graph = fa.to_networkx()
 
@@ -41,7 +43,9 @@ class AdjacencyMatrixFA:
         return False
 
     def transitive_closure(self):
-        init_matrix = csr_matrix((self.number_of_states, self.number_of_states), dtype=bool)
+        init_matrix = csr_matrix(
+            (self.number_of_states, self.number_of_states), dtype=bool
+        )
         init_matrix.setdiag(True)
 
         if not self.adj_matrix:
@@ -69,7 +73,7 @@ class AdjacencyMatrixFA:
 
 
 def intersect_automata(
-        mfa1: AdjacencyMatrixFA, mfa2: AdjacencyMatrixFA
+    mfa1: AdjacencyMatrixFA, mfa2: AdjacencyMatrixFA
 ) -> AdjacencyMatrixFA:
     intersection = AdjacencyMatrixFA(NondeterministicFiniteAutomaton())
     intersection.number_of_states = mfa1.number_of_states * mfa2.number_of_states
