@@ -1,8 +1,8 @@
-from functools import reduce
-from typing import Iterable
-
+from itertools import product
 from networkx import MultiDiGraph
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, Symbol
+from functools import reduce
+from typing import Iterable
 from scipy.sparse import csr_matrix, kron
 
 from project.task2_fa import regex_to_dfa, graph_to_nfa
@@ -11,8 +11,8 @@ from project.task2_fa import regex_to_dfa, graph_to_nfa
 class AdjacencyMatrixFA:
     def __init__(self, fa: NondeterministicFiniteAutomaton):
         self.states = {st: i for (i, st) in enumerate(fa.states)}
-        self.start_states = {st for st in fa.start_states}
-        self.final_states = {st for st in fa.final_states}
+        self.start_states = set(self.states[st] for st in fa.start_states)
+        self.final_states = set(self.states[st] for st in fa.final_states)
         self.number_of_states = len(self.states)
 
         self.adj_matrix = {}
@@ -27,20 +27,18 @@ class AdjacencyMatrixFA:
 
     def accepts(self, word: Iterable[Symbol]) -> bool:
         symbols = list(word)
-        configs = [(symbols, st) for st in self.start_states]
+        configs = [(st, symbols) for st in self.start_states]
 
         while len(configs) > 0:
-            rest, state = configs.pop()
+            state, rest = configs.pop()
+            if not rest:
+                if state in self.final_states:
+                    return True
+                continue
 
-            if (len(rest) == 0) and (state in self.final_states):
-                return True
-
-            first_sym, *rest_sym = rest
-
-            for next_state in self.states:
-                if self.adj_matrix[first_sym][state, next_state]:
-                    configs.append((rest_sym, next_state))
-
+            for next_state in range(self.number_of_states):
+                if self.adj_matrix[rest[0]][state, next_state]:
+                    configs.append((next_state, rest[1:]))
         return False
 
     def transitive_closure(self):
@@ -65,7 +63,7 @@ class AdjacencyMatrixFA:
         tc = self.transitive_closure()
         for start in self.start_states:
             for final in self.final_states:
-                if tc[self.states[start], self.states[final]]:
+                if tc[start, final]:
                     return False
 
         return True
