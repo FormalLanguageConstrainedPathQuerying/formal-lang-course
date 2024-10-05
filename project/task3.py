@@ -1,4 +1,3 @@
-from itertools import product
 from networkx import MultiDiGraph
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, Symbol
 from functools import reduce
@@ -97,21 +96,29 @@ def intersect_automata(
     return intersection
 
 
-def tensor_based_rpq(regex: str, graph: MultiDiGraph, start_nodes: set[int],
-                     final_nodes: set[int]) -> set[tuple[int, int]]:
-    regex_mfa = AdjacencyMatrixFA(regex_to_dfa(regex))
+def tensor_based_rpq(
+    regex: str, graph: MultiDiGraph, start_nodes: set[int], final_nodes: set[int]
+) -> set[tuple[int, int]]:
+    all_nodes = {int(n) for n in graph.nodes}
+    start_nodes = start_nodes or all_nodes
+    final_nodes = final_nodes or all_nodes
+
     graph_mfa = AdjacencyMatrixFA(graph_to_nfa(graph, start_nodes, final_nodes))
-    intersection = intersect_automata(regex_mfa, graph_mfa)
-    tc = intersection.transitive_closure()
+    regex_dfa = regex_to_dfa(regex)
+    regex_mfa = AdjacencyMatrixFA(regex_dfa)
+
+    intersection_mfa = intersect_automata(graph_mfa, regex_mfa)
+    tc = intersection_mfa.transitive_closure()
 
     result = set()
+    for start in start_nodes:
+        for final in final_nodes:
+            for regex_start in regex_dfa.start_states:
+                for regex_final in regex_dfa.final_states:
+                    if tc[
+                        intersection_mfa.states[(start, regex_start)],
+                        intersection_mfa.states[(final, regex_final)],
+                    ]:
+                        result.add((start, final))
 
-    for start_graph_state in start_nodes:
-        for final_graph_state in final_nodes:
-            for start_regex_state in regex_mfa.start_states:
-                for final_regex_state in regex_mfa.final_states:
-                    start_index = intersection.states[(start_graph_state, start_regex_state)]
-                    final_index = intersection.states[(final_graph_state, final_regex_state)]
-                    if tc[start_index, final_index]:
-                        result.add((start_graph_state, final_graph_state))
     return result
