@@ -16,14 +16,19 @@ class AdjacencyMatrixFA:
     labeled_node_numbers: dict[
         Any, int
     ]  # stores key: value structure, key - node label, value - node index
+    numbered_node_labels: dict[int, Any]
     boolean_decomposition: dict[Any, sparse.csr_matrix]
     start_states: set
     final_states: set
+
+    def get_states_by_indexes(self, ind_list: [int]):
+        return list(map(lambda ind: self.numbered_node_labels[ind], ind_list))
 
     def __init__(self, automata: Optional[NondeterministicFiniteAutomaton] = None):
         if automata is None:
             self.adjacent_vertices = {}
             self.labeled_node_numbers = {}
+            self.numbered_node_labels = {}
             self.boolean_decomposition = {}
             self.states_cnt = 0
             self.start_states = set()
@@ -32,11 +37,13 @@ class AdjacencyMatrixFA:
 
         graph = automata.to_networkx()
         self.labeled_node_numbers = {}
+        self.numbered_node_labels = {}
         self.adjacent_vertices = {}
         self.boolean_decomposition = {}
 
         for ind, el in enumerate(graph.nodes()):
             self.labeled_node_numbers[el] = ind
+            self.numbered_node_labels[ind] = el
 
         self.start_states = {
             self.labeled_node_numbers.get(el) for el in automata.start_states
