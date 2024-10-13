@@ -1,3 +1,5 @@
+from symtable import Symbol
+
 import scipy.sparse as sp
 from collections import defaultdict
 from itertools import product
@@ -7,7 +9,18 @@ from project.task3 import AdjacencyMatrixFA, intersect_automata
 
 
 class MsBfsRpq:
+    __matrices_type: type(sp.spmatrix)
+    __adj_dfa: AdjacencyMatrixFA
+    __adj_nfa: AdjacencyMatrixFA
+    __united_adj_matrix: dict[Symbol, sp.block_diag]
+    __start_nfa_states: list[int]
+    __left_front: sp.spmatrix
+    __right_front: sp.spmatrix
+    __dfa_size: int
+    __nfa_size: int
+
     def __init__(self, adj_dfa: AdjacencyMatrixFA, adj_nfa: AdjacencyMatrixFA):
+        self.__matrices_type = adj_dfa.matrix_type
         self.__adj_dfa = adj_dfa
         self.__adj_nfa = adj_nfa
         self.__dfa_size = adj_dfa.states_number
@@ -26,7 +39,7 @@ class MsBfsRpq:
         all_vectors = []
 
         for nfa_state in self.__start_nfa_states:
-            vector = sp.lil_matrix((self.__dfa_size, self.__nfa_size), dtype=bool)
+            vector = self.__matrices_type((self.__dfa_size, self.__nfa_size), dtype=bool)
             for dfa_start in self.__adj_dfa.start_states:
                 vector[dfa_start, nfa_state] = True
             all_vectors.append(sp.hstack([identity_matrix, vector]))
@@ -39,7 +52,7 @@ class MsBfsRpq:
     def ms_bfs(self) -> dict[int, set[int]]:
         def multiply(front, matrix, shape):
             result = front @ matrix
-            updated = sp.lil_matrix(shape, dtype=bool)
+            updated = self.__matrices_type(shape, dtype=bool)
 
             for i, j in zip(*result[:, : self.__dfa_size].nonzero()):
                 updated[i // self.__dfa_size * self.__dfa_size + j, :] += result[
@@ -48,8 +61,8 @@ class MsBfsRpq:
 
             return updated
 
-        new_front = sp.lil_matrix(self.__right_front, dtype=bool)
-        visited_fronts = sp.csr_matrix(new_front, dtype=bool)
+        new_front = self.__matrices_type(self.__right_front, dtype=bool)
+        visited_fronts = self.__matrices_type(new_front, dtype=bool)
 
         while new_front.count_nonzero():
             combined_front = sp.hstack([self.__left_front, new_front])
@@ -76,12 +89,16 @@ class MsBfsRpq:
 
 
 def ms_bfs_based_rpq(
-    regex: str, graph: MultiDiGraph, start_nodes: set[int], final_nodes: set[int]
+    regex: str,
+    graph: MultiDiGraph,
+    start_nodes: set[int],
+    final_nodes: set[int],
+    matrix_type: type(sp.spmatrix) = sp.csr_matrix,
 ) -> set[tuple[int, int]]:
     regex_dfa = regex_to_dfa(regex)
-    adj_dfa = AdjacencyMatrixFA(regex_dfa)
+    adj_dfa = AdjacencyMatrixFA(regex_dfa, matrix_type=matrix_type)
     graph_nfa = graph_to_nfa(graph, start_nodes, final_nodes)
-    adj_nfa = AdjacencyMatrixFA(graph_nfa)
+    adj_nfa = AdjacencyMatrixFA(graph_nfa, matrix_type=matrix_type)
 
     bfs_result = MsBfsRpq(adj_dfa, adj_nfa).ms_bfs()
 

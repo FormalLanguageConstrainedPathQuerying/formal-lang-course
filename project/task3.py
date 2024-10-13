@@ -11,7 +11,8 @@ from project.task2 import regex_to_dfa, graph_to_nfa
 
 
 class AdjacencyMatrixFA:
-    __symbol_matrices: dict[Symbol, sp.csr_matrix]
+    __matrix_type: type(sp.spmatrix)
+    __symbol_matrices: dict[Symbol, type(sp.spmatrix)]
     __start_states: set[int]
     __final_states: set[int]
     __states_to_int: dict[State, int]
@@ -21,7 +22,12 @@ class AdjacencyMatrixFA:
     def __enumerate_value(value) -> dict[Any, int]:
         return {val: idx for idx, val in enumerate(value)}
 
-    def __init__(self, nfa: Optional[NondeterministicFiniteAutomaton]):
+    def __init__(
+        self,
+        nfa: Optional[NondeterministicFiniteAutomaton],
+        matrix_type: type(sp.spmatrix) = sp.csr_matrix,
+    ):
+        self.__matrix_type = matrix_type
         self.__symbol_matrices = dict()
 
         if nfa is None:
@@ -35,8 +41,10 @@ class AdjacencyMatrixFA:
         self.__start_states = set(self.__states_to_int[i] for i in nfa.start_states)
         self.__final_states = set(self.__states_to_int[i] for i in nfa.final_states)
 
-        symbol_to_adj_matrix = defaultdict(
-            lambda: np.zeros((self.__states_number, self.__states_number), dtype=bool)
+        self.__symbol_matrices = defaultdict(
+            lambda: matrix_type(
+                (self.__states_number, self.__states_number), dtype=bool
+            )
         )
 
         for start_state, symbol_to_finish_states in nfa.to_dict().items():
@@ -45,13 +53,10 @@ class AdjacencyMatrixFA:
                     {finish_states} if type(finish_states) is State else finish_states
                 )
                 for finish_state in finish_states:
-                    symbol_to_adj_matrix[symbol][
+                    self.__symbol_matrices[symbol][
                         self.__states_to_int[start_state],
                         self.__states_to_int[finish_state],
                     ] = True
-
-        for symbol, adj_matrix in symbol_to_adj_matrix.items():
-            self.__symbol_matrices[symbol] = sp.csr_matrix(adj_matrix, dtype=bool)
 
     def __find_path(self, word: Iterable[Symbol]):
         stack = [(list(word), start_state) for start_state in self.__start_states]
@@ -76,17 +81,10 @@ class AdjacencyMatrixFA:
         return self.__find_path(word)
 
     def transitive_closure(self) -> np.ndarray:
-        sum_matrix = sp.csr_matrix(sum(self.__symbol_matrices.values())).todense()
-
-        size = sum_matrix.shape[0]
-        for k in range(size):
-            for i in range(size):
-                for j in range(size):
-                    sum_matrix[i, j] = sum_matrix[i, j] or (
-                        sum_matrix[i, k] and sum_matrix[k, j]
-                    )
-
-        return sum_matrix
+        sum_matrix = self.__matrix_type(sum(self.__symbol_matrices.values()))
+        sum_matrix.setdiag(True)
+        closure = sp.linalg.matrix_power(sum_matrix, self.__states_number)
+        return closure
 
     def is_empty(self) -> bool:
         if not self.__symbol_matrices:
@@ -158,6 +156,10 @@ class AdjacencyMatrixFA:
     def symbol_matrices(self):
         return self.__symbol_matrices
 
+    @property
+    def matrix_type(self):
+        return self.__matrix_type
+
 
 def intersect_automata(
     automaton1: AdjacencyMatrixFA, automaton2: AdjacencyMatrixFA
@@ -166,12 +168,17 @@ def intersect_automata(
 
 
 def tensor_based_rpq(
-    regex: str, graph: MultiDiGraph, start_nodes: set[int], final_nodes: set[int]
+    regex: str,
+    graph: MultiDiGraph,
+    start_nodes: set[int],
+    final_nodes: set[int],
+    matrix_type: type(sp.spmatrix) = sp.csr_matrix,
 ) -> set[tuple[int, int]]:
     regex_dfa = regex_to_dfa(regex)
     graph_nfa = graph_to_nfa(graph, start_nodes, final_nodes)
     intersection = AdjacencyMatrixFA.intersect(
-        AdjacencyMatrixFA(graph_nfa), AdjacencyMatrixFA(regex_dfa)
+        AdjacencyMatrixFA(graph_nfa, matrix_type=matrix_type),
+        AdjacencyMatrixFA(regex_dfa, matrix_type=matrix_type),
     )
 
     closure = intersection.transitive_closure()
