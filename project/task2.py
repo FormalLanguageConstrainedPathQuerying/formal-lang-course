@@ -9,8 +9,7 @@ from typing import Set
 
 
 def regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton:
-    regex = Regex(regex)
-    return regex.to_epsilon_nfa().to_deterministic().minimize()
+    return Regex(regex).to_epsilon_nfa().to_deterministic().minimize()
 
 
 def get_actual_states(
