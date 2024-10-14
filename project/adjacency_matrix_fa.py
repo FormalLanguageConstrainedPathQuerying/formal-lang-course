@@ -1,14 +1,22 @@
-from typing import Iterable, Dict
+from typing import Iterable, Dict, TypeVar, Union
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, Symbol
-from scipy.sparse import kron, csr_matrix, diags
+from scipy.sparse import kron, csr_matrix, diags, dok_matrix, lil_matrix, csc_matrix
 from project.finite_automata_lib import regex_to_dfa, graph_to_nfa
 from networkx import MultiDiGraph
 
 import numpy as np
 
+MatrixType = TypeVar(
+    "MatrixType", bound=Union[csr_matrix, dok_matrix, lil_matrix, csc_matrix]
+)
+
 
 class AdjacencyMatrixFA:
-    def __init__(self, nfa: NondeterministicFiniteAutomaton):
+    def __init__(
+        self,
+        nfa: NondeterministicFiniteAutomaton,
+        matrix_representation: MatrixType = csr_matrix,
+    ):
         if nfa is None:
             self.start_states_id = set()
             self.final_states_id = set()
@@ -16,7 +24,10 @@ class AdjacencyMatrixFA:
             self.state_id = {}
             self.id_state = {}
             self.bool_decomposition = {}
+            self.matrix_type = matrix_representation
             return
+
+        self.matrix_type = matrix_representation
         self.start_states = nfa.start_states
         self.final_states = nfa.final_states
 
@@ -33,7 +44,7 @@ class AdjacencyMatrixFA:
 
     def build_bool_decomposition(
         self, nfa: NondeterministicFiniteAutomaton
-    ) -> Dict[Symbol, csr_matrix]:
+    ) -> Dict[Symbol, MatrixType]:
         bool_decomposition = {}
         for fst_state, symbol_snd_states in nfa.to_dict().items():
             for symbol, next_states in symbol_snd_states.items():
@@ -43,7 +54,7 @@ class AdjacencyMatrixFA:
 
                 for next_state in next_states:
                     if symbol not in bool_decomposition:
-                        bool_decomposition[symbol] = csr_matrix(
+                        bool_decomposition[symbol] = self.matrix_type(
                             (self.states_count, self.states_count), dtype=bool
                         )
                     bool_decomposition[symbol][
@@ -77,7 +88,7 @@ class AdjacencyMatrixFA:
                     return False
         return True
 
-    def get_transitive_closure(self) -> csr_matrix:
+    def get_transitive_closure(self) -> MatrixType:
         if not self.bool_decomposition:
             return diags(
                 [1] * self.states_count,
@@ -133,10 +144,16 @@ def intersect_automata(
 
 
 def tensor_based_rpq(
-    regex: str, graph: MultiDiGraph, start_nodes: set[int], final_nodes: set[int]
+    regex: str,
+    graph: MultiDiGraph,
+    start_nodes: set[int],
+    final_nodes: set[int],
+    matrix_representation: MatrixType = csr_matrix,
 ) -> set[tuple[int, int]]:
-    nfa_of_graph = AdjacencyMatrixFA(graph_to_nfa(graph, start_nodes, final_nodes))
-    dfa_of_regex = AdjacencyMatrixFA(regex_to_dfa(regex))
+    nfa_of_graph = AdjacencyMatrixFA(
+        graph_to_nfa(graph, start_nodes, final_nodes), matrix_representation
+    )
+    dfa_of_regex = AdjacencyMatrixFA(regex_to_dfa(regex), matrix_representation)
 
     intersection = intersect_automata(nfa_of_graph, dfa_of_regex)
     transitive_closure = intersection.get_transitive_closure()
