@@ -1,3 +1,4 @@
+from functools import reduce
 from symtable import Symbol
 
 import scipy.sparse as sp
@@ -12,9 +13,7 @@ class MsBfsRpq:
     __matrices_type: type(sp.spmatrix)
     __adj_dfa: AdjacencyMatrixFA
     __adj_nfa: AdjacencyMatrixFA
-    __united_adj_matrix: dict[Symbol, sp.block_diag]
     __start_nfa_states: list[int]
-    __left_front: sp.spmatrix
     __right_front: sp.spmatrix
     __dfa_size: int
     __nfa_size: int
@@ -26,66 +25,63 @@ class MsBfsRpq:
         self.__dfa_size = adj_dfa.states_number
         self.__nfa_size = adj_nfa.states_number
         self.__start_nfa_states = list(adj_nfa.start_states)
-        self.__united_adj_matrix = {
+        self.__united_symbols = set(self.__adj_dfa.symbol_matrices.keys()).intersection(
+            self.__adj_nfa.symbol_matrices.keys()
+        )
+        self.__permutation_matrices = {
             symbol: sp.block_diag(
-                [adj_dfa.symbol_matrices[symbol], adj_nfa.symbol_matrices[symbol]]
+                [
+                    adj_dfa.symbol_matrices[symbol].transpose()
+                    for _ in self.__start_nfa_states
+                ]
             )
-            for symbol in intersect_automata(adj_dfa, adj_nfa).symbol_matrices.keys()
+            for symbol in self.__united_symbols
         }
-        self.__left_front, self.__right_front = self.__initialize_fronts()
 
-    def __initialize_fronts(self) -> (sp.spmatrix, sp.spmatrix):
-        identity_matrix = sp.identity(self.__dfa_size, dtype=bool)
+    def __initialize_front(self):
         all_vectors = []
 
         for nfa_state in self.__start_nfa_states:
-            vector = self.__matrices_type((self.__dfa_size, self.__nfa_size), dtype=bool)
+            vector = self.__matrices_type(
+                (self.__dfa_size, self.__nfa_size), dtype=bool
+            )
             for dfa_start in self.__adj_dfa.start_states:
                 vector[dfa_start, nfa_state] = True
-            all_vectors.append(sp.hstack([identity_matrix, vector]))
+            all_vectors.append(vector)
 
-        combined_vectors = sp.vstack(all_vectors).tocsr()
-        return combined_vectors[:, : self.__dfa_size], combined_vectors[
-            :, self.__dfa_size :
-        ]
+        return self.__matrices_type(sp.vstack(all_vectors))
 
-    def ms_bfs(self) -> dict[int, set[int]]:
-        def multiply(front, matrix, shape):
-            result = front @ matrix
-            updated = self.__matrices_type(shape, dtype=bool)
-
-            for i, j in zip(*result[:, : self.__dfa_size].nonzero()):
-                updated[i // self.__dfa_size * self.__dfa_size + j, :] += result[
-                    i, self.__dfa_size :
-                ]
-
-            return updated
-
-        new_front = self.__matrices_type(self.__right_front, dtype=bool)
-        visited_fronts = self.__matrices_type(new_front, dtype=bool)
+    def ms_bfs(self):
+        new_front = self.__initialize_front()
+        visited_fronts = new_front.copy()
 
         while new_front.count_nonzero():
-            combined_front = sp.hstack([self.__left_front, new_front])
-            new_front = sum(
-                multiply(combined_front, matrix, new_front.shape)
-                for matrix in self.__united_adj_matrix.values()
-            )
-            new_front = new_front > visited_fronts
+            next_front = new_front.copy()
+            for symbol in self.__united_symbols:
+                next_front += self.__permutation_matrices[symbol] @ (
+                    new_front @ self.__adj_nfa.symbol_matrices[symbol]
+                )
+
+            new_front = next_front > visited_fronts
             visited_fronts += new_front
 
-        result_dict = defaultdict(set)
+        result = set()
 
-        for start_idx, final_dfa_state in product(
-            range(len(self.__start_nfa_states)), self.__adj_dfa.final_states
-        ):
-            reachable = set(
-                visited_fronts[
-                    start_idx * self.__dfa_size + final_dfa_state, :
-                ].nonzero()[1]
-            )
-            result_dict[self.__start_nfa_states[start_idx]].update(reachable)
+        for left, nfa_state in zip(*visited_fronts.nonzero()):
+            if (
+                left % self.__dfa_size in self.__adj_dfa.final_states
+                and nfa_state in self.__adj_nfa.final_states
+            ):
+                result.add(
+                    (
+                        self.__adj_nfa.int_to_states[
+                            self.__start_nfa_states[left // self.__dfa_size]
+                        ],
+                        self.__adj_nfa.int_to_states[nfa_state],
+                    )
+                )
 
-        return result_dict
+        return result
 
 
 def ms_bfs_based_rpq(
@@ -95,15 +91,9 @@ def ms_bfs_based_rpq(
     final_nodes: set[int],
     matrix_type: type(sp.spmatrix) = sp.csr_matrix,
 ) -> set[tuple[int, int]]:
-    regex_dfa = regex_to_dfa(regex)
-    adj_dfa = AdjacencyMatrixFA(regex_dfa, matrix_type=matrix_type)
-    graph_nfa = graph_to_nfa(graph, start_nodes, final_nodes)
-    adj_nfa = AdjacencyMatrixFA(graph_nfa, matrix_type=matrix_type)
-
-    bfs_result = MsBfsRpq(adj_dfa, adj_nfa).ms_bfs()
-
-    return {
-        (start, final)
-        for start, final in product(graph_nfa.start_states, graph_nfa.final_states)
-        if adj_nfa.states_to_int[final] in bfs_result[adj_nfa.states_to_int[start]]
-    }
+    return MsBfsRpq(
+        AdjacencyMatrixFA(regex_to_dfa(regex), matrix_type=matrix_type),
+        AdjacencyMatrixFA(
+            graph_to_nfa(graph, start_nodes, final_nodes), matrix_type=matrix_type
+        ),
+    ).ms_bfs()
