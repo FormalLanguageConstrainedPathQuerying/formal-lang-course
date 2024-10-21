@@ -39,7 +39,7 @@ def hellings_based_cfpq(
 
     for n, m, _ in edges:
         label = graph.get_edge_data(n, m)[0]["label"]  # l
-        if not label:
+        if label is not None:
             continue
 
         for prod in wcnf.productions:
@@ -96,11 +96,11 @@ def hellings_based_cfpq(
                     res.append(el)
 
     pairs: set[tuple[int, int]] = set()
-    start_nodes = graph.nodes if not start_nodes else start_nodes
-    final_nodes = graph.nodes if not start_nodes else start_nodes
+    start = graph.nodes if start_nodes is None else start_nodes
+    final = graph.nodes if final_nodes is None else final_nodes
 
     for N, n, m in res:
-        if (N == wcnf.start_symbol) and (n in start_nodes) and (m in final_nodes):
+        if (N == wcnf.start_symbol) and (n in start) and (m in final):
             pairs.add((n, m))
 
     return pairs
