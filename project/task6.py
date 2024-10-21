@@ -1,7 +1,9 @@
 from symtable import Symbol
+from numpy import isin
 from pyformlang.cfg import CFG, Variable, Terminal, Production
 from networkx import DiGraph
 from itertools import product
+from typing import Tuple
 
 
 def cfg_to_weak_normal_form(cfg: CFG) -> CFG:
@@ -24,53 +26,74 @@ def hellings_based_cfpq(
     final_nodes: set[int] = None,
 ) -> set[tuple[int, int]]:
     wcnf = cfg_to_weak_normal_form(cfg)  # G
-    res = set()  # r
+    res: list[Tuple[Production, int, int]] = []  # r
 
     edges = list(graph.edges)
     nodes = list(graph.nodes)
 
     lam = wcnf.get_nullable_symbols()  # λ
-    for n, N in product(nodes, lam):
-        res.add((N, n, n))  # {(N, n, n) | ...}
 
-    for n, m, prod in product(edges, wcnf.productions):
-        head = prod.head  # N
-        body = prod.body  # N -> ...
-        label = graph.get_edge_data(n, m)[0]["data"]  # l
+    for n in nodes:
+        for N in lam:
+            res.append((N, n, n))  # {(N, n, n) | N -> λ}
 
-        # if right part of production contains only 1 sym
-        if len(body) == 1 and isinstance(body[0], Terminal) and body[0].value == label:
-            res.add((head, n, m))  # r = {(N, n, m) | ...}
+    for n, m, _ in edges:
+        label = graph.get_edge_data(n, m)[0]["label"]  # l
+        if not label:
+            continue
 
-    new_res = res.copy()
+        for prod in wcnf.productions:
+            head = prod.head  # N
+            body = prod.body  # N -> ...
 
-    while len(new_res) > 0:
+            # if right part of production contains only 1 sym
+            if (
+                len(body) == 1
+                and isinstance(body[0], Terminal)
+                and body[0].value == label
+            ):
+                res.append((head, n, m))  # r = {(N, n, m) | ...}
+
+    new = res.copy()
+
+    while len(new) > 0:
+        # pick and remove a (N, n, m)
+        (N, n, m) = new.pop(0)
+
         # (M, n', n)
-        for M, n_, n in res:
-            # (N', m', m)
-            for N_, m_, m in res:
-                for prod in wcnf.productions:
-                    body = prod.body
-                    head = prod.head
+        for M, k, p in res:
+            if p != n:
+                continue
 
-                    # N' -> M and (N', n', m) not in r
-                    if (len(body) == 1 and head == N_ and body[0] == M) and (
-                        (N_, n_, m) not in res
-                    ):
-                        new_res.union((N_, n_, m))  # res union (N', n', m)
-                        res.union(new_res)
+            for prod in wcnf.productions:
+                body = prod.body
+                head = prod.head
 
-        for M, m, m_ in res:
-            for N_, n_, n in res:
-                for prod in wcnf.productions:
-                    body = prod.body
-                    head = prod.head
+                el = (head, k, m)
 
-                    if (len(body) == 1 and head == M and body[0] == N_) and (
-                        (M, n, m_) not in res
-                    ):
-                        new_res = new_res.union((M, n, m))
-                        res = res.union(new_res)
+                # N' -> M and (N', n', m) not in r
+                if (len(body) == 2 and body[0].value == M and body[1] == N) and (
+                    el not in res
+                ):
+                    new.append(el)
+                    res.append(el)
+
+        for M, k, p in res:
+            if k != m:
+                continue
+
+            for prod in wcnf.productions:
+                body = prod.body
+                head = prod.head
+
+                el = (head, m, p)
+
+                # (M_ -> N) and ((M_, n, m_) not in res)
+                if (len(body) == 2 and body[0].value == N and body[1] == M) and (
+                    el not in res
+                ):
+                    new.append(el)
+                    res.append(el)
 
     pairs: set[tuple[int, int]] = set()
     start_nodes = graph.nodes if not start_nodes else start_nodes
