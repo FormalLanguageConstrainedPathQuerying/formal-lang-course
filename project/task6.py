@@ -1,8 +1,5 @@
-from symtable import Symbol
-from numpy import isin
-from pyformlang.cfg import CFG, Variable, Terminal, Production
+from pyformlang.cfg import CFG, Terminal, Production
 from networkx import DiGraph
-from itertools import product
 from typing import Tuple
 
 
@@ -28,18 +25,14 @@ def hellings_based_cfpq(
     wcnf = cfg_to_weak_normal_form(cfg)  # G
     res: list[Tuple[Production, int, int]] = []  # r
 
-    edges = list(graph.edges)
-    nodes = list(graph.nodes)
-
     lam = wcnf.get_nullable_symbols()  # λ
 
-    for n in nodes:
+    for n in graph.nodes:
         for N in lam:
             res.append((N, n, n))  # {(N, n, n) | N -> λ}
 
-    for n, m, _ in edges:
-        label = graph.get_edge_data(n, m)[0]["label"]  # l
-        if label is not None:
+    for n, m, label in graph.edges.data("label"):
+        if label is None:
             continue
 
         for prod in wcnf.productions:
@@ -58,43 +51,46 @@ def hellings_based_cfpq(
 
     while len(new) > 0:
         # pick and remove a (N, n, m)
-        (N, n, m) = new.pop(0)
+
+        (N, n, m) = new.pop()
 
         # (M, n', n)
-        for M, k, p in res:
-            if p != n:
+        for M, x, n_ in res:
+            if n_ != n:
                 continue
 
             for prod in wcnf.productions:
                 body = prod.body
                 head = prod.head
 
-                el = (head, k, m)
+                el = (head, x, m)
 
                 # N' -> M and (N', n', m) not in r
                 if (len(body) == 2 and body[0].value == M and body[1] == N) and (
-                    el not in res
+                    (el not in res) and (el not in new)
                 ):
                     new.append(el)
                     res.append(el)
 
-        for M, k, p in res:
-            if k != m:
+        # (M, m, m')
+        for M, m_, y in res:
+            if m_ != m:
                 continue
 
             for prod in wcnf.productions:
                 body = prod.body
                 head = prod.head
 
-                el = (head, m, p)
+                el = (head, n, y)
 
                 # (M_ -> N) and ((M_, n, m_) not in res)
                 if (len(body) == 2 and body[0].value == N and body[1] == M) and (
-                    el not in res
+                    (el not in res) and (el not in new)
                 ):
                     new.append(el)
                     res.append(el)
 
+    res = set(res)
     pairs: set[tuple[int, int]] = set()
     start = graph.nodes if start_nodes is None else start_nodes
     final = graph.nodes if final_nodes is None else final_nodes
@@ -104,23 +100,3 @@ def hellings_based_cfpq(
             pairs.add((n, m))
 
     return pairs
-
-
-var_useless = Variable("USELESS")
-var_S = Variable("S")
-var_B = Variable("B")
-
-# Creation of terminals
-ter_a = Terminal("a")
-ter_b = Terminal("b")
-ter_c = Terminal("c")
-
-# Creation of productions
-p0 = Production(var_S, [ter_a, var_S, var_B])
-p1 = Production(var_useless, [ter_a, var_S, var_B])
-p2 = Production(var_S, [var_useless])
-p4 = Production(var_B, [ter_b])
-p5 = Production(var_useless, [])
-
-# Creation of the CFG
-cfg = CFG({var_useless, var_S}, {ter_a, ter_b}, var_S, {p0, p1, p2, p4, p5})
