@@ -3,7 +3,7 @@ from networkx import DiGraph
 from numpy.typing import NDArray
 import numpy as np
 from typing import Set, Tuple
-from project.task6 import cfg_to_weak_normal_form
+from task6 import cfg_to_weak_normal_form
 
 
 def matrix_based_cfpq(
@@ -13,6 +13,11 @@ def matrix_based_cfpq(
     final_nodes: Set[int] = None,
 ) -> set[tuple[int, int]]:
     wcnf = cfg_to_weak_normal_form(cfg)
+
+    print('\n')
+    print(cfg.productions)
+    print(graph.edges.data("label"))
+    print(start_nodes, final_nodes)
 
     # graph = <V, E, L> | grammar = <Σ, N, P, S>
 
@@ -25,8 +30,9 @@ def matrix_based_cfpq(
 
     # fill adj matrices
     for i, j, label in graph.edges.data("label"):
+        # TODO i,j -> not indexes, it is nodes.
         # a ∈ Σ ∩ L
-        if label is None or label not in terminal_values:
+        if (label is None) or (label not in terminal_values):
             continue
 
         # A → a
@@ -50,6 +56,10 @@ def matrix_based_cfpq(
         for i in graph.nodes:
             adj_matrices[A][i, i] = True  # 8
 
+    # is empty
+    if len(adj_matrices.keys()) == 0:
+        return set()
+
     while True:
         changed = False
 
@@ -58,6 +68,8 @@ def matrix_based_cfpq(
                 A = prod.head
                 B = prod.body[0]
                 C = prod.body[1]
+
+                print(A, B, C)
 
                 mult = adj_matrices[B] @ adj_matrices[C]
                 res = adj_matrices[A] + mult
@@ -77,6 +89,7 @@ def matrix_based_cfpq(
 
     for i in start:
         for j in final:
+            # TODO i, j -> not indexes
             if T[i, j]:
                 pairs.add((i, j))
 
@@ -85,10 +98,13 @@ def matrix_based_cfpq(
 
 from networkx import MultiDiGraph
 
+# {S -> S Terminal(a), S -> }
+# []
+# [1] [1]
+
 graph = MultiDiGraph()
-graph.add_edges_from(
-    [(0, 1, dict(label="b")), (1, 2, dict(label="b")), (2, 0, dict(label="b"))]
-)
+graph.add_node(1)
+# graph.add_edges_from([(0, 1, dict(label="b"))])
 
 var_S = Variable("S")
 var_B = Variable("B")
@@ -98,9 +114,9 @@ ter_b = Terminal("b")
 ter_c = Terminal("c")
 
 # Creation of productions
-p0 = Production(var_S, [var_S, ter_b])
+p0 = Production(var_S, [var_S, ter_a])
 p1 = Production(var_S, [])
 
-grammar = CFG({var_S}, {ter_b}, var_S, {p0, p1})
+grammar = CFG({var_S}, {ter_a}, var_S, {p0, p1})
 
-print(matrix_based_cfpq(grammar, graph))
+print(matrix_based_cfpq(grammar, graph, [1], [1]))
