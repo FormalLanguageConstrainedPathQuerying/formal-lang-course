@@ -3,21 +3,7 @@ from networkx import DiGraph
 from numpy.typing import NDArray
 import numpy as np
 from typing import Set, Tuple
-from task6 import cfg_to_weak_normal_form
-
-
-# def is_equal(old: dict[Production, NDArray[np.bool_]], new: dict[Production, NDArray[np.bool_]]) -> bool:
-#     if old.keys() != new.keys():
-#         return False
-
-#     for prod in old.keys():
-#         if prod not in new.keys():
-#             return False
-
-#         if not np.array_equal(old, new):
-#             return False
-
-#     return True
+from project.task6 import cfg_to_weak_normal_form
 
 
 def matrix_based_cfpq(
@@ -27,7 +13,6 @@ def matrix_based_cfpq(
     final_nodes: Set[int] = None,
 ) -> set[tuple[int, int]]:
     wcnf = cfg_to_weak_normal_form(cfg)
-    print(wcnf.productions)
 
     # graph = <V, E, L> | grammar = <Σ, N, P, S>
 
@@ -65,7 +50,37 @@ def matrix_based_cfpq(
         for i in graph.nodes:
             adj_matrices[A][i, i] = True  # 8
 
-    pass
+    while True:
+        changed = False
+
+        for prod in wcnf.productions:
+            if len(prod.body) == 2:
+                A = prod.head
+                B = prod.body[0]
+                C = prod.body[1]
+
+                mult = adj_matrices[B] @ adj_matrices[C]
+                res = adj_matrices[A] + mult
+
+                if not (res == adj_matrices[A]).all():
+                    changed = True
+                    adj_matrices[A] = res
+
+        if not changed:
+            break
+
+    start = graph.nodes if start_nodes is None else start_nodes
+    final = graph.nodes if final_nodes is None else final_nodes
+
+    T = adj_matrices[wcnf.start_symbol]
+    pairs: set[tuple[int, int]] = set()
+
+    for i in start:
+        for j in final:
+            if T[i, j]:
+                pairs.add((i, j))
+
+    return pairs
 
 
 from networkx import MultiDiGraph
@@ -88,4 +103,4 @@ p1 = Production(var_S, [])
 
 grammar = CFG({var_S}, {ter_b}, var_S, {p0, p1})
 
-matrix_based_cfpq(grammar, graph, [], [])
+print(matrix_based_cfpq(grammar, graph))
