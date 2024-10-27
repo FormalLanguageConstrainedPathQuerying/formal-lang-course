@@ -20,7 +20,6 @@ def matrix_based_cfpq(
 
     adj_matrices: dict[str, NDArray[np.bool_]] = {}
     matrix_shape = (len(graph.edges), len(graph.edges))
-    inf_rules: list[Production] = []
 
     terminal_values = [t.value for t in cfg.terminals]
 
@@ -39,14 +38,13 @@ def matrix_based_cfpq(
         if n == m:  # (i, i)
             for prod in wcnf.productions:
                 if len(prod.body) == 0 or prod.body[0] == Epsilon:
-                    inf_rules.append(prod)
                     have_prod = True
 
         # A → a
-        for prod in wcnf.productions:
-            if len(prod.body) > 0 and prod.body[0].value == label:
-                inf_rules.append(prod)
-                have_prod = True
+        if not have_prod:
+            for prod in wcnf.productions:
+                if len(prod.body) > 0 and prod.body[0].value == label:
+                    have_prod = True
 
         if not have_prod:
             continue
