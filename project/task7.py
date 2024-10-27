@@ -6,6 +6,22 @@ from typing import Set, Tuple
 from task6 import cfg_to_weak_normal_form
 
 
+def is_equal(
+    old: dict[Production, NDArray[np.bool_]], new: dict[Production, NDArray[np.bool_]]
+) -> bool:
+    if old.keys() != new.keys():
+        return False
+
+    for prod in old.keys():
+        if prod not in new.keys():
+            return False
+
+        if not np.array_equal(old, new):
+            return False
+
+    return True
+
+
 def matrix_based_cfpq(
     cfg: CFG,
     graph: DiGraph,
@@ -13,46 +29,43 @@ def matrix_based_cfpq(
     final_nodes: Set[int] = None,
 ) -> set[tuple[int, int]]:
     wcnf = cfg_to_weak_normal_form(cfg)
+
     # graph = <V, E, L> | grammar = <Σ, N, P, S>
 
     # print(graph.edges.data('label'))
     # print(cfg.productions, cfg.terminals)
 
-    adj_matrices: dict[str, NDArray[np.bool_]] = {}
-    matrix_shape = (len(graph.edges), len(graph.edges))
+    edges_count = len(graph.edges)
+
+    adj_matrices: dict[Production, NDArray[np.bool_]] = {}
+    matrix_shape = (edges_count, edges_count)
 
     terminal_values = [t.value for t in cfg.terminals]
 
     # fill adj matrices
-    for n, m, label in graph.edges.data("label"):
-        if label is None:
-            continue
-
+    for i, j, label in graph.edges.data("label"):
         # a ∈ Σ ∩ L
-        if label not in terminal_values:
+        if label is None or label not in terminal_values:
             continue
-
-        have_prod = False
-
-        # 𝐴 → ε
-        if n == m:  # (i, i)
-            for prod in wcnf.productions:
-                if len(prod.body) == 0 or prod.body[0] == Epsilon:
-                    have_prod = True
 
         # A → a
-        if not have_prod:
-            for prod in wcnf.productions:
-                if len(prod.body) > 0 and prod.body[0].value == label:
-                    have_prod = True
+        for prod in wcnf.productions:
+            if len(prod.body) > 0 and prod.body[0].value == label:
+                if prod not in adj_matrices.keys():
+                    adj_matrices[prod] = np.zeros(shape=matrix_shape, dtype=np.bool_)
 
-        if not have_prod:
+                adj_matrices[prod][i, j] = True  # 5
+
+    for prod in wcnf.productions:
+        # 𝐴 → ε
+        if len(prod.body) != 0 and prod.body[0] != Epsilon:  # 6
             continue
 
-        if label not in adj_matrices.keys():
-            adj_matrices[label] = np.zeros(shape=matrix_shape, dtype=np.bool_)
+        if prod not in adj_matrices.keys():
+            adj_matrices[prod] = np.zeros(shape=matrix_shape, dtype=np.bool_)
 
-        adj_matrices[label][n, m] = True
+        for i in graph.nodes:
+            adj_matrices[prod][i, i] = True  # 8
 
     pass
 
