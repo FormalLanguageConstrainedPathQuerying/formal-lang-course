@@ -1,4 +1,4 @@
-from pyformlang.cfg import CFG, Terminal, Production
+from pyformlang.cfg import CFG, Terminal, Production, Variable, Epsilon
 from networkx import DiGraph
 from numpy.typing import NDArray
 import numpy as np
@@ -6,20 +6,18 @@ from typing import Set, Tuple
 from task6 import cfg_to_weak_normal_form
 
 
-def is_equal(
-    old: dict[Production, NDArray[np.bool_]], new: dict[Production, NDArray[np.bool_]]
-) -> bool:
-    if old.keys() != new.keys():
-        return False
+# def is_equal(old: dict[Production, NDArray[np.bool_]], new: dict[Production, NDArray[np.bool_]]) -> bool:
+#     if old.keys() != new.keys():
+#         return False
 
-    for prod in old.keys():
-        if prod not in new.keys():
-            return False
+#     for prod in old.keys():
+#         if prod not in new.keys():
+#             return False
 
-        if not np.array_equal(old, new):
-            return False
+#         if not np.array_equal(old, new):
+#             return False
 
-    return True
+#     return True
 
 
 def matrix_based_cfpq(
@@ -29,15 +27,13 @@ def matrix_based_cfpq(
     final_nodes: Set[int] = None,
 ) -> set[tuple[int, int]]:
     wcnf = cfg_to_weak_normal_form(cfg)
+    print(wcnf.productions)
 
     # graph = <V, E, L> | grammar = <Σ, N, P, S>
 
-    # print(graph.edges.data('label'))
-    # print(cfg.productions, cfg.terminals)
-
     edges_count = len(graph.edges)
 
-    adj_matrices: dict[Production, NDArray[np.bool_]] = {}
+    adj_matrices: dict[Variable, NDArray] = {}
     matrix_shape = (edges_count, edges_count)
 
     terminal_values = [t.value for t in cfg.terminals]
@@ -51,27 +47,28 @@ def matrix_based_cfpq(
         # A → a
         for prod in wcnf.productions:
             if len(prod.body) > 0 and prod.body[0].value == label:
-                if prod not in adj_matrices.keys():
-                    adj_matrices[prod] = np.zeros(shape=matrix_shape, dtype=np.bool_)
+                A = prod.head
+                if A not in adj_matrices.keys():
+                    adj_matrices[A] = np.zeros(shape=matrix_shape, dtype=np.bool_)
 
-                adj_matrices[prod][i, j] = True  # 5
+                adj_matrices[A][i, j] = True  # 5
 
     for prod in wcnf.productions:
+        A = prod.head
         # 𝐴 → ε
         if len(prod.body) != 0 and prod.body[0] != Epsilon:  # 6
             continue
 
-        if prod not in adj_matrices.keys():
-            adj_matrices[prod] = np.zeros(shape=matrix_shape, dtype=np.bool_)
+        if A not in adj_matrices.keys():
+            adj_matrices[A] = np.zeros(shape=matrix_shape, dtype=np.bool_)
 
         for i in graph.nodes:
-            adj_matrices[prod][i, i] = True  # 8
+            adj_matrices[A][i, i] = True  # 8
 
     pass
 
 
 from networkx import MultiDiGraph
-from pyformlang.cfg import Production, Variable, Terminal, CFG, Epsilon
 
 graph = MultiDiGraph()
 graph.add_edges_from(
