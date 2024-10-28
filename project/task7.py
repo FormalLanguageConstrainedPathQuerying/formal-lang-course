@@ -14,23 +14,20 @@ def matrix_based_cfpq(
 ) -> set[tuple[int, int]]:
     wcnf = cfg_to_weak_normal_form(cfg)
 
-    print('\n')
-    print(cfg.productions)
-    print(graph.edges.data("label"))
-    print(start_nodes, final_nodes)
-
     # graph = <V, E, L> | grammar = <Σ, N, P, S>
 
-    edges_count = len(graph.edges)
+    nodes_count = len(graph.nodes)
 
     adj_matrices: dict[Variable, NDArray] = {}
-    matrix_shape = (edges_count, edges_count)
+    matrix_shape = (nodes_count, nodes_count)
 
     terminal_values = [t.value for t in cfg.terminals]
 
     # fill adj matrices
-    for i, j, label in graph.edges.data("label"):
-        # TODO i,j -> not indexes, it is nodes.
+    for n, m, label in graph.edges.data("label"):
+        i = list(graph.nodes).index(n)
+        j = list(graph.nodes).index(m)
+
         # a ∈ Σ ∩ L
         if (label is None) or (label not in terminal_values):
             continue
@@ -53,14 +50,17 @@ def matrix_based_cfpq(
         if A not in adj_matrices.keys():
             adj_matrices[A] = np.zeros(shape=matrix_shape, dtype=np.bool_)
 
-        for i in graph.nodes:
+        for i, _ in enumerate(graph.nodes):
             adj_matrices[A][i, i] = True  # 8
+
+    print(adj_matrices)
 
     # is empty
     if len(adj_matrices.keys()) == 0:
         return set()
 
     while True:
+        vars = adj_matrices.keys()
         changed = False
 
         for prod in wcnf.productions:
@@ -69,7 +69,8 @@ def matrix_based_cfpq(
                 B = prod.body[0]
                 C = prod.body[1]
 
-                print(A, B, C)
+                if A not in vars or B not in vars or C not in vars:
+                    continue
 
                 mult = adj_matrices[B] @ adj_matrices[C]
                 res = adj_matrices[A] + mult
@@ -87,11 +88,10 @@ def matrix_based_cfpq(
     T = adj_matrices[wcnf.start_symbol]
     pairs: set[tuple[int, int]] = set()
 
-    for i in start:
-        for j in final:
-            # TODO i, j -> not indexes
-            if T[i, j]:
-                pairs.add((i, j))
+    for i, node_i in enumerate(graph.nodes):
+        for j, node_j in enumerate(graph.nodes):
+            if node_i in start and node_j in final and T[i, j]:
+                pairs.add((node_i, node_j))
 
     return pairs
 
@@ -103,20 +103,9 @@ from networkx import MultiDiGraph
 # [1] [1]
 
 graph = MultiDiGraph()
-graph.add_node(1)
+graph.add_edges_from([(0, 1, dict(label = "b")), (1, 2, dict(label = "b")), (2, 0, dict(label = "b"))])
 # graph.add_edges_from([(0, 1, dict(label="b"))])
 
-var_S = Variable("S")
-var_B = Variable("B")
+grammar = CFG.from_text("S -> S b b | $")
 
-ter_a = Terminal("a")
-ter_b = Terminal("b")
-ter_c = Terminal("c")
-
-# Creation of productions
-p0 = Production(var_S, [var_S, ter_a])
-p1 = Production(var_S, [])
-
-grammar = CFG({var_S}, {ter_a}, var_S, {p0, p1})
-
-print(matrix_based_cfpq(grammar, graph, [1], [1]))
+print(matrix_based_cfpq(grammar, graph))
