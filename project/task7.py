@@ -1,9 +1,9 @@
-from pyformlang.cfg import CFG, Terminal, Production, Variable, Epsilon
+from pyformlang.cfg import CFG, Variable, Epsilon
 from networkx import DiGraph
 from numpy.typing import NDArray
 import numpy as np
-from typing import Set, Tuple
-from task6 import cfg_to_weak_normal_form
+from typing import Set
+from project.task6 import cfg_to_weak_normal_form
 
 
 def matrix_based_cfpq(
@@ -23,6 +23,12 @@ def matrix_based_cfpq(
 
     terminal_values = [t.value for t in cfg.terminals]
 
+    # init T^A
+    for prod in wcnf.productions:
+        A = prod.head
+        if A not in adj_matrices.keys():
+            adj_matrices[A] = np.zeros(shape=matrix_shape, dtype=np.bool_)
+
     # fill adj matrices
     for n, m, label in graph.edges.data("label"):
         i = list(graph.nodes).index(n)
@@ -36,8 +42,6 @@ def matrix_based_cfpq(
         for prod in wcnf.productions:
             if len(prod.body) > 0 and prod.body[0].value == label:
                 A = prod.head
-                if A not in adj_matrices.keys():
-                    adj_matrices[A] = np.zeros(shape=matrix_shape, dtype=np.bool_)
 
                 adj_matrices[A][i, j] = True  # 5
 
@@ -47,13 +51,8 @@ def matrix_based_cfpq(
         if len(prod.body) != 0 and prod.body[0] != Epsilon:  # 6
             continue
 
-        if A not in adj_matrices.keys():
-            adj_matrices[A] = np.zeros(shape=matrix_shape, dtype=np.bool_)
-
         for i, _ in enumerate(graph.nodes):
             adj_matrices[A][i, i] = True  # 8
-
-    print(adj_matrices)
 
     # is empty
     if len(adj_matrices.keys()) == 0:
@@ -94,18 +93,3 @@ def matrix_based_cfpq(
                 pairs.add((node_i, node_j))
 
     return pairs
-
-
-from networkx import MultiDiGraph
-
-# {S -> S Terminal(a), S -> }
-# []
-# [1] [1]
-
-graph = MultiDiGraph()
-graph.add_edges_from([(0, 1, dict(label = "b")), (1, 2, dict(label = "b")), (2, 0, dict(label = "b"))])
-# graph.add_edges_from([(0, 1, dict(label="b"))])
-
-grammar = CFG.from_text("S -> S b b | $")
-
-print(matrix_based_cfpq(grammar, graph))
