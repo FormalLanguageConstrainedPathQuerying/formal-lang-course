@@ -10,7 +10,6 @@ from project.task3 import AdjacencyMatrixFA
 def ms_bfs_based_rpq(
     regex: str, graph: MultiDiGraph, start_nodes: set[int], final_nodes: set[int]
 ) -> set[tuple[int, int]]:
-
     dfa_adj_matrix = AdjacencyMatrixFA(regex_to_dfa(regex))
     nfa_adj_matrix = AdjacencyMatrixFA(graph_to_nfa(graph, start_nodes, final_nodes))
 
@@ -18,9 +17,7 @@ def ms_bfs_based_rpq(
 
     labels = dfa_adj_matrix.adj_matrix.keys() & nfa_adj_matrix.adj_matrix.keys()
 
-    transposed = {
-        label: dfa_adj_matrix.adj_matrix[label].T for label in labels
-    }
+    transposed = {label: dfa_adj_matrix.adj_matrix[label].T for label in labels}
 
     start_states = [
         (dfa_st, nfa_st)
