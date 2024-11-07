@@ -2,7 +2,6 @@ import itertools
 from typing import Iterable
 from pyformlang.finite_automaton import Symbol, State
 import numpy as np
-from typing import Any
 from scipy import sparse
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton
 from project.hw2.graph_to_nfa_tool import graph_to_nfa
@@ -156,13 +155,22 @@ def intersect_automata(
     fa1_dim = automaton1.states_cnt
     fa2_dim = automaton2.states_cnt
 
-    new_states = [State((automaton1.numbered_node_labels[ind1], automaton2.numbered_node_labels[ind2]))
-                  for ind1 in range(fa1_dim) for ind2 in range(fa2_dim)]
+    new_states = [
+        State(
+            (
+                automaton1.numbered_node_labels[ind1],
+                automaton2.numbered_node_labels[ind2],
+            )
+        )
+        for ind1 in range(fa1_dim)
+        for ind2 in range(fa2_dim)
+    ]
 
     new_ind_to_state = {state: ind for (state, ind) in enumerate(new_states)}
     new_state_to_ind = {ind: state for (state, ind) in enumerate(new_states)}
     kron_labels = (
-        automaton1.boolean_decomposition.keys() & automaton2.boolean_decomposition.keys()
+        automaton1.boolean_decomposition.keys()
+        & automaton2.boolean_decomposition.keys()
     )
 
     inter_boolean_decomposition_matrices = {}
@@ -172,17 +180,31 @@ def intersect_automata(
             automaton1.boolean_decomposition[label],
             automaton2.boolean_decomposition[label],
         )
-    new_start_states = set(itertools.product(map(lambda x: x.value, automaton1.start_states),
-                                             map(lambda x: x.value, automaton2.start_states)))
-    new_start_states_ind = set(map(lambda state: new_state_to_ind[state], new_start_states))
+    new_start_states = set(
+        itertools.product(
+            map(lambda x: x.value, automaton1.start_states),
+            map(lambda x: x.value, automaton2.start_states),
+        )
+    )
+    new_start_states_ind = set(
+        map(lambda state: new_state_to_ind[state], new_start_states)
+    )
 
-    new_final_states = set(itertools.product(map(lambda x: x.value, automaton1.final_states),
-                                             map(lambda x: x.value, automaton2.final_states)))
-    new_final_states_ind = set(map(lambda state: new_state_to_ind[state], new_final_states))
+    new_final_states = set(
+        itertools.product(
+            map(lambda x: x.value, automaton1.final_states),
+            map(lambda x: x.value, automaton2.final_states),
+        )
+    )
+    new_final_states_ind = set(
+        map(lambda state: new_state_to_ind[state], new_final_states)
+    )
 
     for symb in kron_labels:
-        inter_boolean_decomposition_matrices[symb] = sparse.kron(automaton1.boolean_decomposition[symb],
-                                                                 automaton2.boolean_decomposition[symb]).tocsr()
+        inter_boolean_decomposition_matrices[symb] = sparse.kron(
+            automaton1.boolean_decomposition[symb],
+            automaton2.boolean_decomposition[symb],
+        ).tocsr()
     adjacency_matrix_fa = AdjacencyMatrixFA()
     adjacency_matrix_fa.states_cnt = fa1_dim * fa2_dim
     adjacency_matrix_fa.boolean_decomposition = inter_boolean_decomposition_matrices
