@@ -207,8 +207,8 @@
   def tensor_based_cfpq(
     rsm: pyformlang.rsa.RecursiveAutomaton,
     graph: nx.DiGraph,
-    final_nodes: set[int] = None,
     start_nodes: set[int] = None,
+    final_nodes: set[int] = None,
   ) -> set[tuple[int, int]]:
     pass
 
