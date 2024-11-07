@@ -158,8 +158,8 @@ def intersect_automata(
     new_states = [
         State(
             (
-                automaton1.numbered_node_labels[ind1],
-                automaton2.numbered_node_labels[ind2],
+                automaton1.numbered_node_labels[ind1].value,
+                automaton2.numbered_node_labels[ind2].value,
             )
         )
         for ind1 in range(fa1_dim)
