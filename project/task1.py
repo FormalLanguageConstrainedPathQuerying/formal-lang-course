@@ -3,11 +3,7 @@ import networkx as nx
 
 
 def get_info_from_graph_name(name: str):
-    try:
-        graph = cfpq_data.graph_from_csv(cfpq_data.download(name))
-    except FileNotFoundError as e:
-        raise e
-
+    graph = get_graph_by_name(name)
     labels = cfpq_data.get_sorted_labels(graph)
 
     return graph.number_of_nodes(), graph.number_of_edges(), labels
@@ -21,3 +17,11 @@ def create_two_cycles_graph_and_write_to_dot(n, m, labels, output_path):
         cfpq_data.graphs.generators.labeled_two_cycles_graph(n, m, labels=labels)
     )
     pydot_graph.write(output_path)
+
+
+def get_graph_by_name(name: str):
+    try:
+        graph = cfpq_data.graph_from_csv(cfpq_data.download(name))
+    except FileNotFoundError as e:
+        raise e
+    return graph
