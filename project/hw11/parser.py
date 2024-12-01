@@ -38,7 +38,6 @@ def tree_to_program(tree: ParserRuleContext) -> str:
                 reconstructed_string += child.getText() + " "
             else:
                 reconstructed_string += "\n"
-
         else:
             reconstructed_string += tree_to_program(child)
     return reconstructed_string
