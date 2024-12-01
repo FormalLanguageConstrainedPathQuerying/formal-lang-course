@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-antlr -Dlanguage=Python3 ../project/hw11/GLparser.g4
+antlr4 -Dlanguage=Python3 ../project/hw11/GLparser.g4
