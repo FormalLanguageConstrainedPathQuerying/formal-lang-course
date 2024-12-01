@@ -23,6 +23,9 @@ jobs:
 
       - name: Sync dependencies
         run: rye sync
-
+      - name: Make build script executable
+        run: chmod +x scripts/buildParser.sh
+      - name: Build parser
+        run:  scripts/./buildParser.sh
       - name: Run tests
         run: python scripts/run_tests.py
