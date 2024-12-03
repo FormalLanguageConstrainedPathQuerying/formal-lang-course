@@ -6,7 +6,7 @@ from pyformlang.rsa import RecursiveAutomaton
 from typing import Callable, Iterable
 
 try:
-    from project.task4 import ms_bfs_based_rpq
+    from project.bfs_rpq import ms_bfs_based_rpq
 except ImportError:
     pass
 
