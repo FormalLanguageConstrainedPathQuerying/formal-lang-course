@@ -1,8 +1,19 @@
 import antlr4
-from antlr4.tree.Tree import TerminalNode
 from antlr4 import ParserRuleContext
 from project.hw11.GLparserParser import GLparserParser
 from project.hw11.GLparserLexer import GLparserLexer
+
+
+class Listener(antlr4.ParseTreeListener):
+    def __init__(self):
+        self.tokens = []
+        self.count = 0
+
+    def visitTerminal(self, node):
+        self.tokens.append(node.getText())
+
+    def enterEveryRule(self, ctx):
+        self.count += 1
 
 
 def program_to_tree(program: str) -> tuple[ParserRuleContext, bool]:
@@ -17,27 +28,22 @@ def program_to_tree(program: str) -> tuple[ParserRuleContext, bool]:
     return tree, True
 
 
-def nodes_count(tree: ParserRuleContext) -> int:
-    if tree is None:
+def nodes_count(tree: antlr4.ParserRuleContext) -> int:
+    if not tree:
         return 0
-    count = 0
-    for i in range(tree.getChildCount()):
-        child = tree.getChild(i)
-        count += nodes_count(child)
-    return count
+
+    listener = Listener()
+    walker = antlr4.ParseTreeWalker()
+    walker.walk(listener, tree)
+
+    return listener.count
 
 
-def tree_to_program(tree: ParserRuleContext) -> str:
-    if tree is None:
+def tree_to_program(tree: antlr4.ParserRuleContext) -> str:
+    if not tree:
         return ""
+    listener = Listener()
+    walker = antlr4.ParseTreeWalker()
+    walker.walk(listener, tree)
+    return " ".join(listener.tokens)
 
-    reconstructed_string = ""
-    for child in tree.getChildren():
-        if isinstance(child, TerminalNode):
-            if child.getText() != "<EOF>":
-                reconstructed_string += child.getText() + " "
-            else:
-                reconstructed_string += "\n"
-        else:
-            reconstructed_string += tree_to_program(child)
-    return reconstructed_string
