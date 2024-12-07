@@ -11,8 +11,8 @@ from cfpq_concrete_cases import CASES_CFPQ, CaseCFPQ
 
 # Fix import statements in try block to run tests
 try:
-    from project.task6 import hellings_based_cfpq
-    from project.task7 import matrix_based_cfpq
+    from project.hellings_cfpq import hellings_based_cfpq
+    from project.matrix_cfpq import matrix_based_cfpq
 except ImportError:
     pytestmark = pytest.mark.skip("Task 7 is not ready to test!")
 
