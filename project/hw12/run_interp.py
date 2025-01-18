@@ -13,5 +13,5 @@ def interpret(code: str):
     return visitor
 
 if __name__ == '__main__':
-    interp = interpret('let q = a | c | b')
+    interp = interpret('let q = a|b^[1..3]')
     print(interp)

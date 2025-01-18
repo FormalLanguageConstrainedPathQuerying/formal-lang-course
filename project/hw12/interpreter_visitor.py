@@ -36,15 +36,29 @@ class InterpreterVisitor(GLparserVisitor):
             return regexp
 
         def visitRegexp(self, ctx: GLparserParser.RegexpContext):
-            tst = self.visitChildren(ctx)
+            # tst = self.visitChildren(ctx)
             if ctx.getChildCount() == 3:
                 op = ctx.getChild(1).getText()
-                left_regex = self.visit(ctx.getChild(0))
-                right_regex = self.visit(ctx.getChild(2))
-                return f"{left_regex} {op} {right_regex}"
+                if op == '|':
+                    left_regex = self.visit(ctx.getChild(0))
+                    right_regex = self.visit(ctx.getChild(2))
+                    return f"{left_regex} {op} {right_regex}"
+                elif op == '^':
+                    left_regex = self.visit(ctx.getChild(0))
+                    right_regex = self.visit(ctx.getChild(2))
+                    res_reg = ""
+                    for el in range(int(right_regex[0]), int(right_regex[1]) + 1):
+                        if el < int(right_regex[1]):
+                            res_reg = res_reg + ("(" + left_regex + ")") * el + "|"
+                        else:
+                            res_reg = res_reg + ("(" + left_regex + ")") * el
+                    return f"{res_reg}"
             if ctx.getChildCount() == 1:
-
                 return ctx.getChild(0).getText()
+        def visitRange(self, ctx:GLparserParser.RangeContext):
+            num_1 = ctx.getChild(1).getText()
+            num_2 = ctx.getChild(3).getText()
+            return(num_1, num_2)
 
         # def visitTerminal(self, node):
         #      return node
