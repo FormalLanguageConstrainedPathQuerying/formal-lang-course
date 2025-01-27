@@ -1,4 +1,6 @@
 from project.hw12.types_t import Types_t
+
+
 class Env:
     def __init__(self):
         self.__variable_types: dict[str, Types_t] = {}

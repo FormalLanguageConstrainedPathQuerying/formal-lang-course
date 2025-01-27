@@ -6,6 +6,7 @@ from project.hw12.type_inference import GLTypesInferencer
 from project.hw11.GLparserLexer import GLparserLexer
 from project.hw11.GLparserParser import GLparserParser
 
+
 def typing_program(program: str) -> bool:
     lexer = GLparserLexer(InputStream(program))
     stream = CommonTokenStream(lexer)
@@ -17,6 +18,7 @@ def typing_program(program: str) -> bool:
         return True
     except Exception:
         return False
+
 
 def exec_program(program: str) -> dict[str, set[tuple]]:
     lexer = GLparserLexer(InputStream(program))

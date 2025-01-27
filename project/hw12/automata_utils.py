@@ -4,6 +4,7 @@ from pyformlang.rsa import RecursiveAutomaton, Box
 from typing import Optional, Dict, List
 from functools import reduce
 
+
 class AutomataOperations:
     @staticmethod
     def from_char(c: str) -> EpsilonNFA:
@@ -50,7 +51,7 @@ class AutomataOperations:
         result = reduce(
             lambda acc, _: AutomataOperations.concat(acc, automaton),
             range(n - 1),
-            automaton
+            automaton,
         )
         return result.minimize()
 
@@ -61,9 +62,7 @@ class AutomataOperations:
 
     @staticmethod
     def repeat_with_range(
-            automaton: EpsilonNFA,
-            min_repeats: int,
-            max_repeats: Optional[int]
+        automaton: EpsilonNFA, min_repeats: int, max_repeats: Optional[int]
     ) -> EpsilonNFA:
         ops = AutomataOperations
 
@@ -95,8 +94,7 @@ class RSMBuilder:
 
     @staticmethod
     def build(
-            main_automaton: EpsilonNFA,
-            variable_automata: Dict[str, EpsilonNFA]
+        main_automaton: EpsilonNFA, variable_automata: Dict[str, EpsilonNFA]
     ) -> RecursiveAutomaton:
         boxes: List[Box] = [
             Box(automaton, Symbol(name.upper()))
@@ -105,8 +103,7 @@ class RSMBuilder:
         boxes.append(Box(main_automaton, Symbol(RSMBuilder.START_SYMBOL)))
 
         return RecursiveAutomaton(
-            initial_label=Symbol(RSMBuilder.START_SYMBOL),
-            boxes=boxes
+            initial_label=Symbol(RSMBuilder.START_SYMBOL), boxes=boxes
         )
 
 

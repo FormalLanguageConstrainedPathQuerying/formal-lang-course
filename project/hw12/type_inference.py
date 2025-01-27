@@ -5,7 +5,9 @@ from project.hw11.GLparserVisitor import GLparserVisitor
 
 def _check_type(expected: Types_t, actual: Types_t, context: str) -> None:
     if expected != actual:
-        raise Exception(f"Type mismatch in {context}: expected {expected}, got {actual}")
+        raise Exception(
+            f"Type mismatch in {context}: expected {expected}, got {actual}"
+        )
 
 
 class GLTypesInferencer(GLparserVisitor):
@@ -152,9 +154,11 @@ class GLTypesInferencer(GLparserVisitor):
         exprs = ctx.expr()
         types = [self.visitExpr(e) for e in exprs]
 
-        if (types[0] == Types_t.NUM and
-                types[1] == Types_t.CHAR and
-                types[2] == Types_t.NUM):
+        if (
+            types[0] == Types_t.NUM
+            and types[1] == Types_t.CHAR
+            and types[2] == Types_t.NUM
+        ):
             return Types_t.EDGE
 
         raise Exception(f"Invalid edge construction: {ctx.getText()}")

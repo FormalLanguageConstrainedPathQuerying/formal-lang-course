@@ -46,5 +46,3 @@ def tree_to_program(tree: antlr4.ParserRuleContext) -> str:
     walker = antlr4.ParseTreeWalker()
     walker.walk(listener, tree)
     return " ".join(listener.tokens)
-
-# program_to_tree()

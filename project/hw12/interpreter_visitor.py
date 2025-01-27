@@ -2,14 +2,21 @@ from project.hw11.GLparserVisitor import GLparserVisitor
 from networkx import MultiDiGraph
 from pyformlang.finite_automaton import EpsilonNFA
 from project.hw12.automata_utils import (
-    nfa_from_char, nfa_from_var, group, intersect,
-    concatenate, union, repeat_range, build_rsm
+    nfa_from_char,
+    nfa_from_var,
+    group,
+    intersect,
+    concatenate,
+    union,
+    repeat_range,
+    build_rsm,
 )
 from project.hw8.tensor_based_cfpq import tensor_based_cfpq
 
 
 def extract_var_name(ctx):
     return str(ctx.VAR().getText())
+
 
 class InterpreterVisitor(GLparserVisitor):
     def __init__(self):
@@ -59,8 +66,13 @@ class InterpreterVisitor(GLparserVisitor):
             return group(self.visitRegexp(ctx.regexp(0)))
 
         if ctx.PATDENY():
-            left, range_ = self.visitRegexp(ctx.regexp(0)), self.visitRange(ctx.range_())
-            return repeat_range(left, self.visitNum_p(range_[0]), self.visitNum_p(range_[1]))
+            left, range_ = (
+                self.visitRegexp(ctx.regexp(0)),
+                self.visitRange(ctx.range_()),
+            )
+            return repeat_range(
+                left, self.visitNum_p(range_[0]), self.visitNum_p(range_[1])
+            )
 
         left = self.visitRegexp(ctx.regexp(0))
         right = self.visitRegexp(ctx.regexp(1))
@@ -138,7 +150,7 @@ class InterpreterVisitor(GLparserVisitor):
         return (
             self.visitExpr(exprs[0]),
             self.visitExpr(exprs[1]),
-            self.visitExpr(exprs[2])
+            self.visitExpr(exprs[2]),
         )
 
     def visitRange(self, ctx):
