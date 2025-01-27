@@ -1,0 +1,11 @@
+class Types_t:
+    NUM = "num"
+    CHAR = "char"
+    SET = "SET<el>"
+    PAIR_SET = "SET<el * el>"
+    EDGE = "edge"
+    GRAPH = "graph"
+    FA = "FA"
+    RSM = "RSM"
+    RANGE = "RANGE"
+    UNKNOWN = "ERROR"
