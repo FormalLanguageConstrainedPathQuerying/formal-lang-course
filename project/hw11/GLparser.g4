@@ -1,5 +1,5 @@
 grammar GLparser;
-prog: EOL* (stmt EOL*)* EOF;
+prog: stmt*;
 
 stmt
     : bind
@@ -7,27 +7,30 @@ stmt
     | remove
     | declare;
 
-declare : LET VAR IS GRAPH;
-bind : LET VAR EQ expr;
-remove : REMOVE (VERTEX | EDGE | VERTICES) expr FROM VAR;
+declare : LET var_p IS GRAPH;
+bind : LET var_p EQ expr;
+remove : REMOVE (VERTEX | EDGE | VERTICES) expr FROM var_p;
 
-add : ADD (VERTEX | EDGE) expr TO VAR;
-expr : NUM | CHAR | VAR | edge_expr | set_expr | regexp | select;
+add : ADD (VERTEX | EDGE) expr TO var_p;
+expr : num_p | char_p | var_p | edge_expr | set_expr | regexp | select;
 set_expr : LBRACE expr (COMMA expr)* RBRACE;
 edge_expr : LPAREN expr COMMA expr COMMA expr RPAREN;
 
 regexp
-    : CHAR
-    | VAR
+    : char_p
+    | var_p
     | LPAREN regexp RPAREN
-    | regexp ALTERNATIVE regexp
     | regexp PATDENY range
+    | regexp REGAND regexp
     | regexp WILDCARD regexp
-    | regexp REGAND regexp;
+    | regexp ALTERNATIVE regexp;
 
-range : LBRACE NUM TWODOTS NUM? RBRACE;
-select : v_filter? v_filter? RETURN VAR (COMMA VAR)? WHERE VAR REACHABLE FROM VAR IN VAR BY expr;
-v_filter : FOR VAR IN expr;
+range : LBRACE num_p TWODOTS? num_p? RBRACE;
+select : v_filter? v_filter? RETURN var_p (COMMA var_p)? WHERE var_p REACHABLE FROM var_p IN var_p BY expr;
+v_filter : FOR var_p IN expr;
+var_p : VAR;
+char_p : CHAR;
+num_p : NUM;
 LET: 'let';
 IS: 'is';
 FROM: 'from';
@@ -50,7 +53,7 @@ RPAREN: ')';
 LBRACE: '[';
 RBRACE: ']';
 COMMA: ',';
-REGAND: '&';
+REGAND: '&'; // intersect
 ALTERNATIVE: '|';
 WILDCARD: '.';
 TWODOTS: '..';
@@ -58,5 +61,4 @@ PATDENY: '^';
 VAR: [a-z][a-z0-9]*;
 NUM: '0' | [1-9][0-9]*;
 CHAR: '"'[a-z]'"';
-EOL: '\n';
-WS: [ \t\r] -> skip;
+WS : [ \t\r\n\f]+ -> skip ;
