@@ -77,7 +77,7 @@ class TestProgramInterpreter:
             query_full_program = query.full_program()
             assert typing_program(deepcopy(query_full_program))
             separate_res = exec_program(deepcopy(query_full_program))
-            assert separate_res == res
+            assert separate_res[var] == res
             assert res == matrix_based_cfpq(
                 query.get_grammar(),
                 query.get_graph(),
