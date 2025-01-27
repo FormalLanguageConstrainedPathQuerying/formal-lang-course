@@ -11,7 +11,7 @@ from pyformlang.finite_automaton import (
     FiniteAutomaton,
     Symbol,
 )
-from scipy.sparse import csr_array, csr_matrix, kron
+from scipy.sparse import csc_matrix, kron
 
 from project.finite_automaton import graph_to_nfa, regex_to_dfa
 
@@ -19,8 +19,9 @@ from project.finite_automaton import graph_to_nfa, regex_to_dfa
 class AdjacencyMatrixFA:
     def __init__(self, fa: FiniteAutomaton):
         graph = fa.to_networkx()
-        self.states_count = graph.number_of_nodes()
+        self.states_count = len(fa.states)
         self.states = {state: i for i, state in enumerate(fa.states)}
+        self.indices_states = {i: state for state, i in self.states.items()}
         self.final_states = {self.states[state] for state in fa.final_states}
         self.start_states = {self.states[state] for state in fa.start_states}
 
@@ -37,8 +38,8 @@ class AdjacencyMatrixFA:
         for idx1, idx2, symbol in transit:
             transitions[symbol][idx1, idx2] = True
 
-        self.matrices: dict[Symbol, csr_array] = {
-            sym: csr_array(matrix) for (sym, matrix) in transitions.items()
+        self.matrices: dict[Symbol, csc_matrix] = {
+            sym: csc_matrix(matrix) for (sym, matrix) in transitions.items()
         }
 
     def accepts(self, word: Iterable[Symbol]) -> bool:
@@ -61,19 +62,16 @@ class AdjacencyMatrixFA:
 
         return False
 
-    def transitive_closure(self) -> csr_matrix:
-        base = csr_matrix((self.states_count, self.states_count), dtype=bool)
-        base.setdiag(True)
+    def transitive_closure(self) -> csc_matrix:
+        res = csc_matrix((self.states_count, self.states_count), dtype=bool)
+        res = reduce(lambda x, y: x + y, self.matrices.values(), res)
+        res.setdiag(True)
 
-        if not self.matrices:
-            return base
-
-        reach: csr_matrix = base + reduce(lambda x, y: x + y, self.matrices.values())
-
-        for i, j, k in itertools.product(range(self.states_count), repeat=3):
-            reach[j, k] = reach[j, k] or (reach[j, i] and reach[i, k])
-
-        return reach
+        while True:
+            res @= res
+            if (res != res @ res).nnz == 0:
+                break
+        return res
 
     def is_empty(self) -> bool:
         closure = self.transitive_closure()
@@ -105,7 +103,7 @@ def intersect_automata(
     for sym, am1 in amf1.matrices.items():
         if (am2 := amf2.matrices.get(sym)) is None:
             continue
-        new_amf.matrices[sym] = cast(csr_array, kron(am1, am2, format="csr"))
+        new_amf.matrices[sym] = cast(csc_matrix, kron(am1, am2, format="csr"))
 
     return new_amf
 
