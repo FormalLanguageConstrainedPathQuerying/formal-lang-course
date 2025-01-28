@@ -15,9 +15,10 @@ from cfpq_concrete_cases import CASES_CFPQ, CaseCFPQ
 
 # Fix import statements in try block to run tests
 try:
-    from project.task6 import hellings_based_cfpq
-    from project.task7 import matrix_based_cfpq
-    from project.task8 import tensor_based_cfpq, cfg_to_rsm, ebnf_to_rsm
+    from project.hw6.hellings_cfpq import hellings_based_cfpq
+    from project.hw7.matrix_cfpq import matrix_based_cfpq
+    from project.hw8.tensor_based_cfpq import tensor_based_cfpq
+    from project.tools.rsm_tools import cfg_to_rsm, ebnf_to_rsm
 except ImportError:
     pytestmark = pytest.mark.skip("Task 8 is not ready to test!")
 

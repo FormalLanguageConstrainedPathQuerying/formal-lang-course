@@ -20,9 +20,13 @@ jobs:
         uses: eifinger/setup-rye@v4
         with:
           enable-cache: true
-
+      - name: Install antlr
+        run: rye tools install antlr4-tools
       - name: Sync dependencies
         run: rye sync
-
+      - name: Make build script executable
+        run: chmod +x scripts/buildParser.sh
+      - name: Build parser
+        run:  scripts/./buildParser.sh
       - name: Run tests
         run: python scripts/run_tests.py

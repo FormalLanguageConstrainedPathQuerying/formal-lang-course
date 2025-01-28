@@ -14,7 +14,8 @@ from grammars_constants import REGEXES
 
 # Fix import statements in try block to run tests
 try:
-    from project.task2 import regex_to_dfa, graph_to_nfa
+    from project.hw2.graph_to_nfa_tool import graph_to_nfa
+    from project.hw2.regex_to_dfa_tool import regex_to_dfa
 except ImportError:
     pytestmark = pytest.mark.skip("Task 2 is not ready to test!")
 

@@ -11,8 +11,11 @@ from rpq_concrete_cases import CASES_RPQ, CaseRPQ
 
 # Fix import statements in try block to run tests
 try:
-    from project.task3 import tensor_based_rpq
-    from project.task4 import ms_bfs_based_rpq
+    # from project.hw3.test import tensor_based_rpq
+    # from project.hw4.test import ms_bfs_based_rpq
+
+    from project.hw3.AdjacencyMatrixFA import tensor_based_rpq
+    from project.hw4.ms_rpq import ms_bfs_based_rpq
 except ImportError:
     pytestmark = pytest.mark.skip("Task 4 is not ready to test!")
 
