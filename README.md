@@ -3,6 +3,9 @@
 ---
 # Formal Language Course
 
+> [!NOTE]
+> English version of the README can be found in [README.en.md](README.en.md).
+
 Курс по формальным языкам: шаблон структуры репозитория для выполнения домашних работ,
 а также материалы курса и другая сопутствующая информация.
 

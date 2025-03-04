@@ -2,15 +2,15 @@
 
 - [Tasks for "Formal Languages" course](#tasks-for-formal-languages-course)
   - [Task 1. Initializing the Working Environment](#task-1-initializing-the-working-environment)
-  - [Task 2. Constructing a Deterministic Finite Automaton from a Regular Expression and a Non-Deterministic Finite Automaton from a Graph](#task-2-constructing-a-deterministic-finite-automaton-from-a-regular-expression-and-a-non-deterministic-finite-automaton-from-a-graph)
-  - [Task 3. Regular Queries for All Pairs of Vertices](#task-3-regular-queries-for-all-pairs-of-vertices)
-  - [Task 4. Regular Queries for Multiple Start Vertices](#task-4-regular-queries-for-multiple-start-vertices)
-  - [Task 5. Experimental Study of Algorithms for Regular Queries](#task-5-experimental-study-of-algorithms-for-regular-queries)
-  - [Task 6. Grammar Transformation to weak Chomsky Normal Form (wCNF), Hellings' Algorithm](#task-6-grammar-transformation-to-weak-chomsky-normal-form-wcnf-hellings-algorithm)
-  - [Task 7. Matrix-Based Algorithm for Solving the Reachability Problem with CFG Constraints](#task-7-matrix-based-algorithm-for-solving-the-reachability-problem-with-cfg-constraints)
-  - [Task 8. Tensor Algorithm for Solving the Reachability Problem with CFG Constraints](#task-8-tensor-algorithm-for-solving-the-reachability-problem-with-cfg-constraints)
-  - [Task 9. Reachability Problem with CFG Constraints Based on the GLL Algorithm](#task-9-reachability-problem-with-cfg-constraints-based-on-the-gll-algorithm)
-  - [Task 10. Experimental Study of Algorithms for Solving the Reachability Problem with CFG Constraints](#task-10-experimental-study-of-algorithms-for-solving-the-reachability-problem-with-cfg-constraints)
+  - [Task 2. Constructing a DFA from a Regular Expression and a NFA from a Graph](#task-2-constructing-a-dfa-from-a-regular-expression-and-a-nfa-from-a-graph)
+  - [Task 3. All-pairs RPQ algorithm](#task-3-all-pairs-rpq-algorithm)
+  - [Task 4. Multiple-source BFS-based RPQ algorithm](#task-4-multiple-source-bfs-based-rpq-algorithm)
+  - [Task 5. Experimental Study of RPQ algorithms](#task-5-experimental-study-of-rpq-algorithms)
+  - [Task 6. Weak Chomsky Normal Form (wCNF) transformation, Helling's CFPQ Algorithm](#task-6-weak-chomsky-normal-form-wcnf-transformation-hellings-cfpq-algorithm)
+  - [Task 7. Matrix multiplication based CFPQ algorithm](#task-7-matrix-multiplication-based-cfpq-algorithm)
+  - [Task 8. Kronecker product based CFPQ algorithm](#task-8-kronecker-product-based-cfpq-algorithm)
+  - [Task 9. GLL-based CFPQ algorithm](#task-9-gll-based-cfpq-algorithm)
+  - [Task 10. Experimental Study of CFPQ algorithms](#task-10-experimental-study-of-cfpq-algorithms)
   - [Task 11. Graph Query Language](#task-11-graph-query-language)
     - [Specific Syntax](#specific-syntax)
     - [Type Inference Rules](#type-inference-rules)
@@ -20,23 +20,23 @@
 
 ## Task 1. Initializing the Working Environment
 
-Full points: 5
+> Max score: 5
 
 - [ ] Fork this repository.
 - [ ] Share a link to your fork with the instructor.
 - [ ] Add one of the assistants as a co-owner of your fork (instructor will tell you, who your assistant is).
 - [ ] Implement a module that provides the following functionalities.
-For working with graphs, use [cfpq-data](https://formallanguageconstrainedpathquerying.github.io/CFPQ_Data/tutorial.html#graphs).
-This module will be extended in the future. The functions to implement:
+  For working with graphs, use [cfpq-data](https://formallanguageconstrainedpathquerying.github.io/CFPQ_Data/tutorial.html#graphs).
+  This module will be extended in the future. The functions to implement:
   - [ ] Given the graph name, return the number of vertices, edges, and list the different labels that appear on the edges.
-  To get the graph by name, use [this function](https://formallanguageconstrainedpathquerying.github.io/CFPQ_Data/tutorial.html#load-graph).
+    To get the graph by name, use [this function](https://formallanguageconstrainedpathquerying.github.io/CFPQ_Data/tutorial.html#load-graph).
   - [ ] Based on the number of vertices in cycles and the labels of the edges, construct a [graph of two cycles](https://formallanguageconstrainedpathquerying.github.io/CFPQ_Data/reference/graphs/generated/cfpq_data.graphs.generators.labeled_two_cycles_graph.html#cfpq_data.graphs.generators.labeled_two_cycles_graph) and save it to a specified file in DOT format (use pydot).
 - [ ] Add necessary tests.
 
 
-## Task 2. Constructing a Deterministic Finite Automaton from a Regular Expression and a Non-Deterministic Finite Automaton from a Graph
+## Task 2. Constructing a DFA from a Regular Expression and a NFA from a Graph
 
-Full points: 5
+> Max score: 5
 
 - [ ] Using the features of [pyformlang](https://pyformlang.readthedocs.io/en/latest/), implement a **function** to build the minimal DFA (Deterministic Finite Automaton) from a given regular expression. [Regular expression format](https://pyformlang.readthedocs.io/en/latest/usage.html#regular-expression).
   - Required function:
@@ -56,14 +56,14 @@ If they are not specified, assume all vertices are start and final states.
   ```
 - [ ] Add your own tests as needed.
 
-## Task 3. Regular Queries for All Pairs of Vertices
+## Task 3. All-pairs RPQ algorithm
 
-Full points: 5
+> Max score: 5
 
 - [ ] Implement a type (`AdjacencyMatrixFA`) that represents a finite automaton as a sparse adjacency matrix from [sciPy](https://docs.scipy.org/doc/scipy/reference/sparse.html) (or its Boolean decomposition) along with information about start and final vertices.
-The type should have constructors from `DeterministicFiniteAutomaton` and `NondeterministicFiniteAutomaton` (the first being a subclass of the second, so they can be handled interchangeably) from [Task 2](#task-2-constructing-a-deterministic-finite-automaton-from-a-regular-expression-and-a-non-deterministic-finite-automaton-from-a-graph).
+  The type should have constructors from `DeterministicFiniteAutomaton` and `NondeterministicFiniteAutomaton` (the first being a subclass of the second, so they can be handled interchangeably) from [Task 2](#task-2-constructing-a-dfa-from-a-regular-expression-and-a-nfa-from-a-graph).
 - [ ] Implement an interpreter function for the `AdjacencyMatrixFA` type that determines whether the automaton accepts a given string and whether the language defined by the automaton is empty.
-It is recommended to use the transitive closure of the adjacency matrix to implement the second function.
+  It is recommended to use the transitive closure of the adjacency matrix to implement the second function.
   - Required functions:
      ```python
     def accepts(self, word: Iterable[Symbol]) -> bool:
@@ -78,7 +78,7 @@ It is recommended to use the transitive closure of the adjacency matrix to imple
              automaton2: AdjacencyMatrixFA) -> AdjacencyMatrixFA:
         pass
     ```
-- [ ] Based on the previous function, implement a **function** to execute regular queries on graphs: given a graph with specified start and final vertices and a regular expression, return the pairs of vertices from the start and final vertices that are connected by a path forming a word from the language defined by the regular expression.
+- [ ] Based on the previous function, implement a **function** to execute regular path queries on graphs: given a graph with specified start and final vertices and a regular expression, return the pairs of vertices from the start and final vertices that are connected by a path forming a word from the language defined by the regular expression.
   - Required function:
      ```python
     def tensor_based_rpq(regex: str, graph: MultiDiGraph, start_nodes: set[int],
@@ -86,15 +86,15 @@ It is recommended to use the transitive closure of the adjacency matrix to imple
         pass
     ```
 
-  - To construct the regular query and graph transformations, use the results from [Task 2](#task-2-constructing-a-deterministic-finite-automaton-from-a-regular-expression-and-a-non-deterministic-finite-automaton-from-a-graph).
+  - To construct the regular query and graph transformations, use the results from [Task 2](#task-2-constructing-a-dfa-from-a-regular-expression-and-a-nfa-from-a-graph).
 - [ ] Add your own tests as needed.
 
-## Task 4. Regular Queries for Multiple Start Vertices
+## Task 4. Multiple-source BFS-based RPQ algorithm
 
-Full points: 8
+> Max score: 8
 
 - [ ] Using [sparse matrices from sciPy](https://docs.scipy.org/doc/scipy/reference/sparse.html), implement a **function** for reachability with regular constraints for multiple start vertices (algorithm based on multiple source BFS through linear algebra).
-  - To construct the regular query and graph, use the results from [Task 2](#task-2-constructing-a-deterministic-finite-automaton-from-a-regular-expression-and-a-non-deterministic-finite-automaton-from-a-graph).
+  - To construct the regular query and graph, use the results from [Task 2](#task-2-constructing-a-dfa-from-a-regular-expression-and-a-nfa-from-a-graph).
   - Required function:
   ```python
   def ms_bfs_based_rpq(regex: str, graph: MultiDiGraph, start_nodes: set[int],
@@ -102,9 +102,10 @@ Full points: 8
     pass
   ```
 - [ ] Add your own tests as needed.
-## Task 5. Experimental Study of Algorithms for Regular Queries
 
-Full points: 15
+## Task 5. Experimental Study of RPQ algorithms
+
+> Max score: 15
 
 This task is dedicated to the performance analysis of the algorithm for solving the reachability problem between all pairs of vertices with a given set of start vertices under regular constraints.
 
@@ -128,7 +129,7 @@ The solution is not just code, but an experimental research report that should b
   - Graphs
   - Queries
 - Description of the experiment
-  - Equipment
+  - Hardware
   - What and how was measured, and how these measurements should help answer the questions posed
 - Experiment results
   - Graphs, tables
@@ -141,8 +142,10 @@ For writing the report, you may find inspiration in the recommendations [here (i
 - [ ] Create a Python notebook and include the necessary dependencies.
 - [ ] Include solutions from previous tasks.
 - [ ] Prepare the dataset.
-  - [ ] Choose several graphs from the [collection](https://formallanguageconstrainedpathquerying.github.io/CFPQ_Data/graphs/index.html). Be sure to justify why you selected these particular graphs.
-  - [ ] Using the function from the first homework, find the edge labels of the graphs and, based on this information, formulate at least four different queries for each graph. It's better to use the most commonly occurring labels. Query requirements:
+  - [ ] Choose several graphs from the [collection](https://formallanguageconstrainedpathquerying.github.io/CFPQ_Data/graphs/index.html).
+    Be sure to justify why you selected these particular graphs.
+  - [ ] Using the function from the first homework, find the edge labels of the graphs and, based on this information, formulate at least four different queries for each graph. It's better to use the most commonly occurring labels.
+    Query requirements:
       - Queries for all graphs should follow a common template. For example, if there are graphs `g1` and `g2` with different label sets, the queries might look like:
         - `g1`:
           - `(l1 | l2)* l3`
@@ -153,7 +156,8 @@ For writing the report, you may find inspiration in the recommendations [here (i
           - `(m1 | m3)+ m2*`
           - `m1 m2 m3 (m3|m1)*`
       - The queries should use all commonly accepted regular expression constructs (closure, concatenation, alternation). That is, at least one query for each graph must contain each of these constructs.
-  - [ ] To generate the sets of start vertices, use [this function](https://formallanguageconstrainedpathquerying.github.io/CFPQ_Data/reference/graphs/generated/cfpq_data.graphs.utils.multiple_source_utils.html#cfpq_data.graphs.utils.multiple_source_utils.generate_multiple_source). Remember that the computation time of the query depends heavily on how the start set is constructed.
+  - [ ] To generate the sets of start vertices, use [this function](https://formallanguageconstrainedpathquerying.github.io/CFPQ_Data/reference/graphs/generated/cfpq_data.graphs.utils.multiple_source_utils.html#cfpq_data.graphs.utils.multiple_source_utils.generate_multiple_source).
+    Remember that the computation time of the query depends heavily on how the start set is constructed.
 - [ ] Formulate the stages of the experiment. What needs to be done to answer the posed questions? Why?
 - [ ] Perform the necessary experiments and measurements.
 - [ ] Present the results of the experiments.
@@ -162,16 +166,16 @@ For writing the report, you may find inspiration in the recommendations [here (i
   - [ ] Justify the answers (using the results from the experiments).
 - [ ] Don't forget to publish the notebook in the repository.
 
-## Task 6. Grammar Transformation to weak Chomsky Normal Form (wCNF), Hellings' Algorithm
+## Task 6. Weak Chomsky Normal Form (wCNF) transformation, Helling's CFPQ Algorithm
 
-Full points: 10
+> Max score: 10
 
 - [ ] Using [pyformlang capabilities for working with context-free grammars](https://pyformlang.readthedocs.io/en/latest/usage.html#context-free-grammar), implement a **function** that transforms a context-free grammar into a weak Chomsky Normal Form (wCNF).
   ```python
   def cfg_to_weak_normal_form(cfg: pyformlang.cfg.CFG) -> pyformlang.cfg.CFG:
       pass
   ```
-- [ ] Implement a **function**, based on Hellings' algorithm, to solve the reachability problem between all pairs of vertices for a given graph and a given context-free grammar (not necessarily in WNF).
+- [ ] Implement a **function**, based on Hellings' algorithm, to solve the reachability problem between all pairs of vertices for a given graph and a given context-free grammar (not necessarily in wCNF).
   - For working with the graph, use functions from previous tasks.
   ```python
   def hellings_based_cfpq(
@@ -184,9 +188,9 @@ Full points: 10
   ```
 - [ ] Add custom tests if necessary.
 
-## Task 7. Matrix-Based Algorithm for Solving the Reachability Problem with CFG Constraints
+## Task 7. Matrix multiplication based CFPQ algorithm
 
-Full points: 10
+> Max score: 10
 
 - [ ] Implement a **function**, based on the matrix algorithm, that solves the reachability problem between all pairs of vertices for a given graph and a given context-free grammar.
   - Use the results from previous tasks for transforming the grammar into wCNF.
@@ -202,9 +206,9 @@ Full points: 10
     ```
 - [ ] Add custom tests if necessary.
 
-## Task 8. Tensor Algorithm for Solving the Reachability Problem with CFG Constraints
+## Task 8. Kronecker product based CFPQ algorithm
 
-Full points: 10
+> Max score: 10
 
 - [ ] Implement a **function**, based on the tensor algorithm, that solves the reachability problem between all pairs of vertices for a given graph and a given context-free grammar.
   - Use results from previous tasks for transforming the grammar into RSM. Explicitly describe **functions** for transforming CFG -> RSM and EBNF -> RSM.
@@ -227,9 +231,9 @@ Full points: 10
   ```
 - [ ] Add custom tests if necessary.
 
-## Task 9. Reachability Problem with CFG Constraints Based on the GLL Algorithm
+## Task 9. GLL-based CFPQ algorithm
 
-Full points: 15
+> Max score: 15
 
 - [ ] Implement a **function**, based on the Generalized LL algorithm (working with RSM), that solves the reachability problem between all pairs of vertices for a given graph and a given context-free grammar.
   - Use functions from previous tasks for working with graphs and RSM.
@@ -245,14 +249,14 @@ Full points: 15
   ```
 - [ ] Add custom tests if necessary.
 
-## Task 10. Experimental Study of Algorithms for Solving the Reachability Problem with CFG Constraints
+## Task 10. Experimental Study of CFPQ algorithms
 
-Full points: 20
+> Max score: 20
 
-This task is dedicated to analyzing the performance of different algorithms for solving the reachability problem between all pairs of vertices with context-free grammar (CFG) constraints: the Hellings algorithm, the matrix algorithm, the tensor algorithm, and the algorithm based on GLL.
+This task is dedicated to analyzing the performance of different algorithms for solving the reachability problem between all pairs of vertices with context-free constraints: the Helling's algorithm, the matrix algorithm, the tensor algorithm, and the algorithm based on GLL.
 During the analysis, the following questions need to be answered:
 - Which of the four algorithms has the best performance?
-- Does it make sense to use algorithms for CFG constraints to solve the reachability problem with regular constraints (since regular constraints are a special case of CFG) or is it better to use specialized algorithms for regular constraints?
+- Does it make sense to use CFPQ algorithms to solve the PRQ problem (since regular expressions are a special case of CFG) or is it better to use specialized algorithms for regular constraints?
 - How does the grammar affect the performance of the tensor algorithm and the GLL-based algorithm?
 If we fix the language, how do the properties of the grammar (size, (non)ambiguity) affect performance?
 
@@ -268,7 +272,7 @@ The solution is not just code but a report on the experimental study, which shou
   - Graphs
   - Queries
 - Experiment Description
-  - Equipment
+  - Hardware
   - What was measured, how these measurements help answer the research questions
 - Experimental Results
   - Graphs, tables
@@ -279,13 +283,13 @@ The solution is not just code but a report on the experimental study, which shou
 - [ ] Include the necessary solutions from previous tasks.
 - [ ] Prepare the dataset.
   - [ ] Choose some graphs from the [set](https://formallanguageconstrainedpathquerying.github.io/CFPQ_Data/graphs/index.html).
-  Be sure to justify why you chose these specific graphs.
-  Note that the set includes graphs and grammars for different application domains (RDF analysis, pointer analysis in C, Java program analysis).
-  It is recommended to choose graphs related to different areas.
+    Be sure to justify why you chose these specific graphs.
+    Note that the set includes graphs and grammars for different application domains (RDF analysis, pointer analysis in C, Java program analysis).
+    It is recommended to choose graphs related to different areas.
   - [ ] As queries, it is suggested to use grammars from the "Canonical grammars" section in the description of the corresponding graph ([example](https://formallanguageconstrainedpathquerying.github.io/CFPQ_Data/graphs/data/taxonomy_hierarchy.html#canonical-grammars)).
-  If necessary (e.g., when answering the third question), you can "optimize" the grammar by manually creating an optimal RSM, or conversely, transform it into a weak Chomsky Normal Form (wCNF), or make it (non)ambiguous.
+    If necessary (e.g., when answering the third question), you can "optimize" the grammar by manually creating an optimal RSM, or conversely, transform it into a weak Chomsky Normal Form (wCNF), or make it (non)ambiguous.
 - [ ] Define the steps of the experiment.
-What needs to be done to answer the research questions? Why?
+  What needs to be done to answer the research questions? Why?
 - [ ] Conduct the necessary experiments and measurements.
 - [ ] Present the experimental results.
 - [ ] Analyze the results.
@@ -295,7 +299,7 @@ What needs to be done to answer the research questions? Why?
 
 ## Task 11. Graph Query Language
 
-Full points: 15
+> Max score: 15
 
 ### Specific Syntax
 ```
@@ -492,11 +496,11 @@ The result of executing the program is a dictionary where the key is the variabl
 
 ### Task
 - [ ] Using ANTLR, implement a parser for the query language defined above.
-Specifically, implement a function that takes a string and returns the parse tree.
+  Specifically, implement a function that takes a string and returns the parse tree.
 - [ ] Implement a function that returns the number of nodes in the parse tree.
-**Make sure to use ANTLR's tree traversal mechanisms**.
+  **Make sure to use ANTLR's tree traversal mechanisms**.
 - [ ] Implement a function that takes the parse tree and reconstructs the original string.
-**Ensure to use ANTLR's tree traversal mechanisms**.
+  **Ensure to use ANTLR's tree traversal mechanisms**.
 - [ ] Extend the CI pipeline with a step to generate the parser from the specification. Note that the generated parser files should not be included in the repository.
   - Use standard [antlr4-tools](https://github.com/antlr/antlr4-tools) to obtain ANTLR in CI.
 
@@ -514,7 +518,7 @@ def tree_to_program(tree: ParserRuleContext) -> str:
 ```
 ## Task 12. Graph Query Language Interpreter
 
-Full points: 22
+> Max score: 22
 
 In this task, you need to develop an interpreter for the query language created in the previous task.
 Use the algorithms implemented in the previous tasks to execute the queries.
@@ -528,11 +532,11 @@ In fact, a separate function should be implemented that, given the parse tree, o
    - The type system should follow the rules specified in the previous task.
    - Try to make error messages as user-friendly as possible.
 - [ ] From the set of algorithms implemented in previous tasks for executing graph queries, choose those that will be used in the interpreter.
-Justify your choice (record it in the documentation).
+  Justify your choice (write it down in the documentation).
 - [ ] Using the parser from the previous task, the type inference system, and the chosen algorithms, implement the interpreter for the language described in the previous task.
    - You need to implement a function that, given the parse tree provided by ANTLR, returns a dictionary containing, for all bindings where the right-hand side is `select`, the name (left-hand side of the binding) as the key, and the result of executing the corresponding query as the value.
    - Ensure that error messages are appropriate.
-   This will make debugging easier for you.
+    This will make debugging easier for you.
    - Make the most of ANTLR's capabilities for working with the parse tree.
 - [ ] Add the necessary tests.
 
