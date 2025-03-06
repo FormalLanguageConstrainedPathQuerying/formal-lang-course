@@ -51,10 +51,8 @@ Points are awarded for the following:
 - Additional tasks assigned by the instructor, such as preparing course materials, implementing demonstration algorithms, etc.
   These are graded at the instructor's discretion, but no more than 30 points in total can be awarded.
 
-__TODO: первое предложение бредовое слегка и на русском. Надо поправить и там, и там__
-
-The final grade for the course is a weighted sum of the points for tasks and additional assignments, where the weight is the points for the nearest tests (chronologically speaking) to the right.
-One can think of the course as divided into blocks, where each block contains some exercises and a test that will weigh those exercises.
+The course is divided into blocks, where each block contains some exercises and a test that will weigh those exercises.
+The final grade for the course is a weighted sum of the points for the exercises and additional assignments, where the weight is the latest score for the test of the block.
 For example, suppose there are two blocks, each with 2 exercises and 2 tests.
 Let's say the first two exercises earned 4 and 5 points, and the remaining two earned 2.5 and 3 points respectively. For the first test, the score is 0.25 points, and for the second test, it is 0.75 points.
 Then, the final grade for the course would be:
