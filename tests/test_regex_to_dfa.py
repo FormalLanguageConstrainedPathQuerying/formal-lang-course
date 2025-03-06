@@ -1,4 +1,4 @@
-from project.converter import regex_to_dfa
+from project.task2 import regex_to_dfa
 from pyformlang.finite_automaton import Symbol
 
 def test_regex_to_dfa():

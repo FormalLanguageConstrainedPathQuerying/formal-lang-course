@@ -1,5 +1,4 @@
-from project.graph import create_two_cycle_graph
-import pytest
+from project.task1 import create_two_cycle_graph
 import filecmp
 import networkx
 import cfpq_data

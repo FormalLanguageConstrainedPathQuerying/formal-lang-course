@@ -1,5 +1,5 @@
 import cfpq_data
-from project.converter import graph_to_nfa
+from project.task2 import graph_to_nfa
 import pytest
 import networkx as nx  # Предполагаю, что графы создаются при помощи NetworkX
 
