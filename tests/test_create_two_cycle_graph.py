@@ -5,6 +5,7 @@ import cfpq_data
 import pydot
 import os
 
+
 def test_create_two_cycle_graph():
     nodes_left = 5
     nodes_right = 7

@@ -1,6 +1,7 @@
 from project.task2 import regex_to_dfa
 from pyformlang.finite_automaton import Symbol
 
+
 def test_regex_to_dfa():
     dfa = regex_to_dfa("abc|d")
     assert dfa.is_deterministic()
