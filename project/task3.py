@@ -33,8 +33,12 @@ class AdjacencyMatrixFA:
                 for second_state in second_states:
                     if symbol not in bool_decomposition:
                         bool_decomposition[symbol] = csr_matrix(
-                            (self.number_of_states, self.number_of_states), dtype=bool)
-                    bool_decomposition[symbol][self.state_to_index[first_state], self.state_to_index[second_state]] = True
+                            (self.number_of_states, self.number_of_states), dtype=bool
+                        )
+                    bool_decomposition[symbol][
+                        self.state_to_index[first_state],
+                        self.state_to_index[second_state],
+                    ] = True
         self.bool_decomposition = bool_decomposition
 
     def accepts(self, word: Iterable[Symbol]) -> bool:
@@ -83,10 +87,13 @@ class AdjacencyMatrixFA:
 
 
 def intersect_automata(
-        automaton1: AdjacencyMatrixFA,
-        automaton2: AdjacencyMatrixFA
+    automaton1: AdjacencyMatrixFA, automaton2: AdjacencyMatrixFA
 ) -> AdjacencyMatrixFA:
-    new_states = [State((s1, s2)) for s1, i1 in automaton1.state_to_index.items() for s2, i2 in automaton2.state_to_index.items()]
+    new_states = [
+        State((s1, s2))
+        for s1, i1 in automaton1.state_to_index.items()
+        for s2, i2 in automaton2.state_to_index.items()
+    ]
     new_state_to_index = {}
     new_index_to_state = {}
     for idx, st in enumerate(new_states):
@@ -96,15 +103,21 @@ def intersect_automata(
     new_start_states = set()
     for i1 in automaton1.start_states:
         for i2 in automaton2.start_states:
-            new_state = State((automaton1.index_to_state[i1], automaton2.index_to_state[i2]))
+            new_state = State(
+                (automaton1.index_to_state[i1], automaton2.index_to_state[i2])
+            )
             new_start_states.add(new_state_to_index[new_state])
     new_final_states = set()
     for i1 in automaton1.final_states:
         for i2 in automaton2.final_states:
-            new_state = State((automaton1.index_to_state[i1], automaton2.index_to_state[i2]))
+            new_state = State(
+                (automaton1.index_to_state[i1], automaton2.index_to_state[i2])
+            )
             new_final_states.add(new_state_to_index[new_state])
 
-    common_symbols = set(automaton1.bool_decomposition.keys()) & set(automaton2.bool_decomposition.keys())
+    common_symbols = set(automaton1.bool_decomposition.keys()) & set(
+        automaton2.bool_decomposition.keys()
+    )
 
     new_bool_decomposition = {}
     for symbol in common_symbols:

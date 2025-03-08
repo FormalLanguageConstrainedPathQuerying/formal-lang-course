@@ -3,4 +3,4 @@ from project.task1 import get_graph_info
 
 def test_get_graph_info():
     info = get_graph_info("bzip")
-    assert (632, 556, ['d', 'a']) == info
+    assert (632, 556, ["d", "a"]) == info

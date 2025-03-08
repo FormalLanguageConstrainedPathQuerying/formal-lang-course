@@ -5,8 +5,11 @@ import networkx
 def get_graph_info(name: str):
     path = cfpq_data.download(name)
     graph = cfpq_data.graph_from_csv(path)
-    print('\n', graph.number_of_nodes(), graph.number_of_edges(), cfpq_data.get_sorted_labels(graph), '\n')
-    return graph.number_of_nodes(), graph.number_of_edges(), cfpq_data.get_sorted_labels(graph)
+    return (
+        graph.number_of_nodes(),
+        graph.number_of_edges(),
+        cfpq_data.get_sorted_labels(graph),
+    )
 
 
 def create_two_cycle_graph(n, m, labels, path):
