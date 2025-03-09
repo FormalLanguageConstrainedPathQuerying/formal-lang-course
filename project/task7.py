@@ -4,13 +4,13 @@ from typing import Set
 from project.task6 import cfg_to_weak_normal_form
 from scipy.sparse import csr_matrix
 
+
 def matrix_based_cfpq(
     cfg: CFG,
     graph: nx.DiGraph,
     start_nodes: Set[int] = None,
     final_nodes: Set[int] = None,
 ) -> set[tuple[int, int]]:
-
     weak_normal_form = cfg_to_weak_normal_form(cfg)
     node_to_idx = {node: index for index, node in enumerate(graph.nodes)}
     idx_to_node = {index: node for node, index in node_to_idx.items()}
@@ -39,14 +39,19 @@ def matrix_based_cfpq(
         label = data["label"]
         for production in term_prods:
             if production.body[0].value == label:
-                bool_decomposition[production.head][node_to_idx[i], node_to_idx[j]] = True
+                bool_decomposition[production.head][node_to_idx[i], node_to_idx[j]] = (
+                    True
+                )
 
     changed = True
     while changed:
         changed = False
         for production in var_prods:
             old = bool_decomposition[production.head.value].nnz
-            new_matrix = bool_decomposition[production.body[0].value] @ bool_decomposition[production.body[1].value]
+            new_matrix = (
+                bool_decomposition[production.body[0].value]
+                @ bool_decomposition[production.body[1].value]
+            )
             bool_decomposition[production.head.value] += new_matrix
             new = bool_decomposition[production.head.value].nnz
             changed = changed or (old != new)
