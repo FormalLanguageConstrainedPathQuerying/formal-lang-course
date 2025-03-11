@@ -7,7 +7,6 @@
 а также материалы курса и другая сопутствующая информация.
 
 Актуальное:
-- [Таблица с текущими результатами](https://docs.google.com/spreadsheets/d/1X7Hx6IyltD_NyTTphyzbN74Ag-G_LDzUu4OGcHoI8tg/edit?usp=sharing)
 - [Список задач](https://github.com/FormalLanguageConstrainedPathQuerying/formal-lang-course/blob/main/tasks.md)
 - [Стиль кода как референс](https://www.python.org/dev/peps/pep-0008/)
 - [О достижимости с ограничениями в терминах формальных языков](https://github.com/FormalLanguageConstrainedPathQuerying/FormalLanguageConstrainedReachability-LectureNotes)
@@ -100,7 +99,7 @@
     ```shell
     pre-commit run --all-files
     ```
-- Ссылка на свой `fork` репозитория размещается в [таблице](https://docs.google.com/spreadsheets/d/1X7Hx6IyltD_NyTTphyzbN74Ag-G_LDzUu4OGcHoI8tg/edit?usp=sharing) курса с результатами.
+- Ссылка на свой `fork` репозитория размещается в таблице курса с результатами.
 - В свой репозиторий необходимо добавить проверяющих с `admin` правами на чтение, редактирование и проверку `pull-request`'ов.
 
 ## Домашние практические работы
