@@ -32,13 +32,12 @@ Technology stack:
   - [Working with the Project](#working-with-the-project)
   - [Homework](#homework)
     - [Completing homework](#completing-homework)
-    - [Получение оценки за домашнюю работу](#получение-оценки-за-домашнюю-работу)
+    - [Exercise grading rules](#exercise-grading-rules)
   - [Code style](#code-style)
   - [Tests and Autotests](#tests-and-autotests)
   - [Experiments](#experiments)
   - [Repository Structure](#repository-structure)
   - [Course developers](#course-developers)
-  - [Вместо введения](#вместо-введения)
 
 ## Grading
 
@@ -53,7 +52,7 @@ Points are awarded for the following:
 
 The course is divided into blocks, where each block contains some exercises and a test that will weigh those exercises.
 The final grade for the course is a weighted sum of the points for the exercises and additional assignments, where the weight is the latest score for the test of the block.
-For example, suppose there are two blocks, each with 2 exercises and 2 tests.
+For example, suppose there are two blocks, each with 2 exercises, and 2 tests.
 Let's say the first two exercises earned 4 and 5 points, and the remaining two earned 2.5 and 3 points respectively. For the first test, the score is 0.25 points, and for the second test, it is 0.75 points.
 Then, the final grade for the course would be:
 $(4 + 5) * 0.25 + (2.5 + 3) * 0.75 = 6.375$.
@@ -69,11 +68,9 @@ Points are converted to grades as follows:
 | (50 -- 60]  |   E   |      3      |
 |  [0 -- 50]  |   F   |      2      |
 
-__TODO: Подумать надо ли как-то поменять табличку выше__
-
 ### Tests
 
-A "test" is a small assessment (lasting 5-10 minutes) that is written during a class (usually at the beginning).
+A test is a small assessment (lasting 5-10 minutes) that is written during a class (usually at the beginning).
 The typical number of tests during a course is 2-3.
 During the test, students can use any materials, but the time limit is strictly enforced.
 Tests can be rewritten (rewrites are usually centralized at the end of the semester), but with each rewrite, the maximum possible score for the test is halved.
@@ -150,17 +147,16 @@ Additionally, keep the following points in mind:
 - When the review is complete and the task is **approved**, it must be merged into the `main` branch of your fork.
 - The results of completed exercises will be reused in subsequent homework assignments.
 
-### Получение оценки за домашнюю работу
+### Exercise grading rules
 
-__TODO: Здесь вроде что-то надо было чинить, так что пока не переводил__
-
-- Если ревью было запрошено _до_ **дедлайна** _и_ задача зачтена с **с первой попытки** _и_ после запроса ревью и до самого ревью в ветку не было коммитов, то вы получаете **полный балл за домашнюю работу**.
-- Все остальные варианты --- меньшее количество баллов. Частые случаи:
-  - Если проверка запрошена _после_ **дедлайна** _и_ **потрачено не больше трёх попыток**, то вы получаете **половину полного балла за домашнюю работу**.
-  - Если проверка запрошена _до_ **дедлайна** _но_ **потрачено больше одной и не больше трёх попыток**, то вы получаете **половину полного балла за домашнюю работу**.
-    - Для задач на постановку экспериментов и последней задачи (разработка интерпретатора) в данном случае получаете **3/4 от полного балла (75%)**.
-  - Если исчерпано количество попыток сдать задачу (больше трёх), то за неё получаете **0 баллов**.
-- Если после запроса ревью и до самого ревью в ветку были ещё коммиты, то за задачу можно получить **максимум половину баллов**. То есть в предыдущих пунктах заменяем **полный балл** на **половину полного балла**.
+- If a review was requested _before_ **the deadline** _and_ the task was accepted **on the first attempt**, _and_ no commits were made to the branch between the review request and the review itself, you receive **full score for the homework**.
+- All other cases result in a lower score. Common scenarios:
+  - If the review was requested _after_ **the deadline** _and_ **no more than three attempts were used**, you receive **half of the full score for the homework**.
+  - If the review was requested _before_ **the deadline** _but_ more than one and no more than three attempts were used, you receive **half of the score for the homework**.
+    - For tasks involving experiments and the final task (developing an interpreter), in this case, you receive **3/4 of the full score (75%)**.
+  - If the maximum number of attempts (more than three) has been used, you receive **0 points** for the task.
+- If commits were made to the branch between the review request and the review itself, the maximum possible score for the task is **only half**.
+  In other words, in the previous scenarios, replace **full score** with **half score**.
 
 ## Code style
 
@@ -234,61 +230,3 @@ An experiment (setup, measurements, results, analysis of results) should be docu
 - Vadim Abzalov [@vadyushkins](https://github.com/vadyushkins)
 - Rustam Azimov [@rustam-azimov](https://github.com/rustam-azimov)
 - Ekaterina Shemetova [@katyacyfra](https://github.com/katyacyfra)
-
-## Вместо введения
-
-__TODO: этот раздел переводить?__
-
-Данный курс является прикладным. Основная задача --- показать, что формальные языки возникают и могут применяться в разных областях. Примеры таких областей:
-
-- Синтаксический анализ языков программирования: в компиляторах, интерпертаторах, средах разработки, других инстументах.
-- Анализ естественных языков. Активность в этой области несколько спала, так как на передний план сейчас вышли различные методы машинного обучения.
-  Однако и в этой области ведуться работы.Например, [International Conference on Parsing Technologies](http://www.wikicfp.com/cfp/program?id=1853).
-- Статический анализ кода.
-  - Различные задачи межпроцедурного анализа. Основной подход --- language reachability. Основоположник --- Томас Репс. Примеры работ.
-    - Thomas Reps. 1997. Program analysis via graph reachability. In Proceedings of the 1997 international symposium on Logic programming (ILPS ’97). MIT Press, Cambridge, MA, USA, 5–19.
-    - Qirun Zhang and Zhendong Su. 2017. Context-sensitive data-dependence analysis via linear conjunctive language reachability. In Proceedings of the 44th ACM SIGPLAN Symposium on Principles of Programming Languages (POPL 2017). Association for Computing Machinery, New York, NY, USA, 344–358. DOI:https://doi.org/10.1145/3009837.3009848
-    - Kai Wang, Aftab Hussain, Zhiqiang Zuo, Guoqing Xu, and Ardalan Amiri Sani. 2017. Graspan: A Single-machine Disk-based Graph System for Interprocedural Static Analyses of Large-scale Systems Code. In Proceedings of the Twenty-Second International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS ’17). Association for Computing Machinery, New York, NY, USA, 389–404. DOI:https://doi.org/10.1145/3037697.3037744
-    - Lu Y., Shang L., Xie X., Xue J. (2013) An Incremental Points-to Analysis with CFL-Reachability. In: Jhala R., De Bosschere K. (eds) Compiler Construction. CC 2013. Lecture Notes in Computer Science, vol 7791. Springer, Berlin, Heidelberg
-  - Интерливинг (или шафл) языков для верификаци многопоточных программ.
-    - [Approximating the Shuffle of Context-free Languages to Find Bugs in Concurrent Recursive Programs](http://uu.diva-portal.org/smash/get/diva2:442518/FULLTEXT01.pdf)
-    - Flick N.E. (2015) Quotients of Unbounded Parallelism. In: Leucker M., Rueda C., Valencia F. (eds) Theoretical Aspects of Computing - ICTAC 2015. ICTAC 2015. Lecture Notes in Computer Science, vol 9399. Springer, Cham
-
-  - Система типов Java: [Radu Grigore, Java Generics are Turing Complete](https://arxiv.org/abs/1605.05274).
-
-- Графовые базы данных. Поиск путей с ограничениями.
-    - Maurizio Nolé and Carlo Sartiani. 2016. Regular Path Queries on Massive Graphs. In Proceedings of the 28th International Conference on Scientific and Statistical Database Management (SSDBM ’16). Association for Computing Machinery, New York, NY, USA, Article 13, 1–12. DOI:https://doi.org/10.1145/2949689.2949711
-    - Jochem Kuijpers, George Fletcher, Nikolay Yakovets, and Tobias Lindaaker. 2019. An Experimental Study of Context-Free Path Query Evaluation Methods. In Proceedings of the 31st International Conference on Scientific and Statistical Database Management (SSDBM ’19). Association for Computing Machinery, New York, NY, USA, 121–132. DOI:https://doi.org/10.1145/3335783.3335791
-    - [Jelle Hellings. Querying for Paths in Graphs using Context-Free Path Queries.](https://arxiv.org/abs/1502.02242)
-
-- Биоинформатика. В основном это анализ геномных и белковых последовательностей.
-    - [Witold Dyrka, Mateusz Pyzik, Francois Coste, and Hugo Talibart. Estimating probabilistic context-free grammars for proteins using contact map constraints.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6428041/)
-    - [James WJ Anderson, Paula Tataru, Joe Staines, Jotun Hein, and Rune Lyngso. Evolving stochastic context-free grammars for RNA secondary structure prediction.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3464655/)
-    - [Ryan Zier-Vogel. Predicting RNA secondary structure using a stochastic conjunctive grammar.](https://www.semanticscholar.org/paper/Predicting-RNA-secondary-structure-using-a-grammar-Zier-Vogel/90bb312cb1a0f61eddb7a8b5b782bb40630894dd).
-
-- Машинное обучение.
-   - [Matt J. Kusner, Brooks Paige, José Miguel Hernández-Lobato. Grammar Variational Autoencoder](https://arxiv.org/abs/1703.01925). Опубликована в 2017 году и уже [больше 950 цитирований.](https://scholar.google.com/scholar?cites=4080460899049502885&as_sdt=2005&sciodt=0,5&hl=ru)
-   - [TAG Parsing with Neural Networks and Vector Representations of Supertags](https://www.aclweb.org/anthology/D17-1180.pdf). К разговору об оброаботке естественных языков.
-   - [Jungo Kasai, Robert Frank, Pauli Xu, William Merrill, Owen Rambow. End-to-end Graph-based TAG Parsing with Neural Networks.](https://arxiv.org/abs/1804.06610)
-
-- Языки --- это не только про строки.
-  - Языки деревьев: [Tree Automata Techniques and Applications](http://tata.gforge.inria.fr/).
-  - Языки графов:
-     - [Graph Grammars](http://www.its.caltech.edu/~matilde/GraphGrammarsLing.pdf)
-     - [HYPEREDGE REPLACEMENT GRAPH GRAMMARS](https://people.cs.umu.se/drewes/biblio/ps-files/hrg.pdf)
-     - [(Re)introducing Regular Graph Languages](https://www.aclweb.org/anthology/W17-3410.pdf)
-     - [Hyperedge Replacement: Grammars and Languages](https://www.springer.com/gp/book/9783540560050)
-  - $\ldots$
-- Теория групп. Как правило, это проблема слов группы или дополнение к ней.
-   - Anisimov, A.V. Group languages. Cybern Syst Anal (1971) 7: 594.
-   - David E. Muller, Paul E. Schupp, Groups, the Theory of ends, and context-free languages, Journal of Computer and System Sciences, Volume 26, Issue 3, 1983, Pages 295-310, ISSN 0022-0000
-   - HOLT, D., REES, S., ROVER, C., \& THOMAS, R. (2005). GROUPS WITH CONTEXT-FREE CO-WORD PROBLEM. Journal of the London Mathematical Society, 71(3), 643-657. doi:10.1112/S002461070500654X
-   - [Groups with Context-Free Co-Word Problem and Embeddings into Thompson's Group V](https://arxiv.org/abs/1407.7745)
-   - [Kropholler, R. \& Spriano, D. (2019). Closure properties in the class of multiple context-free groups. Groups Complexity Cryptology, 11(1), pp. 1-15. Retrieved 13 Feb. 2020, from doi:10.1515/gcc-2019-2004](https://www.degruyter.com/view/j/gcc.2019.11.issue-1/gcc-2019-2004/gcc-2019-2004.xml)
-   - [Word problems of groups, formal languages and decidability](https://personalpages.manchester.ac.uk/staff/Mark.Kambites/events/nbsan/nbsan17_thomas.pdf)
-
-- Прочая интересная математика.
-  - Немного топологии в теории формальных языков: [Salvati S. On is an n-MCFL. – 2018.](https://hal.archives-ouvertes.fr/hal-01771670/)
-  - Salvati S. MIX is a 2-MCFL and the word problem in Z2 is captured by the IO and the OI hierarchies //Journal of Computer and System Sciences. -- 2015. -- Т. 81. -- \textnumero. 7. -- С. 1252-1277.
-  - О том, как задачи из теории графов связаны с теорией формальных языков: Abboud, Amir \& Backurs, Arturs \& Williams, Virginia. (2015). If the Current Clique Algorithms are Optimal, So is Valiant's Parser. 98-117. 10.1109/FOCS.2015.16.
-  - [A context-free grammar for the Ramanujan-Shor polynomials](https://www.sciencedirect.com/science/article/abs/pii/S0196885819300739)

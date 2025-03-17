@@ -12,7 +12,7 @@
   - [Task 9. GLL-based CFPQ algorithm](#task-9-gll-based-cfpq-algorithm)
   - [Task 10. Experimental Study of CFPQ algorithms](#task-10-experimental-study-of-cfpq-algorithms)
   - [Task 11. Graph Query Language](#task-11-graph-query-language)
-    - [Specific Syntax](#specific-syntax)
+    - [Concrete Syntax](#concrete-syntax)
     - [Type Inference Rules](#type-inference-rules)
     - [Dynamic Semantics of the Query Language](#dynamic-semantics-of-the-query-language)
     - [Task](#task)
@@ -61,7 +61,7 @@ If they are not specified, assume all vertices are start and final states.
 > Max score: 5
 
 - [ ] Implement a type (`AdjacencyMatrixFA`) that represents a finite automaton as a sparse adjacency matrix from [sciPy](https://docs.scipy.org/doc/scipy/reference/sparse.html) (or its Boolean decomposition) along with information about start and final vertices.
-  The type should have constructors from `DeterministicFiniteAutomaton` and `NondeterministicFiniteAutomaton` (the first being a subclass of the second, so they can be handled interchangeably) from [Task 2](#task-2-constructing-a-dfa-from-a-regular-expression-and-a-nfa-from-a-graph).
+  Instances must be initialized with `DeterministicFiniteAutomaton` and `NondeterministicFiniteAutomaton` (the first being a subclass of the second, so they can be handled interchangeably) from [Task 2](#task-2-constructing-a-dfa-from-a-regular-expression-and-a-nfa-from-a-graph).
 - [ ] Implement an interpreter function for the `AdjacencyMatrixFA` type that determines whether the automaton accepts a given string and whether the language defined by the automaton is empty.
   It is recommended to use the transitive closure of the adjacency matrix to implement the second function.
   - Required functions:
@@ -71,14 +71,14 @@ If they are not specified, assume all vertices are start and final states.
     def is_empty(self) -> bool:
       pass
     ```
-- [ ] Using [sparse matrices from sciPy](https://docs.scipy.org/doc/scipy/reference/sparse.html), implement a **function** to compute the intersection of two finite automata through tensor product.
+- [ ] Using [sparse matrices from sciPy](https://docs.scipy.org/doc/scipy/reference/sparse.html), implement a **function** to compute the intersection of two finite automata by computing tensor product.
   - Required function:
      ```python
     def intersect_automata(automaton1: AdjacencyMatrixFA,
              automaton2: AdjacencyMatrixFA) -> AdjacencyMatrixFA:
         pass
     ```
-- [ ] Based on the previous function, implement a **function** to execute regular path queries on graphs: given a graph with specified start and final vertices and a regular expression, return the pairs of vertices from the start and final vertices that are connected by a path forming a word from the language defined by the regular expression.
+- [ ] Based on the previous function, implement a **function** to evaluate regular path queries on graphs: given a graph with specified start and final vertices and a regular expression, return the pairs of vertices from the start and final vertices that are connected by a path forming a word from the language defined by the regular expression.
   - Required function:
      ```python
     def tensor_based_rpq(regex: str, graph: MultiDiGraph, start_nodes: set[int],
@@ -93,7 +93,7 @@ If they are not specified, assume all vertices are start and final states.
 
 > Max score: 8
 
-- [ ] Using [sparse matrices from sciPy](https://docs.scipy.org/doc/scipy/reference/sparse.html), implement a **function** for reachability with regular constraints for multiple start vertices (algorithm based on multiple source BFS through linear algebra).
+- [ ] Using [sparse matrices from sciPy](https://docs.scipy.org/doc/scipy/reference/sparse.html), implement a **function** for reachability with regular constraints for multiple start vertices (algorithm based on multiple source BFS and linear algebra).
   - To construct the regular query and graph, use the results from [Task 2](#task-2-constructing-a-dfa-from-a-regular-expression-and-a-nfa-from-a-graph).
   - Required function:
   ```python
@@ -122,7 +122,7 @@ In order to ensure the possibility of verification, the notebook must be self-co
 Additionally, the notebook should include a report and an analysis of the results of your experiments in textual form.
 The report should be accompanied by diagrams, tables, and images, if necessary, to explain the results.
 
-The solution is not just code, but an experimental research report that should be a connected text containing (at a minimum) the following sections:
+The solution is not just code, but an experimental research report that should be a connected text containing (at least) the following sections:
 - Problem statement
 - Description of the solutions being researched
 - Description of the dataset for the experiments
@@ -144,7 +144,7 @@ For writing the report, you may find inspiration in the recommendations [here (i
 - [ ] Prepare the dataset.
   - [ ] Choose several graphs from the [collection](https://formallanguageconstrainedpathquerying.github.io/CFPQ_Data/graphs/index.html).
     Be sure to justify why you selected these particular graphs.
-  - [ ] Using the function from the first homework, find the edge labels of the graphs and, based on this information, formulate at least four different queries for each graph. It's better to use the most commonly occurring labels.
+  - [ ] Using the function from the first homework, find the edge labels of the graphs and, based on this information, formulate at least four different queries for each graph. It's better to use the most frequent labels.
     Query requirements:
       - Queries for all graphs should follow a common template. For example, if there are graphs `g1` and `g2` with different label sets, the queries might look like:
         - `g1`:
@@ -258,7 +258,7 @@ During the analysis, the following questions need to be answered:
 - Which of the four algorithms has the best performance?
 - Does it make sense to use CFPQ algorithms to solve the PRQ problem (since regular expressions are a special case of CFG) or is it better to use specialized algorithms for regular constraints?
 - How does the grammar affect the performance of the tensor algorithm and the GLL-based algorithm?
-If we fix the language, how do the properties of the grammar (size, (non)ambiguity) affect performance?
+  If we fix the language, how do the properties of the grammar (size, (non)ambiguity) affect performance?
 
 The solution to this task should be presented as a Python notebook.
 To ensure the possibility of verification, the notebook must be self-contained: it should include all actions necessary to reproduce the experiment.
@@ -301,7 +301,7 @@ The solution is not just code but a report on the experimental study, which shou
 
 > Max score: 15
 
-### Specific Syntax
+### Concrete Syntax
 ```
 prog = stmt*
 
@@ -521,7 +521,7 @@ def tree_to_program(tree: ParserRuleContext) -> str:
 > Max score: 22
 
 In this task, you need to develop an interpreter for the query language created in the previous task.
-Use the algorithms implemented in the previous tasks to execute the queries.
+Use the algorithms implemented in the previous tasks to evaluate the queries.
 In addition to the implementation, you must provide minimal documentation explaining the decisions made during the implementation process (for example, in a README).
 
 Note that in addition to the interpreter itself, you also need to implement type inference.
