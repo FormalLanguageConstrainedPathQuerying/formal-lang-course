@@ -10,7 +10,7 @@
 а также материалы курса и другая сопутствующая информация.
 
 Актуальное:
-- [Список задач](https://github.com/FormalLanguageConstrainedPathQuerying/formal-lang-course/blob/main/tasks.md)
+- [Список задач](tasks.md)
 - [Стиль кода как референс](https://www.python.org/dev/peps/pep-0008/)
 - [О достижимости с ограничениями в терминах формальных языков](https://github.com/FormalLanguageConstrainedPathQuerying/FormalLanguageConstrainedReachability-LectureNotes)
 - Классика по алгоритмам синтаксического анализа: [Dick Grune, Ceriel J. H. Jacobs, "Parsing Techniques A Practical Guide"](https://link.springer.com/book/10.1007/978-0-387-68954-8#bibliographic-information)

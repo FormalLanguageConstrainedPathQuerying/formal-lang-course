@@ -6,7 +6,7 @@
 A course on formal languages: repository template for completing homework assignments, as well as course materials and other related information.
 
 Useful links:
-- [List of exercises](https://github.com/FormalLanguageConstrainedPathQuerying/formal-lang-course/blob/main/tasks.en.md)
+- [List of exercises](tasks.en.md)
 - [Code style reference](https://www.python.org/dev/peps/pep-0008/)
 - [On reachability with constraints in terms of formal languages, in Russian](https://github.com/FormalLanguageConstrainedPathQuerying/FormalLanguageConstrainedReachability-LectureNotes)
 - A textbook on parsing algorithms: [Dick Grune, Ceriel J. H. Jacobs, "Parsing Techniques A Practical Guide"](https://link.springer.com/book/10.1007/978-0-387-68954-8#bibliographic-information)
