@@ -148,3 +148,6 @@ _minted-presentation/
 
 # MacOS
 .DS_Store
+
+# Program output
+.dot
