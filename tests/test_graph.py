@@ -10,7 +10,7 @@ class TestCrAndSave2CycGraph:
         g = pydot.graph_from_dot_file("ex.dot")[0]
         assert len(g.get_node_list()) == 21
         assert len(g.get_edge_list()) == 22
-        assert {edge.obj_dict["attributes"]["label"] for edge in g.get_edge_list} == {
+        assert {edge.obj_dict["attributes"]["label"] for edge in g.get_edge_list()} == {
             "a",
             "b",
         }

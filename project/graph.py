@@ -13,7 +13,7 @@ class Info:
         g = rw.graph_from_csv(cfpq_data.download(name))
         self.number_of_edges = g.number_of_edges
         self.number_of_nodes = g.number_of_nodes
-        self.labels = {edge.label for edge in g.edges}
+        self.labels = {g.edges[edge]["label"] for edge in g.edges}
 
 
 def create_and_safe_2cycle_graph(
