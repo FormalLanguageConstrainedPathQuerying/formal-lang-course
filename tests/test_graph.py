@@ -9,8 +9,11 @@ class TestCrAndSave2CycGraph:
         graph.create_and_safe_2cycle_graph(10, 10, ("a", "b"), "ex.dot")
         g = pydot.graph_from_dot_file("ex.dot")[0]
         assert len(g.get_node_list()) == 21
-        assert len(g.get_edge_list) == 22
-        assert {edge.label for edge in g.get_edge_list} == {"a", "b"}
+        assert len(g.get_edge_list()) == 22
+        assert {edge.obj_dict["attributes"]["label"] for edge in g.get_edge_list} == {
+            "a",
+            "b",
+        }
 
 
 class TestGraphInfo:
