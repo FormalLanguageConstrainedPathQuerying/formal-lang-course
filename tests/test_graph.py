@@ -7,7 +7,7 @@ import pydot
 class TestCrAndSave2CycGraph:
     def test_read_after_write(self):
         graph.create_and_safe_2cycle_graph(10, 10, ("a", "b"), "ex.dot")
-        g = pydot.graph_from_dot_file("ex.dot")
+        g = pydot.graph_from_dot_file("ex.dot")[0]
         assert len(g.get_node_list()) == 21
         assert len(g.get_edge_list) == 22
         assert {edge.label for edge in g.get_edge_list} == {"a", "b"}
