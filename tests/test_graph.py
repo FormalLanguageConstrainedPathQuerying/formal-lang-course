@@ -1,5 +1,4 @@
 import project.graph as graph
-import cfpq_data
 import cfpq_data.dataset.data as ds
 import pytest
 import networkx

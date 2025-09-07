@@ -1,6 +1,6 @@
 from typing import Tuple, Set
-import netwotkx
 import cfpq_data
+import networkx
 
 
 class Info:
