@@ -6,6 +6,7 @@ authors = [
     { name = "Semyon Grigorev", email = "rsdpisuy@gmail.com" },
     { name = "Efim Kubishkin", email = "efimkub@mail.ru" },
     { name = "Nikolai Ponomarev", email = "wowasterdev@gmail.com" },
+    { name = "Roman Mukovenkov", email = "roman.mukovenkov@gmail.com" }
 ]
 dependencies = [
     "antlr4-python3-runtime>=4.13.1",
