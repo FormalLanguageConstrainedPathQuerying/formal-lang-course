@@ -150,4 +150,4 @@ _minted-presentation/
 .DS_Store
 
 # Program output
-.dot
+*.dot
