@@ -1,1 +1,1 @@
-print("import sources directory")
+from project import graph_info
