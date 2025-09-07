@@ -20,8 +20,8 @@ class TestGraphInfo:
     def test_nonneg_graph_info(self):
         infos = map(lambda name: graph.Info(name), ds.DATASET[0:3])
         for info in infos:
-            assert info.number_of_nodes >= 0
-            assert info.number_of_edges >= 0
+            assert info.number_of_nodes() >= 0
+            assert info.number_of_edges() >= 0
 
     def test_nonexisting_graph_info(self):
         with pytest.raises(FileNotFoundError):
