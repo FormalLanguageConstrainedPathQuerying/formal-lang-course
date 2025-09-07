@@ -1,5 +1,6 @@
 from typing import Tuple, Set
 import cfpq_data
+import cfpq_data.graphs.readwrite as rw
 import networkx
 
 
@@ -9,7 +10,7 @@ class Info:
     labels: Set[str] = set()
 
     def __init__(self, name):
-        g = cfpq_data.download(name)
+        g = rw.graph_from_csv(cfpq_data.download(name))
         self.number_of_edges = g.number_of_edges
         self.number_of_nodes = g.number_of_nodes
         self.labels = {edge.label for edge in g.edges}
