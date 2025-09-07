@@ -36,3 +36,45 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/formal_lang_course"]
+
+[tool.ruff]
+
+line-length = 79
+target-version = "py313"  # Версия Python
+
+
+exclude = [
+    ".git",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    "venv",
+    ".venv",
+    "env",
+    "build",
+    "tests/test_basic.py",
+    "tests/autotests",
+    "dist",
+    "migrations",
+    "scripts",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "W",
+    "UP",
+    "I",
+    "C90",
+    "F405",
+]
+
+[tool.ruff.format]
+
+quote-style = "double"
+indent-style = "space"
+
+[tool.ruff.lint.isort]
+known-first-party = ["formal_lang_course"]
