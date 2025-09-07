@@ -29,9 +29,7 @@ def test_save_graph():
     filename = "tests/out_test_save_graph.dot"
 
     save_two_cycle_graph(n, m, labels, filename)
-    graph: nx.MultiDiGraph = nx.drawing.nx_pydot.read_dot(filename)
+    graph = nx.drawing.nx_pydot.read_dot(filename)
 
     assert graph.number_of_nodes() == n + m + 1
     assert set(cfpq_data.get_sorted_labels(graph)) == set(labels)
-
-
