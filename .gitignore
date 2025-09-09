@@ -126,8 +126,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# IDEA
+# editors
 .idea
+.vscode
 
 # LaTeX
 *.aux
