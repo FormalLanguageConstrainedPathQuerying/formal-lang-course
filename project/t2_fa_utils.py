@@ -1,4 +1,4 @@
-from typing import Optional, Set
+from typing import Set
 from pyformlang.regular_expression import Regex
 from pyformlang.finite_automaton import DeterministicFiniteAutomaton, NondeterministicFiniteAutomaton
 from pyformlang.finite_automaton import State, Symbol
@@ -7,22 +7,23 @@ from networkx import MultiDiGraph
 def regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton:
     rx = Regex(regex)
     nfa = rx.to_epsilon_nfa()
-    return nfa.to_deterministic()
+    dfa = nfa.to_deterministic()
+    return dfa.minimize()
 
 
 def graph_to_nfa(
     graph: MultiDiGraph,
-    start_states: Optional[Set[int]] = None,
-    final_states: Optional[Set[int]] = None,
+    start_states: Set[int],
+    final_states: Set[int],
 ) -> NondeterministicFiniteAutomaton:
 
     nfa = NondeterministicFiniteAutomaton()
 
     graph_nodes = set(graph.nodes())
     if not start_states:
-        start_states = set(graph_nodes)
+        start_states = graph_nodes
     if not final_states:
-        final_states = set(graph_nodes)
+        final_states = graph_nodes
 
     for s in start_states:
         nfa.add_start_state(State(s))
