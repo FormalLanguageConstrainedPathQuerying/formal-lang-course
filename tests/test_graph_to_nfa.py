@@ -6,7 +6,7 @@ from project import t2_fa_utils as t2
 
 def test_empty_graph():
     G = nx.MultiDiGraph()
-    nfa = t2.graph_to_nfa(G)
+    nfa = t2.graph_to_nfa(G, set(), set())
 
     assert len(nfa.states) == 0
     assert len(nfa.to_dict()) == 0
@@ -32,7 +32,7 @@ def test_all_nodes_start_and_final_if_not_specified():
     G.add_edge(0, 1, label="a")
     G.add_edge(1, 2, label="b")
 
-    nfa = t2.graph_to_nfa(G)
+    nfa = t2.graph_to_nfa(G, set(), set())
 
     assert all(State(v) in nfa.start_states for v in G.nodes)
     assert all(State(v) in nfa.final_states for v in G.nodes)
