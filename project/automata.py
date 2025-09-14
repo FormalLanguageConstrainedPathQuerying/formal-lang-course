@@ -2,7 +2,10 @@ from pyformlang import (
     DeterministicFiniteAutomaton,
     Regex,
     NondeterministicFiniteAutomaton,
+    State,
+    Symbol,
 )
+
 from networkx import MultiDiGraph
 from types import Set
 
@@ -14,4 +17,20 @@ def regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton:
 def graph_to_nfa(
     graph: MultiDiGraph, start_states: Set[int], final_states: Set[int]
 ) -> NondeterministicFiniteAutomaton:
-    pass
+    # Definition of the NFA
+
+    nfa = NondeterministicFiniteAutomaton()
+    states = [State(i) for i in range(len(graph))]
+    for ss in start_states:
+        nfa.add_start_state(ss)
+    for fs in final_states:
+        nfa.add_final_state(fs)
+    symbs = dict()
+    for u, v, label in graph.edges(data="label"):
+        symb = symbs[label]
+        if symb is None:
+            symb = Symbol(label)
+            symbs[label] = symb
+        nfa.add_transition(states[u], symb, states[v])
+
+    return nfa
