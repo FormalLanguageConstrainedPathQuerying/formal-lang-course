@@ -10,7 +10,7 @@ from typing import Set
 
 
 def regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton:
-    return Regex(regex).to_epsilon_nfa().to_dfa().minimize()
+    return Regex(regex).to_epsilon_nfa().to_deterministic().minimize()
 
 
 def graph_to_nfa(
