@@ -1,15 +1,22 @@
-from typing import Tuple
+from __future__ import annotations
+from typing import Tuple, Set
 import cfpq_data
 import cfpq_data.graphs.readwrite as rw
 import networkx
 
 
 class Info:
-    def __init__(self, name:str):
+    def __init__(self, number_of_nodes: int, number_of_edges: int, labels: Set[str]):
+        self.number_of_nodes = number_of_nodes
+        self.number_of_edges = number_of_edges
+        self.labels = labels
+
+    def from_file(name: str) -> Info:
         g = rw.graph_from_csv(cfpq_data.download(name))
-        self.number_of_edges = g.number_of_edges
-        self.number_of_nodes = g.number_of_nodes
-        self.labels = {g.edges[edge]["label"] for edge in g.edges}
+        number_of_edges = g.number_of_edges
+        number_of_nodes = g.number_of_nodes
+        labels = {g.edges[edge]["label"] for edge in g.edges}
+        return Info(number_of_nodes, number_of_edges, labels)
 
 
 def create_and_safe_2cycle_graph(
