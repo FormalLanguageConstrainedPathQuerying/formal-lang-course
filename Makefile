@@ -1,4 +1,4 @@
-.PHONY: lint lint-fix venv install format
+.PHONY: lint lint-fix venv install format rye
 
 PYTHON = python3
 VENV_DIR = venv
@@ -27,3 +27,7 @@ venv:
 		echo "Venv created in $(VENV_DIR)"; \
 		echo "To activate run: source $(VENV_DIR)/bin/activate"; \
 	fi
+
+rye:
+	rye fmt --check
+	rye fmt
