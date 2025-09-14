@@ -6,7 +6,7 @@ from pyformlang.finite_automaton import (
 )
 from pyformlang.regular_expression import Regex
 from networkx import MultiDiGraph
-from types import Set
+from typing import Set
 
 
 def regex_to_dfa(regex: str) -> DeterministicFiniteAutomaton:
