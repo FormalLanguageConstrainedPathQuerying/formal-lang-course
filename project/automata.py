@@ -26,7 +26,7 @@ def graph_to_nfa(
         nfa.add_final_state(fs)
     symbs = dict()
     for u, v, label in graph.edges(data="label"):
-        symb = symbs[label]
+        symb = symbs.get(label)
         if symb is None:
             symb = Symbol(label)
             symbs[label] = symb
