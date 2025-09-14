@@ -1,11 +1,10 @@
-from pyformlang import (
+from pyformlang.finite_automaton import (
     DeterministicFiniteAutomaton,
-    Regex,
     NondeterministicFiniteAutomaton,
     State,
     Symbol,
 )
-
+from pyfromlang.regular_expression import Regex
 from networkx import MultiDiGraph
 from types import Set
 
