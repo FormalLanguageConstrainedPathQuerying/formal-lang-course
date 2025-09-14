@@ -20,9 +20,9 @@ def graph_to_nfa(
 
     nfa = NondeterministicFiniteAutomaton()
     states = [State(i) for i in range(len(graph))]
-    for ss in start_states:
+    for ss in states if not start_states else start_states:
         nfa.add_start_state(ss)
-    for fs in final_states:
+    for fs in states if not final_states else final_states:
         nfa.add_final_state(fs)
     symbs = dict()
     for u, v, label in graph.edges(data="label"):
