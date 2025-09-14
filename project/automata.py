@@ -4,7 +4,7 @@ from pyformlang.finite_automaton import (
     State,
     Symbol,
 )
-from pyfromlang.regular_expression import Regex
+from pyformlang.regular_expression import Regex
 from networkx import MultiDiGraph
 from types import Set
 
