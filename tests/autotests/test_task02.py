@@ -14,7 +14,6 @@ from grammars_constants import REGEXES
 from project.automata import regex_to_dfa, graph_to_nfa
 
 
-
 class TestRegexToDfa:
     @pytest.mark.parametrize("regex_str", REGEXES)
     def test(self, regex_str: str) -> None:
