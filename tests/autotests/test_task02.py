@@ -11,12 +11,8 @@ import itertools
 from helper import GraphWordsHelper, generate_rnd_start_and_final
 from constants import IS_FINAL, IS_START
 from grammars_constants import REGEXES
+from project.automata import regex_to_dfa, graph_to_nfa
 
-# Fix import statements in try block to run tests
-try:
-    from project.automata import regex_to_dfa, graph_to_nfa
-except ImportError:
-    pytestmark = pytest.mark.skip("Task 2 is not ready to test!")
 
 
 class TestRegexToDfa:
