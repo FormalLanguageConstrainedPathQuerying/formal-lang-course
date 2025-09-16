@@ -1,3 +1,3 @@
-from . import utils
+from . import utils, build_graph
 
-__all__ = ["utils"]
+__all__ = ["utils", "build_graph"]
