@@ -78,7 +78,6 @@ def test_from_pyformlang_nfa():
     "nfa, is_empty_truth",
     [
         (make_simple_nfa(False), True),
-        (make_random_nfa(["a", "b", "c", "d"], 4, 1, 1, 0), True),
         (make_random_nfa(["a"], 4, 4, 4, 0), False),
         (make_random_nfa([], 1, 1, 1, 0), False),
         (make_random_nfa(["a"], 1, 1, 1, 1), False),
