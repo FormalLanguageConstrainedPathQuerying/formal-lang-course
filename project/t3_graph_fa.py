@@ -57,7 +57,6 @@ class AdjacencyMatrixFA:
 
         self.alphabet = nfa.symbols
 
-
     def get_state_indices(states):
         index = {s: i for i, s in enumerate(states)}
         return [index[s] for s in states]
