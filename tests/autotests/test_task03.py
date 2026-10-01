@@ -12,8 +12,9 @@ from rpq_concrete_cases import CASES_RPQ, CaseRPQ
 
 # Fix import statements in try block to run tests
 try:
+    from project.adjacency_matrix_fa import AdjacencyMatrixFA, intersect_automata
     from project.automata_utils import regex_to_dfa
-    from project.task3 import intersect_automata, AdjacencyMatrixFA, tensor_based_rpq
+    from project.rpq import tensor_based_rpq
 except ImportError:
     pytestmark = pytest.mark.skip("Task 3 is not ready to test!")
 
