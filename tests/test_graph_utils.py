@@ -8,6 +8,24 @@ import pytest
 from project.graph_utils import create_two_cycles_graph, get_graph_info
 
 
+@pytest.mark.parametrize(
+    "graph_name",
+    [name for name in cfpq_data.DATASET if name in {"generations", "skos"}],
+)
+def test_get_graph_info_from_dataset(graph_name):
+    """Compare statistics with independently parsed real dataset edges."""
+    csv_path = cfpq_data.download(graph_name)
+    vertices, labels = set(), set()
+    edge_count = 0
+    for line in csv_path.read_text(encoding="utf-8").splitlines():
+        source, target, label = line.split()
+        vertices.update((source, target))
+        labels.add(label)
+        edge_count += 1
+
+    assert get_graph_info(graph_name) == (len(vertices), edge_count, labels)
+
+
 def test_get_graph_info_with_common_node(tmp_path, monkeypatch):
     csv_path = tmp_path / "graph.csv"
     csv_path.write_text("0 1 a\n1 0 a\n0 2 b\n2 0 b\n", encoding="utf-8")
