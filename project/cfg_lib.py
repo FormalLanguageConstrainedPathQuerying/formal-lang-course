@@ -1,7 +1,13 @@
 import networkx as nx
 
 from pyformlang.cfg import CFG, Terminal, Variable, Epsilon
+from pyformlang.finite_automaton import Symbol, State
+from pyformlang.rsa import RecursiveAutomaton
 from scipy.sparse import csc_matrix
+
+from project.graph_lib import graph_to_nfa
+from project.rpq_lib import AdjacencyMatrixFA, intersect_automata
+from project.rsm_lib import boolean_decompress_rsm
 
 
 def cfg_to_weak_normal_form(cfg: CFG) -> CFG:
@@ -150,5 +156,80 @@ def matrix_based_cfpq(
             for r, c in zip(*adjacency_matrix[nonterm].nonzero()):
                 if idx_to_node[r] in start_nodes and idx_to_node[c] in final_nodes:
                     valid_pairs.add((idx_to_node[r], idx_to_node[c]))
+
+    return valid_pairs
+
+
+def tensor_based_cfpq(
+    rsm: RecursiveAutomaton,
+    graph: nx.DiGraph,
+    start_nodes: set[int] = None,
+    final_nodes: set[int] = None,
+) -> set[tuple[int, int]]:
+    """
+    Return (u, v) pairs from start_nodes to final_nodes connected by a path whose labels
+    derive from the RSM initial label, via tensor-based fixed-point iteration.
+    """
+    rsm_m = boolean_decompress_rsm(rsm)
+    graph_m = AdjacencyMatrixFA(
+        graph_to_nfa(nx.MultiDiGraph(graph), start_nodes, final_nodes)
+    )
+
+    def delta(tc: csc_matrix) -> dict[Symbol, csc_matrix]:
+        """
+        Project the tensor product's transitive closure onto the graph automaton:
+        map each complete RSM derivation of a non-terminal to a new edge labelled by that non-terminal,
+        skipping edges already present in graph_m.
+        """
+        res: dict[Symbol, csc_matrix] = {}
+
+        for i, j in zip(*tc.nonzero()):
+            rsm_i, rsm_j = i % rsm_m.states_count, j % rsm_m.states_count
+            st1, st2 = rsm_m.indexes_to_states[rsm_i], rsm_m.indexes_to_states[rsm_j]
+
+            if st1 in rsm_m.start_states and st2 in rsm_m.final_states:
+                assert st1.value[0] == st2.value[0]
+                nonterm = st1.value[0]
+
+                graph_i, graph_j = i // rsm_m.states_count, j // rsm_m.states_count
+                if (
+                    nonterm in graph_m.adj_matrices
+                    and graph_m.adj_matrices[nonterm][graph_i, graph_j]
+                ):
+                    continue
+
+                if nonterm not in res:
+                    res[nonterm] = csc_matrix(
+                        (graph_m.states_count, graph_m.states_count), dtype=bool
+                    )
+                res[nonterm][graph_i, graph_j] = True
+
+        return res
+
+    while True:
+        transitive_closure = intersect_automata(graph_m, rsm_m).transitive_closure()
+        m_delta = delta(transitive_closure)
+
+        if not m_delta:
+            break
+
+        for symbol in m_delta.keys():
+            if symbol not in graph_m.adj_matrices:
+                graph_m.adj_matrices[symbol] = m_delta[symbol]
+            else:
+                graph_m.adj_matrices[symbol] += m_delta[symbol]
+
+    valid_pairs: set[tuple[int, int]] = set()
+    start_m = graph_m.adj_matrices.get(rsm.initial_label)
+    if start_m is None:
+        return valid_pairs
+
+    for start in start_nodes:
+        for final in final_nodes:
+            if start_m[
+                graph_m.states_to_indexes[State(start)],
+                graph_m.states_to_indexes[State(final)],
+            ]:
+                valid_pairs.add((start, final))
 
     return valid_pairs
